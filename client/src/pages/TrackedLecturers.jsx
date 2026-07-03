@@ -371,7 +371,7 @@ const TrackedLecturers = () => {
             ) : (
               <>
                 {/* Grid layout for lecturer cards */}
-                <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4 sm:gap-6 lg:gap-8 mt-6 sm:mt-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mt-6 sm:mt-8">
                   {trackedLecturers
                     .filter(({ lecturer }) => lecturer) // Filter out null/undefined lecturers
                     .map(({ lecturer }) => (
