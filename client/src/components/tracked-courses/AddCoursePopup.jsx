@@ -3,6 +3,8 @@ import { apiFetch } from "../../hooks/useApi";
 import { Search, X, BookOpen, AlertCircle, Loader2 } from "lucide-react";
 import CourseItem from "./CourseItem";
 import CourseDetailsModal from "./CourseDetailsModal";
+import Modal from "../common/Modal";
+import EmptyState from "../common/EmptyState";
 
 const AddCoursePopup = ({ onClose, onCourseAdded, user }) => {
   const [allCourses, setAllCourses] = useState([]);
@@ -157,23 +159,22 @@ const AddCoursePopup = ({ onClose, onCourseAdded, user }) => {
     }
   };
 
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget && !isAdding) {
-      onClose();
-    }
+  const handleClose = () => {
+    if (!isAdding) onClose();
   };
 
   return (
     <>
-      <div
-        className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-        onClick={handleBackdropClick}
-        dir="rtl"
+      <Modal
+        isOpen
+        onClose={handleClose}
+        size="lg"
+        showCloseButton={false}
+        closeOnBackdrop={!isAdding}
       >
-        <div className="bg-white rounded-3xl shadow-elevated w-full max-w-2xl max-h-[85vh] overflow-hidden relative transform transition-all duration-ui">
-          <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 p-6 relative">
+          <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 p-6 relative -mx-4 sm:-mx-6 -mt-4 sm:-mt-5">
             <button
-              onClick={onClose}
+              onClick={handleClose}
               disabled={isAdding}
               className="absolute top-4 left-4 text-white hover:text-emerald-200 transition-colors duration-ui bg-white/20 rounded-full p-2 hover:bg-white/30 disabled:opacity-50"
               aria-label="סגור"
@@ -192,7 +193,7 @@ const AddCoursePopup = ({ onClose, onCourseAdded, user }) => {
             </div>
           </div>
 
-          <div className="p-6 bg-gray-50 border-b">
+          <div className="p-6 bg-gray-50 border-b -mx-4 sm:-mx-6">
             <div className="relative">
               <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-emerald-500">
                 <Search className="w-5 h-5" />
@@ -230,24 +231,22 @@ const AddCoursePopup = ({ onClose, onCourseAdded, user }) => {
                 </div>
               </div>
             ) : filteredCourses.length === 0 && searchTerm ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="text-center">
-                  <div className="bg-gray-100 rounded-full p-3 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                    <Search className="w-8 h-8 text-gray-400" />
-                  </div>
-                  <p className="text-gray-600">לא נמצאו קורסים התואמים לחיפוש</p>
-                  <p className="text-gray-400 text-sm mt-2">נסה מילות חיפוש אחרות</p>
-                </div>
+              <div className="py-6">
+                <EmptyState
+                  icon={Search}
+                  title="לא נמצאו קורסים התואמים לחיפוש"
+                  description="נסה מילות חיפוש אחרות"
+                  className="border-0 bg-transparent"
+                />
               </div>
             ) : filteredCourses.length === 0 && !searchTerm ? (
-              <div className="flex items-center justify-center py-12">
-                <div className="text-center">
-                  <div className="bg-emerald-100 rounded-full p-3 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                    <BookOpen className="w-8 h-8 text-emerald-500" />
-                  </div>
-                  <p className="text-gray-600 font-medium">אתה עוקב אחרי כל הקורסים!</p>
-                  <p className="text-gray-400 text-sm mt-2">אין קורסים נוספים להוספה</p>
-                </div>
+              <div className="py-6">
+                <EmptyState
+                  icon={BookOpen}
+                  title="אתה עוקב אחרי כל הקורסים!"
+                  description="אין קורסים נוספים להוספה"
+                  className="border-0 bg-transparent"
+                />
               </div>
             ) : (
               <div className="overflow-y-auto max-h-96 p-6">
@@ -267,23 +266,22 @@ const AddCoursePopup = ({ onClose, onCourseAdded, user }) => {
           </div>
 
           {!isLoading && !error && (
-            <div className="border-t bg-gray-50 p-6">
+            <div className="border-t bg-gray-50 p-6 -mx-4 sm:-mx-6 -mb-4 sm:-mb-5">
               <div className="flex justify-between items-center">
                 <div className="text-sm text-gray-600">
                   {filteredCourses.length} קורסים זמינים להוספה
                 </div>
                 <button
-                  onClick={onClose}
+                  onClick={handleClose}
                   disabled={isAdding}
-                  className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-card font-medium transition-colors duration-ui disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-card font-medium transition-colors duration-ui disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
                 >
                   {isAdding ? "מוסיף..." : "ביטול"}
                 </button>
               </div>
             </div>
           )}
-        </div>
-      </div>
+      </Modal>
 
       {detailsCourse && (
         <CourseDetailsModal

@@ -2,8 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Plus, Users, Trash2 } from "lucide-react";
 import FilterBar from "../../common/admin/FilterBar";
 import ListTable from "../../common/admin/ListTable";
-import Modal, { ModalFooter } from "../../common/Modal";
-import Button from "../../common/Button";
+import ConfirmDialog from "../../common/ConfirmDialog";
 import useLecturers from "../../../hooks/useLecturers";
 import { lecturerColumns, renderLecturerRowActions } from "./LecturerRow";
 import LecturerFormModal from "./LecturerFormModal";
@@ -133,36 +132,18 @@ const LecturerManagement = ({ onMessage, onError, onLecturersUpdate }) => {
         />
       )}
 
-      <Modal
+      <ConfirmDialog
         isOpen={Boolean(deleteTarget)}
         onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDelete}
         title="מחיקת מרצה"
         description="הפעולה אינה ניתנת לביטול"
-        size="sm"
-      >
-        <p className="text-sm text-slate-700" dir="rtl">
-          {`האם אתה בטוח שברצונך למחוק את ${deleteTarget?.name || "המרצה"}?`}
-        </p>
-        <ModalFooter className="-mx-6 -mb-5 mt-6">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => setDeleteTarget(null)}
-            disabled={mutating}
-          >
-            ביטול
-          </Button>
-          <Button
-            type="button"
-            variant="danger"
-            loading={mutating}
-            leftIcon={Trash2}
-            onClick={confirmDelete}
-          >
-            מחק מרצה
-          </Button>
-        </ModalFooter>
-      </Modal>
+        message={`האם אתה בטוח שברצונך למחוק את ${deleteTarget?.name || "המרצה"}?`}
+        confirmLabel="מחק מרצה"
+        confirmIcon={Trash2}
+        variant="danger"
+        loading={mutating}
+      />
     </div>
   );
 };

@@ -13,8 +13,9 @@ import {
   Eye,
   Star
 } from 'lucide-react';
+import Button from '../common/Button';
 
-const ReviewFilters = ({ 
+const ReviewFilters = ({
   filters, 
   onFilterChange, 
   onClearFilters, 
@@ -99,13 +100,14 @@ const ReviewFilters = ({
           </button>
 
           {hasActiveFilters && (
-            <button
+            <Button
+              variant="ghost"
+              leftIcon={X}
               onClick={onClearFilters}
-              className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 border border-red-200 rounded-card hover:bg-red-200 transition-colors"
+              className="!bg-red-100 !text-red-700 border border-red-200 hover:!bg-red-200 focus-visible:!ring-danger"
             >
-              <X className="w-4 h-4" />
               <span className="hidden sm:inline">נקה סינון</span>
-            </button>
+            </Button>
           )}
         </div>
       </div>

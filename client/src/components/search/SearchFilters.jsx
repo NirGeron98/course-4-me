@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Search, Filter, ChevronDown, ChevronUp, Hash, Award, Users, Star, Mail } from 'lucide-react';
 import AutocompleteInput from './AutocompleteInput';
 import MultiSelectDepartments from '../common/MultiSelectDepartments';
+import Button from '../common/Button';
 
 const SearchFilters = ({
     searchType,
@@ -37,12 +38,14 @@ const SearchFilters = ({
                     </div>
                     <h3 className="text-xl font-semibold text-gray-800">פילטרי חיפוש</h3>
                 </div>
-                <button
+                <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={onClearFilters}
-                    className="text-sm text-red-600 hover:text-red-700 hover:bg-red-50 px-3 py-1 rounded-card transition-all duration-ui font-semibold border border-red-200 hover:border-red-300"
+                    className="!text-red-600 hover:!text-red-700 hover:!bg-red-50 border border-red-200 hover:border-red-300 focus-visible:!ring-danger"
                 >
                     נקה הכל
-                </button>
+                </Button>
             </div>
 
             {/* Basic Filters */}
@@ -180,7 +183,7 @@ const SearchFilters = ({
                                             <Star className="w-4 h-4 text-yellow-500" />
                                             דירוג
                                         </label>
-                                        <div className="grid grid-cols-2 gap-3">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             <div>
                                                 <label className="block text-xs font-medium text-gray-500 mb-2">מינימום</label>
                                                 <select
@@ -262,7 +265,7 @@ const SearchFilters = ({
                                             <Star className="w-4 h-4 text-yellow-500" />
                                             דירוג מרצה
                                         </label>
-                                        <div className="grid grid-cols-2 gap-3">
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             <div>
                                                 <label className="block text-xs font-medium text-gray-500 mb-2">מינימום</label>
                                                 <select
@@ -329,23 +332,16 @@ const SearchFilters = ({
 
             {/* Search Button */}
             <div className="mt-6 flex justify-center">
-                <button
+                <Button
+                    variant="primary"
+                    size="lg"
+                    leftIcon={Search}
+                    loading={loading}
                     onClick={onSearch}
-                    disabled={loading}
-                    className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white py-3 px-8 rounded-card font-medium transition-all duration-ui shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5 disabled:opacity-50 disabled:transform-none flex items-center justify-center gap-3 min-w-[150px]"
+                    className="min-w-[150px]"
                 >
-                    {loading ? (
-                        <>
-                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                            מחפש...
-                        </>
-                    ) : (
-                        <>
-                            <Search className="w-5 h-5" />
-                            חפש
-                        </>
-                    )}
-                </button>
+                    {loading ? 'מחפש...' : 'חפש'}
+                </Button>
             </div>
         </div>
     );

@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { apiFetch } from "../hooks/useApi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Lock, LogIn } from "lucide-react";
+import { Mail, LogIn } from "lucide-react";
 import Alert from "../components/common/Alert";
+import Card from "../components/common/Card";
+import Input from "../components/common/Input";
+import PasswordInput from "../components/common/PasswordInput";
+import Button from "../components/common/Button";
 
 const Login = ({ onLogin, user }) => {
 
@@ -15,7 +19,6 @@ const Login = ({ onLogin, user }) => {
   });
 
   const [message, setMessage] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDataLoading, setIsDataLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -127,6 +130,7 @@ const Login = ({ onLogin, user }) => {
 
       // Check if user needs to reset password first - skip preload when so
       if (data.requiresPasswordReset) {
+        onLogin(data);
         navigate("/reset-password");
         return;
       }
@@ -148,79 +152,56 @@ const Login = ({ onLogin, user }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 flex items-center justify-center p-4" dir="rtl">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-500 rounded-full mb-4 shadow-card">
-            <LogIn className="w-8 h-8 text-white" />
+            <LogIn className="w-8 h-8 text-white" aria-hidden="true" />
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">התחברות</h1>
+          <p className="text-gray-600">ברוך שובך! התחבר כדי להמשיך</p>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-elevated border border-emerald-100 p-8" dir="rtl">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="relative">
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-emerald-500">
-                <Mail className="w-5 h-5" />
-              </div>
-              <input
-                type="email"
-                name="email"
-                placeholder="כתובת אימייל"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full bg-gray-50/70 border-2 border-gray-200 rounded-card-lg py-4 pr-12 pl-4 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:border-emerald-400 focus:bg-white/90 transition-all duration-ui"
-                required
-              />
-            </div>
+        <Card variant="raised" padding="lg">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <Input
+              type="email"
+              name="email"
+              label="כתובת אימייל"
+              autoComplete="email"
+              leftIcon={Mail}
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
 
-            <div className="relative">
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-emerald-500">
-                <Lock className="w-5 h-5" />
-              </div>
-              <input
-                type={showPassword ? "text" : "password"}
+            <div>
+              <PasswordInput
                 name="password"
-                placeholder="סיסמה"
+                label="סיסמה"
+                autoComplete="current-password"
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full bg-gray-50/70 border-2 border-gray-200 rounded-card-lg py-4 pr-12 pl-12 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:border-emerald-400 focus:bg-white/90 transition-all duration-ui"
                 required
               />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-emerald-500 transition-colors"
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
+              <div className="mt-2 text-left">
+                <Link
+                  to="/forgot-password"
+                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium hover:underline transition-colors duration-ui"
+                >
+                  שכחתי סיסמה
+                </Link>
+              </div>
             </div>
 
-            <div className="text-center mb-4">
-              <Link
-                to="/forgot-password"
-                className="text-emerald-600 hover:text-emerald-700 font-medium hover:underline transition-colors text-sm"
-              >
-                שכחתי סיסמה
-              </Link>
-            </div>
-
-            <button
+            <Button
               type="submit"
-              disabled={isLoading || isDataLoading}
-              className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-4 rounded-card-lg shadow-card hover:shadow-card-hover transition-all duration-ui disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+              size="lg"
+              fullWidth
+              loading={isLoading || isDataLoading}
             >
-              {isLoading || isDataLoading ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <div className="ml-4">
-                    <span className="mr-2">{isDataLoading ? "טוען נתונים..." : "מתחבר..."}</span>
-                  </div>
-                </div>
-              ) : (
-                "התחבר"
-              )}
-            </button>
+              {isDataLoading ? "טוען נתונים..." : isLoading ? "מתחבר..." : "התחבר"}
+            </Button>
           </form>
 
           {message && (message.includes('טוען') || message.includes('נתונים')) && (
@@ -246,18 +227,18 @@ const Login = ({ onLogin, user }) => {
             </div>
           )}
 
-          <div className="mt-8 text-center">
+          <div className="mt-8 pt-6 border-t border-slate-200 text-center">
             <p className="text-gray-600">
               עוד לא נרשמת?{" "}
               <Link
                 to="/signup"
-                className="text-emerald-600 hover:text-emerald-700 font-semibold hover:underline transition-colors"
+                className="text-emerald-600 hover:text-emerald-700 font-semibold hover:underline transition-colors duration-ui"
               >
                 הירשם עכשיו
               </Link>
             </p>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { apiFetch } from '../hooks/useApi';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  CheckCircle, 
-  AlertCircle, 
-  Save, 
+import {
+  CheckCircle,
+  AlertCircle,
+  Save,
   Loader2,
   Shield,
-  LogOut 
+  LogOut
 } from 'lucide-react';
+import Alert from '../components/common/Alert';
+import Card from '../components/common/Card';
+import PasswordInput from '../components/common/PasswordInput';
+import Button from '../components/common/Button';
 
 const ResetPassword = ({ user, onLogout, updateUser }) => {
   const navigate = useNavigate();
@@ -20,14 +21,12 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
     newPassword: '',
     confirmPassword: ''
   });
-  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState([]);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const [redirectBarFilled, setRedirectBarFilled] = useState(false);
   
   // Check if user is using temporary password
   const isUsingTempPassword = user?.requiresPasswordReset || localStorage.getItem("requiresPasswordReset") === "true";
@@ -133,6 +132,11 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
 
       // Show redirect animation and redirect to dashboard
       setIsRedirecting(true);
+      // Start the bar at 0% and fill it on the next frame so the width
+      // transition actually animates instead of rendering already-full.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setRedirectBarFilled(true));
+      });
       setTimeout(() => {
         navigate('/dashboard');
       }, 3000);
@@ -150,28 +154,28 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 flex items-center justify-center p-4" dir="rtl">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-500 rounded-full mb-4 shadow-card">
-            <Shield className="w-8 h-8 text-white" />
+            <Shield className="w-8 h-8 text-white" aria-hidden="true" />
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
             {isUsingTempPassword ? 'הגדרת סיסמה חדשה' : 'שינוי סיסמה'}
           </h1>
           <p className="text-gray-600">
-            {isUsingTempPassword 
+            {isUsingTempPassword
               ? 'אנא הגדר סיסמה חדשה וחזקה למשך השימוש במערכת'
               : 'הגדר סיסמה חדשה וחזקה'
             }
           </p>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-elevated border border-emerald-100 p-8" dir="rtl">
+        <Card variant="raised" padding="lg">
           {isUsingTempPassword && (
             <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-card">
               <div className="flex items-center">
-                <Shield className="w-5 h-5 text-blue-600 ml-2" />
+                <Shield className="w-5 h-5 text-blue-600 ml-2" aria-hidden="true" />
                 <div>
                   <h3 className="text-blue-800 font-semibold mb-1">הגדרת סיסמה חדשה</h3>
                   <p className="text-blue-700 text-sm">
@@ -181,62 +185,33 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
               </div>
             </div>
           )}
-          
+
           {!isSuccess ? (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Current Password */}
-              <div className="relative">
-                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-emerald-500">
-                  <Lock className="w-5 h-5" />
-                </div>
-                <input
-                  type={showCurrentPassword ? "text" : "password"}
-                  name="currentPassword"
-                  value={formData.currentPassword}
-                  onChange={handleChange}
-                  placeholder={isUsingTempPassword ? "סיסמה זמנית" : "סיסמה נוכחית"}
-                  className="w-full bg-gray-50/70 border-2 border-gray-200 rounded-card-lg py-4 pr-12 pl-12 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:border-emerald-400 focus:bg-white/90 transition-all duration-ui"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-emerald-500 transition-colors"
-                >
-                  {showCurrentPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <PasswordInput
+                name="currentPassword"
+                label={isUsingTempPassword ? "סיסמה זמנית" : "סיסמה נוכחית"}
+                autoComplete="current-password"
+                value={formData.currentPassword}
+                onChange={handleChange}
+                required
+              />
 
-              {/* New Password */}
-              <div className="relative">
-                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-emerald-500">
-                  <Lock className="w-5 h-5" />
-                </div>
-                <input
-                  type={showNewPassword ? "text" : "password"}
-                  name="newPassword"
-                  value={formData.newPassword}
-                  onChange={handleChange}
-                  placeholder="סיסמה חדשה"
-                  className="w-full bg-gray-50/70 border-2 border-gray-200 rounded-card-lg py-4 pr-12 pl-12 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:border-emerald-400 focus:bg-white/90 transition-all duration-ui"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-emerald-500 transition-colors"
-                >
-                  {showNewPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
+              <PasswordInput
+                name="newPassword"
+                label="סיסמה חדשה"
+                autoComplete="new-password"
+                value={formData.newPassword}
+                onChange={handleChange}
+                required
+              />
 
-              {/* Password validation errors */}
               {passwordErrors.length > 0 && (
                 <div className="bg-red-50 border border-red-200 rounded-card p-4">
                   <ul className="text-red-700 text-sm space-y-1">
                     {passwordErrors.map((error, index) => (
                       <li key={index} className="flex items-center">
-                        <AlertCircle className="w-4 h-4 ml-2 flex-shrink-0" />
+                        <AlertCircle className="w-4 h-4 ml-2 flex-shrink-0" aria-hidden="true" />
                         {error}
                       </li>
                     ))}
@@ -244,57 +219,37 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
                 </div>
               )}
 
-              {/* Confirm Password */}
-              <div className="relative">
-                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-emerald-500">
-                  <Lock className="w-5 h-5" />
-                </div>
-                <input
-                  type={showConfirmPassword ? "text" : "password"}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleChange}
-                  placeholder="אישור סיסמה חדשה"
-                  className="w-full bg-gray-50/70 border-2 border-gray-200 rounded-card-lg py-4 pr-12 pl-12 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:border-emerald-400 focus:bg-white/90 transition-all duration-ui"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-emerald-500 transition-colors"
-                >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
+              <PasswordInput
+                name="confirmPassword"
+                label="אישור סיסמה חדשה"
+                autoComplete="new-password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+              />
 
-              <button
+              <Button
                 type="submit"
-                disabled={isLoading || passwordErrors.length > 0}
-                className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-4 rounded-card-lg shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5 transition-all duration-ui disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                size="lg"
+                fullWidth
+                loading={isLoading}
+                disabled={passwordErrors.length > 0}
+                leftIcon={!isLoading ? Save : undefined}
               >
-                {isLoading ? (
-                  <div className="flex items-center justify-center space-x-2">
-                    <Loader2 className="ml-3 w-5 h-5 animate-spin" />
-                    <span className="mr-2">משנה סיסמה...</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center justify-center space-x-2">
-                    <Save className="ml-3 w-5 h-5" />
-                    <span className="mr-2">שמור סיסמה חדשה</span>
-                  </div>
-                )}
-              </button>
-              
-              {/* Back to Login Button - only for temporary password users */}
+                {isLoading ? "משנה סיסמה..." : "שמור סיסמה חדשה"}
+              </Button>
+
               {isUsingTempPassword && (
-                <button
+                <Button
                   type="button"
+                  variant="secondary"
+                  size="lg"
+                  fullWidth
                   onClick={handleLogout}
-                  className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 rounded-card-lg border-2 border-gray-200 transition-all duration-ui flex items-center justify-center space-x-2"
+                  leftIcon={LogOut}
                 >
-                  <LogOut className="ml-3 w-4 h-4" />
-                  <span className="mr-2">חזרה להתחברות</span>
-                </button>
+                  חזרה להתחברות
+                </Button>
               )}
             </form>
           ) : (
@@ -317,9 +272,9 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
                     <p className="text-emerald-700 text-sm mr-2">מעביר אותך לדף הראשי...</p>
                   </div>
                   <div className="mt-3 bg-emerald-200 rounded-full h-2 overflow-hidden">
-                    <div 
+                    <div
                       className="bg-emerald-500 h-full rounded-full transition-all duration-[3000ms] ease-in-out"
-                      style={{ width: isRedirecting ? '100%' : '0%' }}
+                      style={{ width: redirectBarFilled ? '100%' : '0%' }}
                     ></div>
                   </div>
                 </div>
@@ -334,12 +289,11 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
           )}
 
           {message && !isSuccess && (
-            <div className="mt-6 p-4 rounded-card-lg flex items-center space-x-3 bg-red-50 text-red-700 border border-red-200">
-              <AlertCircle className="w-5 h-5 text-red-500 ml-3" />
-              <p className="text-right font-medium">{message}</p>
+            <div className="mt-6">
+              <Alert type="error" message={message} onDismiss={() => setMessage('')} />
             </div>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import React from 'react';
 import { BookOpen, Building, Hash, Star, Eye, Users } from 'lucide-react';
+import Button from '../common/Button';
 
 const CourseResultCard = ({ course, onSelect }) => {
   // Safety check for course object
@@ -155,13 +156,9 @@ const CourseResultCard = ({ course, onSelect }) => {
 
       {/* Action Button */}
       <div className="flex justify-end pt-4 border-t border-gray-100">
-        <button
-          onClick={onSelect}
-          className="flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-card transition-all duration-ui font-medium shadow-card hover:shadow-card transform hover:-translate-y-0.5"
-        >
-          <Eye className="w-4 h-4" />
+        <Button onClick={onSelect} leftIcon={Eye} size="sm">
           פרטים מלאים
-        </button>
+        </Button>
       </div>
     </div>
   );

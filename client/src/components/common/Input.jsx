@@ -6,6 +6,8 @@ import React, { useId } from "react";
 //  - hint: helper text below the input
 //  - error: error message; replaces the hint and applies danger styles
 //  - leftIcon / rightIcon: optional lucide-react icon component
+//  - rightElement: interactive node (e.g. a visibility toggle button) rendered
+//    in the trailing icon slot; takes precedence over rightIcon
 //  - as: "input" (default) or "textarea"
 //  - fullWidth: stretch to parent width (default: true)
 const BASE_FIELD =
@@ -32,6 +34,7 @@ const Input = React.forwardRef(function Input(
     error,
     leftIcon: LeftIcon,
     rightIcon: RightIcon,
+    rightElement,
     as = "input",
     id,
     className = "",
@@ -51,7 +54,7 @@ const Input = React.forwardRef(function Input(
 
   const borderClass = error ? DANGER_BORDER : NEUTRAL_BORDER;
   const paddingWithIcons =
-    (LeftIcon ? " pr-10" : "") + (RightIcon ? " pl-10" : "");
+    (LeftIcon ? " pr-10" : "") + (RightIcon || rightElement ? " pl-10" : "");
 
   const sharedProps = {
     ref,
@@ -90,10 +93,16 @@ const Input = React.forwardRef(function Input(
           </span>
         )}
         {field}
-        {RightIcon && (
-          <span className="absolute inset-y-0 left-3 flex items-center text-slate-400 pointer-events-none">
-            <RightIcon className="w-4 h-4" aria-hidden="true" />
+        {rightElement ? (
+          <span className="absolute inset-y-0 left-2 flex items-center">
+            {rightElement}
           </span>
+        ) : (
+          RightIcon && (
+            <span className="absolute inset-y-0 left-3 flex items-center text-slate-400 pointer-events-none">
+              <RightIcon className="w-4 h-4" aria-hidden="true" />
+            </span>
+          )
         )}
       </div>
 

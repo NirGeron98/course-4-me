@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { User, AlertCircle, Loader2, Star } from 'lucide-react';
+import { User, AlertCircle, Star } from 'lucide-react';
 import LecturerReviewFormModal from '../components/lecturer-page/LecturerReviewFormModal';
 import LecturerHeader from '../components/lecturer-page/LecturerHeader';
 import LecturerReviewsSection from '../components/lecturer-page/LecturerReviewsSection';
 import LecturerStatisticsCard from '../components/lecturer-page/LecturerStatisticsCard';
 import LecturerQuickActions from '../components/lecturer-page/LecturerQuickActions';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import Button from '../components/common/Button';
 
 const LecturerPage = ({ user }) => {
     const { slug } = useParams();
@@ -307,16 +309,7 @@ const LecturerPage = ({ user }) => {
 
     // Show loading screen until all data is ready
     if (loading) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100 flex items-center justify-center">
-                <div className="text-center">
-                    <Loader2 className="w-16 h-16 text-purple-500 animate-spin mx-auto mb-6" />
-                    <div className="space-y-3">
-                        <h2 className="text-xl font-semibold text-gray-700">טוען מידע על המרצה</h2>
-                    </div>
-                </div>
-            </div>
-        );
+        return <LoadingSpinner message="טוען מידע על המרצה" />;
     }
 
     if (error) {
@@ -326,12 +319,9 @@ const LecturerPage = ({ user }) => {
                     <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
                     <h1 className="text-2xl font-bold text-gray-800 mb-2">שגיאה בטעינת המרצה</h1>
                     <p className="text-gray-600 mb-6">{error}</p>
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-card transition-colors"
-                    >
+                    <Button onClick={() => navigate(-1)}>
                         חזור אחורה
-                    </button>
+                    </Button>
                 </div>
             </div>
         );
@@ -344,12 +334,9 @@ const LecturerPage = ({ user }) => {
                     <User className="w-16 h-16 text-red-500 mx-auto mb-4" />
                     <h1 className="text-2xl font-bold text-gray-800 mb-2">מרצה לא נמצא</h1>
                     <p className="text-gray-600 mb-6">המרצה שחיפשת לא קיים במערכת</p>
-                    <button
-                        onClick={() => navigate('/')}
-                        className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-card transition-colors"
-                    >
+                    <Button onClick={() => navigate('/')}>
                         חזור לדף הבית
-                    </button>
+                    </Button>
                 </div>
             </div>
         );

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, BookOpen, Building, Hash, FileText, Award, Users, ArrowLeft, ChevronDown, ChevronUp } from "lucide-react";
+import Modal, { ModalFooter } from "../common/Modal";
+import Button from "../common/Button";
 
 const CourseDetailsModal = ({ course, onClose }) => {
   const navigate = useNavigate();
@@ -21,13 +23,6 @@ const CourseDetailsModal = ({ course, onClose }) => {
     if (!lecturers) return [];
     if (Array.isArray(lecturers)) return lecturers;
     return [lecturers];
-  };
-
-  // Close modal when clicking outside
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
   };
 
   // Navigate to course page
@@ -52,18 +47,9 @@ const CourseDetailsModal = ({ course, onClose }) => {
   const shouldTruncate = description.length > 300;
 
   return (
-    <div
-      className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-backdropEnter"
-      onClick={handleBackdropClick}
-      dir="rtl"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="course-modal-title"
-    >
-      <div className="bg-white rounded-3xl shadow-elevated max-w-4xl w-full max-h-[95vh] overflow-hidden relative flex flex-col animate-modalEnter">
-
+    <Modal isOpen onClose={onClose} size="xl" showCloseButton={false}>
         {/* Elegant Header with integrated info */}
-        <div className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 p-6 relative flex-shrink-0">
+        <div className="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 p-6 relative -mx-4 sm:-mx-6 -mt-4 sm:-mt-5">
           <button
             type="button"
             onClick={onClose}
@@ -151,8 +137,8 @@ const CourseDetailsModal = ({ course, onClose }) => {
           </div>
         </div>
 
-        {/* Main content - with controlled overflow */}
-        <div className="flex-1 overflow-y-auto p-6">
+        {/* Main content */}
+        <div className="py-6">
           {/* Secondary Info Row - Compact */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             {/* Department */}
@@ -228,30 +214,15 @@ const CourseDetailsModal = ({ course, onClose }) => {
           )}
         </div>
 
-        {/* Elegant Footer - Fixed at bottom */}
-        <div className="border-t border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100 p-5 flex-shrink-0">
-          <div className="flex justify-between items-center gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-6 py-2.5 bg-white hover:bg-gray-50 text-gray-700 rounded-card font-medium transition-all duration-ui text-sm border border-gray-200 hover:border-gray-300 shadow-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
-            >
-              סגור
-            </button>
-
-            <button
-              type="button"
-              onClick={handleGoToCourse}
-              className="px-8 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white rounded-card font-medium transition-all duration-ui text-sm shadow-card hover:shadow-card flex items-center gap-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
-            >
-              <span>מעבר לדף הקורס</span>
-              <ArrowLeft className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-      </div>
-    </div>
+        <ModalFooter className="-mx-4 sm:-mx-6 -mb-4 sm:-mb-5">
+          <Button variant="secondary" onClick={onClose}>
+            סגור
+          </Button>
+          <Button variant="primary" onClick={handleGoToCourse} rightIcon={ArrowLeft}>
+            מעבר לדף הקורס
+          </Button>
+        </ModalFooter>
+    </Modal>
   );
 };
 

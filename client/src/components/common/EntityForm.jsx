@@ -1,5 +1,6 @@
 import React from "react";
 import { Save } from "lucide-react";
+import Button from "./Button";
 
 const EntityForm = ({
   title,
@@ -51,23 +52,16 @@ const EntityForm = ({
           ))}
 
           <div className="md:col-span-2">
-            <button
+            <Button
               type="submit"
-              disabled={isLoading}
-              className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-4 rounded-card transition-all duration-ui disabled:opacity-50 shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5 mt-4"
+              loading={isLoading}
+              leftIcon={Save}
+              fullWidth
+              size="lg"
+              className="mt-4"
             >
-              {isLoading ? (
-                <div className="flex items-center justify-center">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin ml-2"></div>
-                  {isEditing ? "מעדכן..." : "מוסיף..."}
-                </div>
-              ) : (
-                <div className="flex items-center justify-center">
-                  <Save className="w-5 h-5 ml-2" />
-                  {isEditing ? "עדכן" : "הוסף"}
-                </div>
-              )}
-            </button>
+              {isLoading ? (isEditing ? "מעדכן..." : "מוסיף...") : isEditing ? "עדכן" : "הוסף"}
+            </Button>
           </div>
         </div>
       </form>

@@ -4,7 +4,7 @@ import ProfileHeader from '../components/profile/ProfileHeader';
 import ProfileForm from '../components/profile/ProfileForm';
 import PasswordForm from '../components/profile/PasswordForm';
 import SecurityInfo from '../components/profile/SecurityInfo';
-import LoadingSpinner from '../components/common/LoadingSpinner';
+import { SkeletonForm } from '../components/common/Skeleton';
 
 // Mock data for development when API is not available
 const mockUserProfile = {
@@ -259,7 +259,27 @@ const ProfileManagement = () => {
   };
 
   if (loading.profile) {
-    return <LoadingSpinner message="טוען פרטי פרופיל..." />;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-emerald-50/30 to-blue-50/40" dir="rtl" role="status">
+        <p className="sr-only">טוען פרטי פרופיל...</p>
+        {/* Header placeholder */}
+        <div className="bg-white border-b border-gray-100 py-10 px-6" aria-hidden="true">
+          <div className="max-w-4xl mx-auto flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-gray-200 animate-pulse" />
+            <div className="space-y-2">
+              <div className="h-6 w-48 rounded bg-gray-200 animate-pulse" />
+              <div className="h-4 w-32 rounded bg-gray-200 animate-pulse" />
+            </div>
+          </div>
+        </div>
+        <div className="max-w-4xl mx-auto px-6 py-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
+            <SkeletonForm rows={4} />
+            <SkeletonForm rows={3} />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

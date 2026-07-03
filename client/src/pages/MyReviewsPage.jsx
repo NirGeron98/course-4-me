@@ -4,7 +4,7 @@ import ReviewFilters from "../components/my-reviews/ReviewFilters";
 import ReviewsList from "../components/my-reviews/ReviewsList";
 import ReviewEditModal from "../components/my-reviews/ReviewEditModal";
 import DeleteConfirmationModal from "../components/common/DeleteConfirmationModal";
-import ElegantLoadingSpinner from "../components/common/ElegantLoadingSpinner";
+import { SkeletonReviewList, SkeletonLine } from "../components/common/Skeleton";
 import { useMyReviews } from "../hooks/useMyReviews";
 
 const DEFAULT_FILTERS = {
@@ -205,10 +205,6 @@ const MyReviewsPage = ({ user }) => {
     setEditingReview(null);
   };
 
-  if (loading) {
-    return <ElegantLoadingSpinner message="טוען ביקורות..." />;
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 p-3 sm:p-6" dir="rtl">
       <div className="max-w-7xl mx-auto">
@@ -223,9 +219,13 @@ const MyReviewsPage = ({ user }) => {
             </h1>
             <div className="flex items-center gap-3 text-gray-600">
               <div className="h-px w-8 bg-gradient-to-r from-transparent to-gray-300" />
-              <p className="text-base sm:text-lg font-medium">
-                נמצאו <span className="text-gray-600 font-bold">{filteredReviews.length}</span> ביקורות מתוך <span className="text-gray-600 font-bold">{reviews.length}</span> סה"כ
-              </p>
+              {loading ? (
+                <SkeletonLine width="180px" className="h-5" />
+              ) : (
+                <p className="text-base sm:text-lg font-medium">
+                  נמצאו <span className="text-gray-600 font-bold">{filteredReviews.length}</span> ביקורות מתוך <span className="text-gray-600 font-bold">{reviews.length}</span> סה"כ
+                </p>
+              )}
               <div className="h-px w-8 bg-gradient-to-l from-transparent to-gray-300" />
             </div>
             <div className="mt-4 w-24 h-1 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full" />
@@ -238,24 +238,33 @@ const MyReviewsPage = ({ user }) => {
           </div>
         )}
 
-        <ReviewFilters
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          onClearFilters={clearFilters}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          sortOrder={sortOrder}
-          setSortOrder={setSortOrder}
-          uniqueLecturers={uniqueLecturers}
-          uniqueCourses={uniqueCourses}
-          uniqueDepartments={uniqueDepartments}
-        />
+        {loading ? (
+          <div role="status">
+            <p className="sr-only">טוען ביקורות...</p>
+            <SkeletonReviewList count={4} />
+          </div>
+        ) : (
+          <>
+            <ReviewFilters
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              onClearFilters={clearFilters}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              sortOrder={sortOrder}
+              setSortOrder={setSortOrder}
+              uniqueLecturers={uniqueLecturers}
+              uniqueCourses={uniqueCourses}
+              uniqueDepartments={uniqueDepartments}
+            />
 
-        <ReviewsList
-          reviews={filteredReviews}
-          onEditClick={handleEditClick}
-          onDeleteClick={handleDeleteClick}
-        />
+            <ReviewsList
+              reviews={filteredReviews}
+              onEditClick={handleEditClick}
+              onDeleteClick={handleDeleteClick}
+            />
+          </>
+        )}
 
         {showEditModal && editingReview && (
           <ReviewEditModal

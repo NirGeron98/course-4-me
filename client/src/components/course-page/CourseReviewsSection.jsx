@@ -3,6 +3,8 @@ import { MessageCircle, Star, Plus, Loader2, User, Filter, SortAsc, Shield, Penc
 import ReviewFormModal from './CourseReviewFormModal';
 import ExistingReviewModal from '../common/ExistingReviewModal';
 import DeleteConfirmationModal from '../common/DeleteConfirmationModal';
+import Button from '../common/Button';
+import EmptyState from '../common/EmptyState';
 
 const CourseReviewsSection = ({ courseId, courseTitle, user, onShowReviewForm, onReviewDeleted }) => {
     const [reviews, setReviews] = useState([]);
@@ -249,13 +251,9 @@ const CourseReviewsSection = ({ courseId, courseTitle, user, onShowReviewForm, o
                         )}
                     </h2>
 
-                    <button
-                        onClick={handleWriteReviewClick}
-                        className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-card flex items-center gap-2 transition-colors"
-                    >
-                        <Plus className="w-4 h-4" />
+                    <Button onClick={handleWriteReviewClick} leftIcon={Plus}>
                         <span className="hidden sm:inline">כתוב ביקורת</span>
-                    </button>
+                    </Button>
                 </div>
 
                 {reviews.length > 0 && (
@@ -293,24 +291,17 @@ const CourseReviewsSection = ({ courseId, courseTitle, user, onShowReviewForm, o
                 )}
 
                 {filteredReviews.length === 0 ? (
-                    <div className="text-center py-12">
-                        <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                            {filterLecturer !== 'all' ? 'אין ביקורות למרצה זה' : 'אין ביקורות עדיין'}
-                        </h3>
-                        <p className="text-gray-600 mb-6">
-                            {filterLecturer !== 'all'
+                    <EmptyState
+                        icon={MessageCircle}
+                        title={filterLecturer !== 'all' ? 'אין ביקורות למרצה זה' : 'אין ביקורות עדיין'}
+                        description={
+                            filterLecturer !== 'all'
                                 ? 'נסה לבחור מרצה אחר או לכתוב ביקורת ראשונה'
                                 : 'היה הראשון לכתוב ביקורת על הקורס'
-                            }
-                        </p>
-                        <button
-                            onClick={handleWriteReviewClick}
-                            className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-card transition-colors"
-                        >
-                            כתוב ביקורת ראשונה
-                        </button>
-                    </div>
+                        }
+                        actionLabel="כתוב ביקורת ראשונה"
+                        onAction={handleWriteReviewClick}
+                    />
                 ) : (
                     <div className="space-y-4">
                         {filteredReviews.map((review) => (

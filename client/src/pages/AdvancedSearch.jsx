@@ -155,7 +155,7 @@ const AdvancedSearch = ({ user }) => {
     fetchFilterOptions();
   }, []);
 
-  // Update filters when search type changes
+  // Update filters when search type changes (not on every filter edit)
   useEffect(() => {
     if (searchType === 'courses') {
       setFilters(courseFilters);
@@ -164,7 +164,8 @@ const AdvancedSearch = ({ user }) => {
     }
     setResults([]);
     setHasSearched(false);
-  }, [searchType, courseFilters, lecturerFilters]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchType]);
 
   const handleFilterChange = (key, value) => {
     const newFilters = {
@@ -420,12 +421,15 @@ const AdvancedSearch = ({ user }) => {
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-8">
         {/* Filters Section */}
         {filtersLoading ? (
-          <div className="bg-white rounded-card-lg shadow-card border border-gray-100 p-6">
-            <div className="flex items-center justify-center py-8">
-              <div className="flex items-center gap-3">
-                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                <span className="text-gray-600">טוען פילטרי חיפוש...</span>
-              </div>
+          <div className="bg-white rounded-card-lg shadow-card border border-gray-100 p-6" role="status">
+            <p className="sr-only">טוען פילטרי חיפוש...</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" aria-hidden="true">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <div className="h-3 w-24 rounded bg-gray-200 animate-pulse" />
+                  <div className="h-12 w-full rounded-card bg-gray-200 animate-pulse" />
+                </div>
+              ))}
             </div>
           </div>
         ) : (

@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { User, Building, Mail, Award, BookOpen, Hash, X } from 'lucide-react';
+import { User, Building, Mail, Award, BookOpen, Hash } from 'lucide-react';
+import Modal from '../common/Modal';
 
 const LecturerHeader = ({ lecturer, courses, reviews = [], renderStars }) => {
     const [showAllCourses, setShowAllCourses] = useState(false);
@@ -163,25 +164,12 @@ const LecturerHeader = ({ lecturer, courses, reviews = [], renderStars }) => {
             </div>
 
             {/* All courses popup */}
-            {showAllCourses && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-card-lg shadow-elevated max-w-5xl w-full max-h-[80vh] overflow-hidden">
-                        {/* Popup header */}
-                        <div className="bg-gradient-to-r from-purple-600 to-purple-700 px-6 py-4 flex items-center justify-between">
-                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                <BookOpen className="w-5 h-5" />
-                                כל הקורסים של {lecturer.name} ({courses.length})
-                            </h3>
-                            <button
-                                onClick={() => setShowAllCourses(false)}
-                                className="text-white hover:bg-white/20 rounded-card p-2 transition-colors"
-                            >
-                                <X className="w-5 h-5" />
-                            </button>
-                        </div>
-
-                        {/* Popup content */}
-                        <div className="p-6 overflow-y-auto max-h-[calc(80vh-80px)]">
+            <Modal
+                isOpen={showAllCourses}
+                onClose={() => setShowAllCourses(false)}
+                title={`כל הקורסים של ${lecturer.name} (${courses.length})`}
+                size="full"
+            >
                             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                                 {courses.map((course) => (
                                     <Link
@@ -222,10 +210,7 @@ const LecturerHeader = ({ lecturer, courses, reviews = [], renderStars }) => {
                                     </Link>
                                 ))}
                             </div>
-                        </div>
-                    </div>
-                </div>
-            )}
+            </Modal>
         </div>
     );
 };

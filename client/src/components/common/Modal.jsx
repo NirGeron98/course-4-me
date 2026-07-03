@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback } from "react";
+import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
@@ -11,6 +11,10 @@ import { X } from "lucide-react";
 // Children receive the raw content area; use ModalFooter for action rows.
 // On mobile the modal is full-width (bottom sheet style); the max-width only
 // kicks in at the sm breakpoint so small screens never get pinched content.
+// Stack of currently open modal ids. Escape only closes the topmost entry,
+// so nested modals (details modal inside an add popup) close one layer at a time.
+const openModalStack = [];
+
 const SIZE_CLASSES = {
   sm: "sm:max-w-sm",
   md: "sm:max-w-md",
@@ -31,23 +35,32 @@ const Modal = ({
   initialFocusRef,
   className = "",
 }) => {
-  const handleEscape = useCallback(
-    (event) => {
-      if (event.key === "Escape") onClose?.();
-    },
-    [onClose]
-  );
+  const modalIdRef = useRef(null);
+  if (modalIdRef.current === null) {
+    modalIdRef.current = Symbol("modal");
+  }
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!isOpen) return undefined;
+    const modalId = modalIdRef.current;
+    openModalStack.push(modalId);
+    const handleEscape = (event) => {
+      if (event.key !== "Escape") return;
+      if (openModalStack[openModalStack.length - 1] !== modalId) return;
+      onCloseRef.current?.();
+    };
     document.addEventListener("keydown", handleEscape);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
+      const index = openModalStack.indexOf(modalId);
+      if (index !== -1) openModalStack.splice(index, 1);
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = previousOverflow;
     };
-  }, [isOpen, handleEscape]);
+  }, [isOpen]);
 
   useEffect(() => {
     if (isOpen && initialFocusRef?.current) {

@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { apiFetch } from "../../hooks/useApi";
-import { Search, X, Loader2, Users } from "lucide-react";
+import { Search, Loader2, Users } from "lucide-react";
 import LecturerItem from "./LecturerItem";
 import LecturerDetailsModal from "./LecturerDetailsModal";
+import Modal from "../common/Modal";
+import Button from "../common/Button";
+import EmptyState from "../common/EmptyState";
 
 const AddLecturerPopup = ({ onClose, onLecturerAdded }) => {
   const [allLecturers, setAllLecturers] = useState([]);
@@ -14,37 +17,40 @@ const AddLecturerPopup = ({ onClose, onLecturerAdded }) => {
   const [isAdding, setIsAdding] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  const fetchData = async () => {
+    setIsLoading(true);
+    setError("");
+    try {
+      // Fetch all lecturers and tracked lecturers in parallel
+      const [allLecturersData, trackedData] = await Promise.all([
+        apiFetch(`/api/lecturers`),
+        apiFetch(`/api/tracked-lecturers`)
+      ]);
+
+      // Extract IDs of already tracked lecturers
+      const trackedIds = trackedData
+        .filter(({ lecturer }) => lecturer) // Filter out null/undefined
+        .map(({ lecturer }) => lecturer._id);
+
+      // Filter out lecturers that are already being tracked and ensure valid lecturer objects
+      const availableLecturers = allLecturersData.filter(
+        lecturer => lecturer && lecturer._id && lecturer.name && !trackedIds.includes(lecturer._id)
+      );
+
+      setAllLecturers(availableLecturers);
+      setTrackedLecturerIds(trackedIds);
+      setFilteredLecturers(availableLecturers);
+    } catch (err) {
+      setError("שגיאה בטעינת המרצים");
+      console.error("Error fetching data:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch all lecturers and tracked lecturers in parallel
-        const [allLecturersData, trackedData] = await Promise.all([
-          apiFetch(`/api/lecturers`),
-          apiFetch(`/api/tracked-lecturers`)
-        ]);
-
-        // Extract IDs of already tracked lecturers
-        const trackedIds = trackedData
-          .filter(({ lecturer }) => lecturer) // Filter out null/undefined
-          .map(({ lecturer }) => lecturer._id);
-
-        // Filter out lecturers that are already being tracked and ensure valid lecturer objects
-        const availableLecturers = allLecturersData.filter(
-          lecturer => lecturer && lecturer._id && lecturer.name && !trackedIds.includes(lecturer._id)
-        );
-
-        setAllLecturers(availableLecturers);
-        setTrackedLecturerIds(trackedIds);
-        setFilteredLecturers(availableLecturers);
-      } catch (err) {
-        setError("שגיאה בטעינת המרצים");
-        console.error("Error fetching data:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -179,20 +185,7 @@ const AddLecturerPopup = ({ onClose, onLecturerAdded }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50 p-4">
-      <div className="bg-white max-w-2xl w-full rounded-card shadow-card p-6 relative overflow-hidden">
-        <button
-          onClick={onClose}
-          className="absolute top-4 left-4 text-gray-500 hover:text-gray-700"
-        >
-          <X className="w-5 h-5" />
-        </button>
-
-        <div className="mb-4 flex items-center gap-2">
-          <Users className="w-6 h-6 text-purple-600" />
-          <h2 className="text-xl font-bold text-gray-800">הוספת מרצה למעקב</h2>
-        </div>
-
+    <Modal isOpen onClose={onClose} title="הוספת מרצה למעקב" size="lg">
         <div className="relative mb-6">
           <Search className="absolute right-3 top-3 text-gray-400 w-5 h-5" />
           <input
@@ -213,28 +206,26 @@ const AddLecturerPopup = ({ onClose, onLecturerAdded }) => {
         ) : error ? (
           <div className="text-center py-10">
             <p className="text-red-500 text-sm mb-4">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="bg-purple-600 text-white px-4 py-2 rounded-card hover:bg-purple-700 transition-colors"
-            >
+            <Button onClick={fetchData}>
               נסה שוב
-            </button>
+            </Button>
           </div>
         ) : filteredLecturers.length === 0 ? (
-          <div className="text-center py-10">
+          <div className="py-6">
             {searchTerm ? (
-              <div>
-                <p className="text-gray-600 text-sm mb-2">לא נמצאו מרצים התואמים לחיפוש.</p>
-                <p className="text-gray-500 text-xs">נסה לחפש במילים אחרות</p>
-              </div>
+              <EmptyState
+                icon={Search}
+                title="לא נמצאו מרצים התואמים לחיפוש"
+                description="נסה לחפש במילים אחרות"
+                className="border-0 bg-transparent"
+              />
             ) : (
-              <div>
-                <div className="mb-4">
-                  <Users className="w-12 h-12 text-gray-300 mx-auto mb-2" />
-                </div>
-                <p className="text-gray-600 text-sm mb-2">כל המרצים כבר במעקב!</p>
-                <p className="text-gray-500 text-xs">נראה שאתה עוקב אחר כל המרצים הזמינים במערכת</p>
-              </div>
+              <EmptyState
+                icon={Users}
+                title="כל המרצים כבר במעקב!"
+                description="נראה שאתה עוקב אחר כל המרצים הזמינים במערכת"
+                className="border-0 bg-transparent"
+              />
             )}
           </div>
         ) : (
@@ -243,6 +234,7 @@ const AddLecturerPopup = ({ onClose, onLecturerAdded }) => {
               <LecturerItem
                 key={lecturer._id}
                 lecturer={lecturer}
+                onViewDetails={setSelectedLecturer}
                 onAdd={handleAddLecturer}
                 isAdding={isAdding === lecturer._id}
               />
@@ -266,8 +258,7 @@ const AddLecturerPopup = ({ onClose, onLecturerAdded }) => {
             onClose={() => setSelectedLecturer(null)}
           />
         )}
-      </div>
-    </div>
+    </Modal>
   );
 };
 

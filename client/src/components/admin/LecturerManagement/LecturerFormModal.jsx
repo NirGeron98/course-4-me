@@ -5,6 +5,7 @@ import Modal, { ModalFooter } from "../../common/Modal";
 import Button from "../../common/Button";
 import Input from "../../common/Input";
 import Alert from "../../common/Alert";
+import selectStyles from "../../common/admin/selectStyles";
 
 // LecturerFormModal — add / edit form wrapped in the Modal primitive.
 // Uses react-select for the departments multi-select to stay consistent with
@@ -12,37 +13,6 @@ import Alert from "../../common/Alert";
 // the actual mutation via the useLecturers hook.
 
 const EMPTY_FORM = { name: "", email: "", departments: [] };
-
-const selectStyles = {
-  control: (provided, state) => ({
-    ...provided,
-    minHeight: "42px",
-    borderRadius: "0.75rem",
-    borderColor: state.isFocused ? "#10b981" : "#cbd5e1",
-    boxShadow: state.isFocused ? "0 0 0 2px rgba(16,185,129,0.18)" : "none",
-    "&:hover": { borderColor: "#10b981" },
-  }),
-  multiValue: (provided) => ({
-    ...provided,
-    backgroundColor: "#ecfdf5",
-    borderRadius: "6px",
-  }),
-  multiValueLabel: (provided) => ({
-    ...provided,
-    color: "#047857",
-    fontWeight: 500,
-  }),
-  placeholder: (provided) => ({ ...provided, color: "#94a3b8" }),
-  option: (provided, state) => ({
-    ...provided,
-    backgroundColor: state.isSelected
-      ? "#10b981"
-      : state.isFocused
-      ? "#f0fdf4"
-      : "white",
-    color: state.isSelected ? "white" : "#334155",
-  }),
-};
 
 const hydrateFromLecturer = (lecturer, departments) => {
   if (!lecturer) return EMPTY_FORM;

@@ -22,6 +22,7 @@ import {
     Trash2
 } from 'lucide-react';
 import { getLecturerSlug } from '../../utils/slugUtils';
+import EmptyState from '../common/EmptyState';
 
 const ReviewsList = ({ reviews, onEditClick, onDeleteClick }) => {
     const renderStars = (rating, size = 'w-4 h-4') => {
@@ -84,14 +85,12 @@ const ReviewsList = ({ reviews, onEditClick, onDeleteClick }) => {
 
     if (reviews.length === 0) {
         return (
-            <div className="bg-white rounded-card-lg shadow-card p-12 text-center">
-                <MessageCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                    לא נמצאו ביקורות
-                </h3>
-                <p className="text-gray-600">
-                    נסה לשנות את הסינונים או לכתוב ביקורת ראשונה
-                </p>
+            <div className="bg-white rounded-card-lg shadow-card p-6">
+                <EmptyState
+                    icon={MessageCircle}
+                    title="לא נמצאו ביקורות"
+                    description="נסה לשנות את הסינונים או לכתוב ביקורת ראשונה"
+                />
             </div>
         );
     }

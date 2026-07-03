@@ -1,6 +1,7 @@
 import React from 'react';
-import { User, Mail, Shield, Calendar, Save, Edit3, Loader2 } from 'lucide-react';
+import { User, Mail, Shield, Calendar, Save, Edit3 } from 'lucide-react';
 import MessageAlert from './MessageAlert';
+import Button from '../common/Button';
 
 const ProfileForm = ({
   userProfile,
@@ -137,18 +138,14 @@ const ProfileForm = ({
         </div>
 
         {isEditing && (
-          <button
+          <Button
             type="submit"
-            disabled={loading.updateProfile}
-            className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white py-3 px-6 rounded-card font-medium flex items-center justify-center gap-2 transition-all duration-ui shadow-card hover:shadow-card-hover disabled:opacity-50"
+            fullWidth
+            loading={loading.updateProfile}
+            leftIcon={Save}
           >
-            {loading.updateProfile ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Save className="w-5 h-5" />
-            )}
             {loading.updateProfile ? "שומר..." : "שמור שינויים"}
-          </button>
+          </Button>
         )}
       </form>
     </div>

@@ -5,9 +5,11 @@ import WelcomeHeader from "../components/dashboard/WelcomeHeader";
 import TrackedCoursesList from "../components/dashboard/TrackedCoursesList";
 import CourseCarousel from "../components/dashboard/CourseCarousel";
 import LecturerCarousel from "../components/dashboard/LecturerCarousel";
-import ElegantLoadingSpinner, {
-  ElegantSecondaryLoading,
-} from "../components/common/ElegantLoadingSpinner";
+import { ElegantSecondaryLoading } from "../components/common/ElegantLoadingSpinner";
+import {
+  SkeletonStatGrid,
+  SkeletonSection,
+} from "../components/common/Skeleton";
 import StatsCards from "../components/dashboard/StatsCards";
 import { apiFetch, useApi } from "../hooks/useApi";
 import { useCourses } from "../hooks/useCourses";
@@ -90,7 +92,9 @@ const Dashboard = () => {
     [trackedCourses.length, myReviews.length, contactRequests.length]
   );
 
-  const isLoading =
+  // Per-section loading flags so each section can render progressively
+  // instead of gating the whole page behind one spinner.
+  const statsLoading =
     coursesLoading ||
     trackedCoursesLoading ||
     lecturersLoading ||
@@ -270,10 +274,6 @@ const Dashboard = () => {
     trackedCarouselIndex + 3
   );
 
-  if (isLoading) {
-    return <ElegantLoadingSpinner message="טוען נתונים" />;
-  }
-
   return (
     <div
       className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-blue-50"
@@ -285,6 +285,9 @@ const Dashboard = () => {
       <WelcomeHeader userName={userFullName} />
 
       <div className="max-w-6xl mx-auto p-3 sm:p-6 space-y-5 sm:space-y-8">
+        {statsLoading ? (
+          <SkeletonStatGrid />
+        ) : (
         <StatsCards
           coursesCount={stats.coursesCount}
           trackedLecturersCount={
@@ -296,6 +299,10 @@ const Dashboard = () => {
           allCoursesCount={allCourses.length}
           lecturersCount={lecturers.length}
         />
+        )}
+        {trackedCoursesLoading ? (
+          <SkeletonSection />
+        ) : (
         <TrackedCoursesList
           trackedCourses={trackedCourses}
           visibleCourses={visibleTrackedCourses}
@@ -308,7 +315,11 @@ const Dashboard = () => {
           emptyActionLabel="עבור לקורסים שלי"
           onEmptyAction={() => navigate("/tracked-courses")}
         />
+        )}
 
+        {coursesLoading ? (
+          <SkeletonSection />
+        ) : (
         <CourseCarousel
           courses={allCourses}
           visibleCourses={visibleCourses}
@@ -319,6 +330,10 @@ const Dashboard = () => {
           formatLecturersDisplay={formatLecturersDisplay}
           setCarouselIndex={setCourseCarouselIndex}
         />
+        )}
+        {lecturersLoading ? (
+          <SkeletonSection />
+        ) : (
         <LecturerCarousel
           lecturers={lecturers}
           visibleLecturers={visibleLecturers}
@@ -327,6 +342,7 @@ const Dashboard = () => {
           onNext={handleLecturerCarouselNext}
           setCarouselIndex={setLecturerCarouselIndex}
         />
+        )}
       </div>
       {isModalOpen && (
         <CourseDetailsModal

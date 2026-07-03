@@ -121,7 +121,7 @@ const Navbar = ({ user, onLogout }) => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center space-x-2 px-3 xl:px-4 py-2 rounded-card font-medium transition-all duration-ui whitespace-nowrap text-sm xl:text-base ${isActivePage(item.path)
+                    className={`flex items-center space-x-2 px-3 xl:px-4 py-2 rounded-card font-medium transition-all duration-ui whitespace-nowrap text-sm xl:text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isActivePage(item.path)
                         ? 'bg-slate-100 text-slate-800 shadow-card'
                         : item.path === '/admin'
                           ? 'text-purple-600 hover:text-purple-700 hover:bg-purple-50'
@@ -147,7 +147,7 @@ const Navbar = ({ user, onLogout }) => {
                   <Link
                     key={item.path}
                     to={item.path}
-                    className={`flex items-center justify-center w-10 h-10 rounded-card transition-all duration-ui ${isActivePage(item.path)
+                    className={`flex items-center justify-center w-10 h-10 rounded-card transition-all duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isActivePage(item.path)
                         ? 'bg-slate-100 text-slate-800 shadow-card'
                         : item.path === '/admin'
                           ? 'text-purple-600 hover:text-purple-700 hover:bg-purple-50'
@@ -167,7 +167,7 @@ const Navbar = ({ user, onLogout }) => {
             {/* Contact Request Button */}
             <button
               onClick={() => setIsContactModalOpen(true)}
-              className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-card font-medium text-sm shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5 transition-all duration-ui"
+              className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-card font-medium text-sm shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5 transition-all duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               title="פתח פנייה חדשה"
             >
               <HelpCircle className="w-3.5 h-3.5 ml-1" />
@@ -177,7 +177,7 @@ const Navbar = ({ user, onLogout }) => {
             {/* User Profile Button - More compact */}
             <button
               onClick={handleUserNameClick}
-              className={`flex items-center space-x-2 lg:space-x-3 rounded-card px-2 lg:px-3 py-2 transition-all duration-ui cursor-pointer ${isActivePage('/profile')
+              className={`flex items-center space-x-2 lg:space-x-3 rounded-card px-2 lg:px-3 py-2 transition-all duration-ui cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isActivePage('/profile')
                   ? 'bg-slate-100 hover:bg-slate-200'
                   : 'bg-gray-50 hover:bg-slate-50'
                 }`}
@@ -205,7 +205,7 @@ const Navbar = ({ user, onLogout }) => {
             {/* Logout Button - More compact */}
             <button
               onClick={handleLogout}
-              className="flex items-center space-x-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-2 lg:px-3 py-2 rounded-card font-medium text-sm shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5 transition-all duration-ui"
+              className="flex items-center space-x-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-2 lg:px-3 py-2 rounded-card font-medium text-sm shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5 transition-all duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-danger"
               title="יציאה מהמערכת"
             >
               <LogOut className="w-3.5 h-3.5 ml-1" />
@@ -217,7 +217,9 @@ const Navbar = ({ user, onLogout }) => {
           <div className="md:hidden">
             <button
               onClick={toggleMobileMenu}
-              className="bg-slate-100 text-slate-600 p-2 rounded-card hover:bg-slate-200 transition-colors"
+              className="bg-slate-100 text-slate-600 p-2 rounded-card hover:bg-slate-200 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              aria-expanded={isMobileMenuOpen}
+              aria-label="תפריט ניווט"
             >
               {isMobileMenuOpen ? (
                 <X className="w-6 h-6" />

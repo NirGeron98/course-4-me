@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import AddLecturerPopup from "../components/tracked-lecturers/AddLecturerPopup";
 import TrackedLecturerCard from "../components/tracked-lecturers/TrackedLecturerCard";
 import { getLecturerSlug } from '../utils/slugUtils';
-import ElegantLoadingSpinner from '../components/common/ElegantLoadingSpinner';
+import { SkeletonCardGrid } from '../components/common/Skeleton';
 
 const TRACKED_LECTURERS_CACHE_KEY = 'tracked_lecturers_data';
 const TRACKED_LECTURERS_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -321,9 +321,13 @@ const TrackedLecturers = () => {
 
       {/* Main content area */}
       <div className="max-w-7xl mx-auto p-6 pb-12">
-        {/* Loading spinner and message */}
+        {/* Loading: skeleton grid to avoid layout shift */}
         {isLoading ? (
-          <ElegantLoadingSpinner message="טוען מרצים..." />
+          <div className="mt-8" role="status">
+            <p className="sr-only">טוען מרצים...</p>
+            <div className="h-7 w-48 rounded bg-gray-200 animate-pulse mb-6" aria-hidden="true" />
+            <SkeletonCardGrid count={6} />
+          </div>
         ) : (
           <>
             {/* Empty state - shown when no lecturers or all lecturers are null */}

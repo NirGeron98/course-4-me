@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HeartHandshake, Plus, Check, Copy } from 'lucide-react';
-import ExistingReviewModal from '../common/ExistingReviewModal'; 
+import ExistingReviewModal from '../common/ExistingReviewModal';
+import Button from '../common/Button'; 
 
 const LecturerQuickActions = ({ onShowReviewForm, lecturerId, lecturerName, user, reviews, onEditReview }) => {
     const [isFollowing, setIsFollowing] = useState(false);
@@ -151,58 +152,40 @@ const LecturerQuickActions = ({ onShowReviewForm, lecturerId, lecturerName, user
                         <>
                             {/* Follow/Unfollow Button */}
                             {followStatusLoading ? (
-                                <button 
-                                    disabled
-                                    className="w-full bg-gray-300 text-gray-500 py-3 rounded-card transition-colors flex items-center justify-center gap-2 cursor-not-allowed"
-                                >
-                                    <div className="w-5 h-5 border-2 border-gray-500 border-t-transparent rounded-full animate-spin"></div>
+                                <Button variant="secondary" fullWidth size="lg" loading disabled>
                                     בודק סטטוס מעקב...
-                                </button>
+                                </Button>
                             ) : !isFollowing ? (
-                                <button 
+                                <Button
                                     onClick={handleFollowToggle}
-                                    disabled={isLoading}
-                                    className="w-full bg-purple-500 hover:bg-purple-600 disabled:bg-purple-300 text-white py-3 rounded-card transition-colors flex items-center justify-center gap-2"
+                                    loading={isLoading}
+                                    leftIcon={HeartHandshake}
+                                    fullWidth
+                                    size="lg"
                                 >
-                                    {isLoading ? (
-                                        <>
-                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                            מוסיף למעקב...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <HeartHandshake className="w-5 h-5" />
-                                            הוסף מרצה למעקב
-                                        </>
-                                    )}
-                                </button>
+                                    {isLoading ? 'מוסיף למעקב...' : 'הוסף מרצה למעקב'}
+                                </Button>
                             ) : (
-                                <button 
+                                <Button
+                                    variant="danger"
                                     onClick={handleFollowToggle}
-                                    disabled={isLoading}
-                                    className="w-full bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white py-3 rounded-card transition-colors flex items-center justify-center gap-2"
+                                    loading={isLoading}
+                                    leftIcon={Check}
+                                    fullWidth
+                                    size="lg"
                                 >
-                                    {isLoading ? (
-                                        <>
-                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                            מסיר מהמעקב...
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Check className="w-5 h-5" />
-                                            הסר מרצה מהמעקב
-                                        </>
-                                    )}
-                                </button>
+                                    {isLoading ? 'מסיר מהמעקב...' : 'הסר מרצה מהמעקב'}
+                                </Button>
                             )}
 
-                            <button
+                            <Button
                                 onClick={handleReviewClick}
-                                className="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-card transition-colors flex items-center justify-center gap-2"
+                                leftIcon={Plus}
+                                fullWidth
+                                size="lg"
                             >
-                                <Plus className="w-5 h-5" />
                                 כתוב ביקורת מרצה
-                            </button>
+                            </Button>
                         </>
                     )}
 

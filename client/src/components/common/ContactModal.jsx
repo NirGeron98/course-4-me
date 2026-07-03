@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Send, MessageSquare } from 'lucide-react';
+import Button from './Button';
 
 const ContactModal = ({ isOpen, onClose, user }) => {
   const [formData, setFormData] = useState({
@@ -171,32 +172,25 @@ const ContactModal = ({ isOpen, onClose, user }) => {
 
               {/* Submit Buttons */}
               <div className="flex gap-4 pt-4">
-                <button
-                  type="button"
+                <Button
+                  variant="secondary"
+                  size="lg"
                   onClick={handleClose}
                   disabled={isSubmitting}
-                  className="flex-1 px-6 py-4 border border-slate-300 text-slate-700 rounded-card hover:bg-slate-50 transition-all disabled:opacity-50 font-medium"
+                  className="flex-1"
                 >
                   ביטול
-                </button>
-                <button
-                  type="button"
+                </Button>
+                <Button
+                  size="lg"
                   onClick={handleSubmit}
+                  loading={isSubmitting}
+                  leftIcon={Send}
                   disabled={isSubmitting || !formData.subject || !formData.description.trim()}
-                  className="flex-1 px-6 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-card hover:from-indigo-700 hover:to-purple-700 transition-all disabled:opacity-50 flex items-center justify-center font-medium shadow-card"
+                  className="flex-1"
                 >
-                  {isSubmitting ? (
-                    <div className="flex items-center">
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin ml-2" />
-                      שולח...
-                    </div>
-                  ) : (
-                    <div className="flex items-center">
-                      <Send className="w-5 h-5 ml-2" />
-                      שלח פנייה
-                    </div>
-                  )}
-                </button>
+                  {isSubmitting ? 'שולח...' : 'שלח פנייה'}
+                </Button>
               </div>
             </div>
           )}

@@ -4,7 +4,8 @@ import CourseManagement from "../components/admin/CourseManagement";
 import LecturerManagement from "../components/admin/LecturerManagement";
 import DepartmentManagement from "../components/admin/DepartmentManagement";
 import ContactRequestManagement from "../components/admin/ContactRequestManagement";
-import { AlertCircle, BookOpen, Users, Building, CheckCircle, X, MessageSquare } from "lucide-react";
+import { AlertCircle, BookOpen, Users, Building, MessageSquare } from "lucide-react";
+import Alert from "../components/common/Alert";
 
 const AdminPanel = ({ user }) => {
   const [activeTab, setActiveTab] = useState("courses");
@@ -118,29 +119,21 @@ const AdminPanel = ({ user }) => {
           </div>
 
           {message && (
-            <div className="m-3 sm:m-6 p-3 sm:p-4 bg-emerald-50 border border-emerald-200 rounded-card flex items-center animate-fade-in">
-              <CheckCircle className="w-5 h-5 text-emerald-500 ml-3" />
-              <span className="text-emerald-700 font-medium">{message}</span>
-              <button
-                onClick={() => setMessage("")}
-                className="mr-auto text-emerald-400 hover:text-emerald-600 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+            <Alert
+              type="success"
+              message={message}
+              onDismiss={() => setMessage("")}
+              className="m-3 sm:m-6"
+            />
           )}
 
           {error && (
-            <div className="m-3 sm:m-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-card flex items-center animate-fade-in">
-              <AlertCircle className="w-5 h-5 text-red-500 ml-3" />
-              <span className="text-red-700 font-medium">{error}</span>
-              <button
-                onClick={() => setError("")}
-                className="mr-auto text-red-400 hover:text-red-600 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+            <Alert
+              type="error"
+              message={error}
+              onDismiss={() => setError("")}
+              className="m-3 sm:m-6"
+            />
           )}
 
           {activeTab === "courses" && (

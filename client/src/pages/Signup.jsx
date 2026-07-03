@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { apiFetch } from "../hooks/useApi";
 import { Link, useNavigate } from "react-router-dom";
-import { Eye, EyeOff, User, Mail, Lock, CheckCircle, AlertCircle } from "lucide-react";
+import { User, Mail } from "lucide-react";
+import Alert from "../components/common/Alert";
+import Card from "../components/common/Card";
+import Input from "../components/common/Input";
+import PasswordInput from "../components/common/PasswordInput";
+import Button from "../components/common/Button";
 
 const Signup = ({ onLogin }) => {
   const navigate = useNavigate();
@@ -24,10 +29,9 @@ const Signup = ({ onLogin }) => {
   });
 
   const [message, setMessage] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
+  const isPasswordLengthError = passwordError === "הסיסמה חייבת להכיל לפחות 6 תווים";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,7 +73,7 @@ const Signup = ({ onLogin }) => {
       localStorage.setItem("userRole", data.user.role);
 
       // Call onLogin with the complete response data
-      onLogin(data);
+      await onLogin(data);
 
       navigate("/dashboard");
     } catch (err) {
@@ -81,147 +85,84 @@ const Signup = ({ onLogin }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 flex items-center justify-center p-4" dir="rtl">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-500 rounded-full mb-4 shadow-card">
-            <User className="w-8 h-8 text-white" />
+            <User className="w-8 h-8 text-white" aria-hidden="true" />
           </div>
           <h1 className="text-3xl font-bold text-gray-800 mb-2">הרשמה</h1>
+          <p className="text-gray-600">צור חשבון כדי להתחיל</p>
         </div>
 
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-elevated border border-emerald-100 p-8" dir="rtl">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="relative">
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-emerald-500">
-                <User className="w-5 h-5" />
-              </div>
-              <input
-                type="text"
-                name="fullName"
-                placeholder="שם מלא"
-                value={formData.fullName}
-                onChange={handleChange}
-                className="w-full bg-gray-50/70 border-2 border-gray-200 rounded-card-lg py-4 pr-12 pl-4 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:border-emerald-400 focus:bg-white/90 transition-all duration-ui"
-                required
-              />
-            </div>
+        <Card variant="raised" padding="lg">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <Input
+              type="text"
+              name="fullName"
+              label="שם מלא"
+              autoComplete="name"
+              leftIcon={User}
+              value={formData.fullName}
+              onChange={handleChange}
+              required
+            />
 
-            <div className="relative">
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-emerald-500">
-                <Mail className="w-5 h-5" />
-              </div>
-              <input
-                type="email"
-                name="email"
-                placeholder="כתובת אימייל"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full bg-gray-50/70 border-2 border-gray-200 rounded-card-lg py-4 pr-12 pl-4 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:border-emerald-400 focus:bg-white/90 transition-all duration-ui"
-                required
-              />
-            </div>
+            <Input
+              type="email"
+              name="email"
+              label="כתובת אימייל"
+              autoComplete="email"
+              leftIcon={Mail}
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
 
-            <div className="relative">
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-emerald-500">
-                <Lock className="w-5 h-5" />
-              </div>
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                placeholder="סיסמה (לפחות 6 תווים)"
-                value={formData.password}
-                onChange={handleChange}
-                className={`w-full bg-gray-50/70 border-2 rounded-card-lg py-4 pr-12 pl-12 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:bg-white/90 transition-all duration-ui ${
-                  passwordError ? "border-red-300 focus:border-red-400" : "border-gray-200 focus:border-emerald-400"
-                }`}
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-emerald-500 transition-colors"
-              >
-                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
+            <PasswordInput
+              name="password"
+              label="סיסמה"
+              hint={!passwordError ? "לפחות 6 תווים" : undefined}
+              error={isPasswordLengthError ? passwordError : undefined}
+              autoComplete="new-password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
 
-            <div className="relative">
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2 text-emerald-500">
-                <Lock className="w-5 h-5" />
-              </div>
-              <input
-                type={showConfirmPassword ? "text" : "password"}
-                name="confirmPassword"
-                placeholder="אימות סיסמה"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className={`w-full bg-gray-50/70 border-2 rounded-card-lg py-4 pr-12 pl-12 text-right text-gray-700 placeholder-gray-400 focus:outline-none focus:bg-white/90 transition-all duration-ui ${
-                  passwordError ? "border-red-300 focus:border-red-400" : "border-gray-200 focus:border-emerald-400"
-                }`}
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-emerald-500 transition-colors"
-              >
-                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
+            <PasswordInput
+              name="confirmPassword"
+              label="אימות סיסמה"
+              error={passwordError && !isPasswordLengthError ? passwordError : undefined}
+              autoComplete="new-password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+            />
 
-            {passwordError && (
-              <div className="bg-red-50 text-red-700 border border-red-200 p-3 rounded-card-lg flex items-center space-x-3">
-                <AlertCircle className="w-5 h-5 text-red-500 ml-3" />
-                <p className="text-right font-medium">{passwordError}</p>
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold py-4 rounded-card-lg shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5 transition-all duration-ui disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-            >
-              {isLoading ? (
-                <div className="flex items-center justify-center space-x-2">
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span className="mr-2">טוען...</span>
-                </div>
-              ) : (
-                "הירשם"
-              )}
-            </button>
+            <Button type="submit" size="lg" fullWidth loading={isLoading}>
+              {isLoading ? "נרשם..." : "הירשם"}
+            </Button>
           </form>
 
           {message && (
-            <div
-              className={`mt-6 p-4 rounded-card-lg flex items-center space-x-3 ${
-                message.includes("בהצלחה")
-                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                  : "bg-red-50 text-red-700 border border-red-200"
-              }`}
-            >
-              {message.includes("בהצלחה") ? (
-                <CheckCircle className="w-5 h-5 text-emerald-500 ml-3" />
-              ) : (
-                <AlertCircle className="w-5 h-5 text-red-500 ml-3" />
-              )}
-              <p className="text-right font-medium">{message}</p>
+            <div className="mt-6">
+              <Alert type="error" message={message} onDismiss={() => setMessage("")} />
             </div>
           )}
 
-          <div className="mt-8 text-center">
+          <div className="mt-8 pt-6 border-t border-slate-200 text-center">
             <p className="text-gray-600">
               כבר רשום?{" "}
               <Link
                 to="/login"
-                className="text-emerald-600 hover:text-emerald-700 font-semibold hover:underline transition-colors"
+                className="text-emerald-600 hover:text-emerald-700 font-semibold hover:underline transition-colors duration-ui"
               >
                 התחבר כאן
               </Link>
             </p>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );

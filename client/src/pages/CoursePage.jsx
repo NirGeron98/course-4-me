@@ -2,13 +2,15 @@ import { useCourseDataWithSync } from '../hooks/useCourseDataWithSync';
 import { useReviewsWithSync } from '../hooks/useReviewsWithSync';
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { BookOpen, AlertCircle, Loader2 } from 'lucide-react';
+import { BookOpen, AlertCircle } from 'lucide-react';
 import CourseDescription from '../components/course-page/CourseDescription';
 import CourseHeader from '../components/course-page/CourseHeader';
 import QuickActions from '../components/course-page/CourseQuickActions';
 import CourseReviewFormModal from '../components/course-page/CourseReviewFormModal';
 import CourseReviewsSection from '../components/course-page/CourseReviewsSection';
 import CourseStatisticsCard from '../components/course-page/CourseStatisticsCard';
+import LoadingSpinner from '../components/common/LoadingSpinner';
+import Button from '../components/common/Button';
 
 const CoursePage = ({ user }) => {
     const { courseNumber } = useParams();
@@ -67,14 +69,7 @@ const CoursePage = ({ user }) => {
     };
 
     if (loading || reviewsLoading) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 flex items-center justify-center">
-                <div className="text-center">
-                    <Loader2 className="w-12 h-12 text-emerald-500 animate-spin mx-auto mb-4" />
-                    <p className="text-gray-600">טוען מידע על הקורס...</p>
-                </div>
-            </div>
-        );
+        return <LoadingSpinner message="טוען מידע על הקורס..." />;
     }
 
 
@@ -85,12 +80,9 @@ const CoursePage = ({ user }) => {
                     <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
                     <h1 className="text-2xl font-bold text-gray-800 mb-2">שגיאה בטעינת הקורס</h1>
                     <p className="text-gray-600 mb-6">{error}</p>
-                    <button
-                        onClick={() => navigate(-1)}
-                        className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-card transition-colors"
-                    >
+                    <Button onClick={() => navigate(-1)}>
                         חזור אחורה
-                    </button>
+                    </Button>
                 </div>
             </div>
         );
@@ -103,12 +95,9 @@ const CoursePage = ({ user }) => {
                     <BookOpen className="w-16 h-16 text-red-500 mx-auto mb-4" />
                     <h1 className="text-2xl font-bold text-gray-800 mb-2">קורס לא נמצא</h1>
                     <p className="text-gray-600 mb-6">הקורס שחיפשת לא קיים במערכת</p>
-                    <button
-                        onClick={() => navigate('/')}
-                        className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-card transition-colors"
-                    >
+                    <Button onClick={() => navigate('/')}>
                         חזור לדף הבית
-                    </button>
+                    </Button>
                 </div>
             </div>
         );

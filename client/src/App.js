@@ -6,6 +6,8 @@ import {
   Navigate,
 } from "react-router-dom";
 import Navbar from "./components/common/Navbar";
+import LoadingSpinner from "./components/common/LoadingSpinner";
+import NotFound from "./components/common/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -26,11 +28,7 @@ import preloadUserData, { abortPreload } from "./utils/preloadUserData";
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const AdvancedSearch = lazy(() => import("./pages/AdvancedSearch"));
 
-const PageLoader = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-emerald-100">
-    <div className="w-10 h-10 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-  </div>
-);
+const PageLoader = () => <LoadingSpinner message="טוען עמוד..." />;
 
 function App() {
   const [user, setUser] = useState(null);
@@ -133,14 +131,7 @@ function App() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">טוען...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
@@ -254,27 +245,7 @@ function App() {
             />
 
             {/* Catch all route - 404 */}
-            <Route
-              path="*"
-              element={
-                <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-100 flex items-center justify-center">
-                  <div className="text-center">
-                    <h1 className="text-4xl font-bold text-gray-800 mb-4">
-                      404
-                    </h1>
-                    <p className="text-gray-600 mb-6">הדף שחיפשת לא נמצא</p>
-                    <button
-                      onClick={() =>
-                        (window.location.href = user ? "/dashboard" : "/login")
-                      }
-                      className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-card transition-colors"
-                    >
-                      {user ? "חזור לדף הבית" : "חזור להתחברות"}
-                    </button>
-                  </div>
-                </div>
-              }
-            />
+            <Route path="*" element={<NotFound isLoggedIn={!!user} />} />
           </Routes>
         </div>
       </Router>

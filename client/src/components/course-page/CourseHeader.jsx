@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
     BookOpen, Hash, Award, Building,
-    BookMarked, Users, Star, X, ThumbsUp
+    BookMarked, Users, Star, ThumbsUp
 } from 'lucide-react';
 import { getLecturerSlug } from '../../utils/slugUtils';
+import Modal from '../common/Modal';
 
 const CourseHeader = ({ course, stats }) => {
     const [showAllLecturers, setShowAllLecturers] = useState(false);
@@ -146,25 +147,12 @@ const CourseHeader = ({ course, stats }) => {
                         )}
 
                         {/* All lecturers popup */}
-                        {showAllLecturers && (
-                            <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                                <div className="bg-white rounded-card-lg shadow-elevated max-w-4xl w-full max-h-[80vh] overflow-hidden">
-                                    {/* Popup header */}
-                                    <div className="bg-gradient-to-r from-emerald-600 to-teal-700 px-6 py-4 flex items-center justify-between">
-                                        <h3 className="text-xl font-bold text-white flex items-center gap-2">
-                                            <Users className="w-5 h-5" />
-                                            כל המרצים של הקורס ({course.lecturers?.length || 0})
-                                        </h3>
-                                        <button
-                                            onClick={() => setShowAllLecturers(false)}
-                                            className="text-white hover:bg-white/20 rounded-card p-2 transition-colors"
-                                        >
-                                            <X className="w-5 h-5" />
-                                        </button>
-                                    </div>
-
-                                    {/* Popup content */}
-                                    <div className="p-6 overflow-y-auto max-h-[calc(80vh-80px)]">
+                        <Modal
+                            isOpen={showAllLecturers}
+                            onClose={() => setShowAllLecturers(false)}
+                            title={`כל המרצים של הקורס (${course.lecturers?.length || 0})`}
+                            size="xl"
+                        >
                                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                                             {course.lecturers?.map((lecturer, index) => (
                                                 <Link
@@ -188,10 +176,7 @@ const CourseHeader = ({ course, stats }) => {
                                                 </Link>
                                             ))}
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
+                        </Modal>
                     </div>
 
                 </div>

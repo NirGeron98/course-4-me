@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HeartHandshake, Plus, Check, Copy } from 'lucide-react';
 import ExistingReviewModal from '../common/ExistingReviewModal';
+import Button from '../common/Button';
 
 const CourseQuickActions = ({ onShowReviewForm, courseId, courseName, user, onDataChanged }) => {
     const [isFollowing, setIsFollowing] = useState(false);
@@ -193,52 +194,38 @@ const CourseQuickActions = ({ onShowReviewForm, courseId, courseName, user, onDa
 
                 <div className="space-y-3">
                     {!isFollowing && (
-                        <button 
+                        <Button
                             onClick={handleFollowToggle}
-                            disabled={isLoading}
-                            className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-300 text-white py-3 rounded-card transition-colors flex items-center justify-center gap-2"
+                            loading={isLoading}
+                            leftIcon={HeartHandshake}
+                            fullWidth
+                            size="lg"
                         >
-                            {isLoading ? (
-                                <>
-                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    מוסיף למעקב...
-                                </>
-                            ) : (
-                                <>
-                                    <HeartHandshake className="w-5 h-5" />
-                                    הוסף למעקב
-                                </>
-                            )}
-                        </button>
+                            {isLoading ? 'מוסיף למעקב...' : 'הוסף למעקב'}
+                        </Button>
                     )}
 
                     {isFollowing && (
-                        <button 
+                        <Button
+                            variant="danger"
                             onClick={handleFollowToggle}
-                            disabled={isLoading}
-                            className="w-full bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white py-3 rounded-card transition-colors flex items-center justify-center gap-2"
+                            loading={isLoading}
+                            leftIcon={Check}
+                            fullWidth
+                            size="lg"
                         >
-                            {isLoading ? (
-                                <>
-                                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                    מסיר מהמעקב...
-                                </>
-                            ) : (
-                                <>
-                                    <Check className="w-5 h-5" />
-                                    הסר מהמעקב
-                                </>
-                            )}
-                        </button>
+                            {isLoading ? 'מסיר מהמעקב...' : 'הסר מהמעקב'}
+                        </Button>
                     )}
 
-                    <button
+                    <Button
                         onClick={handleWriteReviewClick}
-                        className="w-full bg-emerald-500 hover:bg-emerald-600 text-white py-3 rounded-card transition-colors flex items-center justify-center gap-2"
+                        leftIcon={Plus}
+                        fullWidth
+                        size="lg"
                     >
-                        <Plus className="w-5 h-5" />
                         כתוב ביקורת
-                    </button>
+                    </Button>
 
                     <button 
                         onClick={handleShare}

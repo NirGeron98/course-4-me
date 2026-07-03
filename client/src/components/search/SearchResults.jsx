@@ -1,7 +1,9 @@
 import React from 'react';
-import { Search, X, BookOpen, User } from 'lucide-react';
+import { Search, SearchX, BookOpen, User } from 'lucide-react';
 import CourseResultCard from './CourseResultCard';
 import LecturerResultCard from './LecturerResultCard';
+import EmptyState from '../common/EmptyState';
+import { SkeletonResultGrid } from '../common/Skeleton';
 
 const SearchResults = ({
   searchType,
@@ -31,21 +33,11 @@ const SearchResults = ({
 
   if (loading) {
     return (
-      <div className="bg-white rounded-card-lg shadow-card border border-gray-100 p-8">
-        <div className="text-center py-16">
-          {loading && (
-            <div className="bg-white rounded-card-lg shadow-card border border-gray-100 p-8">
-              <div className="text-center py-16">
-                <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-                <h3 className="text-xl font-semibold text-gray-700 mb-2">מחפש...</h3>
-                <p className="text-gray-500">
-                  מחפש {searchType === 'courses' ? 'קורסים' : 'מרצים'} עבורך
-                </p>
-              </div>
-            </div>
-          )}
-
-        </div>
+      <div className="bg-white rounded-card-lg shadow-card border border-gray-100 p-6" role="status">
+        <p className="sr-only">
+          מחפש {searchType === 'courses' ? 'קורסים' : 'מרצים'} עבורך
+        </p>
+        <SkeletonResultGrid count={4} />
       </div>
     );
   }
@@ -53,20 +45,11 @@ const SearchResults = ({
   if (results.length === 0) {
     return (
       <div className="bg-white rounded-card-lg shadow-card border border-gray-100 p-8">
-        <div className="text-center py-16">
-          <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-full p-6 w-24 h-24 flex items-center justify-center mx-auto mb-6">
-            <X className="w-12 h-12 text-gray-400" />
-          </div>
-          <h3 className="text-2xl font-semibold text-gray-800 mb-3">
-            לא נמצאו תוצאות
-          </h3>
-          <p className="text-gray-600 text-lg mb-4">
-            נסה לשנות את הפילטרים או להשתמש במילות חיפוש אחרות
-          </p>
-          <div className="text-sm text-gray-500">
-            💡 טיפ: נסה חיפוש רחב יותר או בדוק אות כתיב
-          </div>
-        </div>
+        <EmptyState
+          icon={SearchX}
+          title="לא נמצאו תוצאות"
+          description="נסה לשנות את הפילטרים או להשתמש במילות חיפוש אחרות. טיפ: נסה חיפוש רחב יותר או בדוק את הכתיב."
+        />
       </div>
     );
   }
@@ -107,7 +90,7 @@ const SearchResults = ({
 
       {/* Results Grid */}
       <div className="p-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {results.map((item) => (
             searchType === 'courses' ? (
               <CourseResultCard

@@ -1,83 +1,38 @@
 import React, { useEffect, useState } from "react";
-import {
-  MessageSquare,
-  Clock,
-  CheckCircle2,
-  Calendar,
-  User,
-  Edit3,
-  Save,
-  X,
-  Loader2,
-  RefreshCw,
-  AlertTriangle,
-  Trash2,
-  Eye,
-  Headphones,
-} from "lucide-react";
-import ElegantLoadingSpinner from "../components/common/ElegantLoadingSpinner";
+import { MessageSquare, Clock, CheckCircle2, RefreshCw } from "lucide-react";
+import Alert from "../components/common/Alert";
+import ConfirmDialog from "../components/common/ConfirmDialog";
+import ContactRequestsList from "../components/contact-requests/ContactRequestsList";
+import ContactRequestDetailsModal from "../components/contact-requests/ContactRequestDetailsModal";
+import ContactRequestEditModal from "../components/contact-requests/ContactRequestEditModal";
 import { useContactRequests } from "../hooks/useContactRequests";
 
-const SUBJECT_MAP = {
-  add_lecturer_to_course: "הוספת מרצה לקורס",
-  add_course_to_lecturer: "הוספת קורס למרצה",
-  add_course_to_system: "הוספת קורס למערכת",
-  add_lecturer_to_system: "הוספת מרצה למערכת",
-  general_inquiry: "פנייה כללית",
-};
-
-const STATUS_MAP = {
-  pending: {
-    text: "ממתין לטיפול",
-    icon: Clock,
-    color: "text-amber-700 bg-amber-100 border-amber-200",
-    dotColor: "bg-amber-500",
-  },
-  in_progress: {
-    text: "בטיפול",
-    icon: RefreshCw,
-    color: "text-blue-700 bg-blue-100 border-blue-200",
-    dotColor: "bg-blue-500",
-  },
-  answered: {
-    text: "נענתה",
-    icon: CheckCircle2,
-    color: "text-emerald-700 bg-emerald-100 border-emerald-200",
-    dotColor: "bg-emerald-500",
-  },
-};
-
-const getSubjectDisplay = (subject) => SUBJECT_MAP[subject] || subject;
-const getStatusDisplay = (status) => STATUS_MAP[status] || STATUS_MAP.pending;
-
-const formatDate = (dateString) =>
-  new Date(dateString).toLocaleDateString("he-IL", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
+// MyContactRequests — thin page shell (Phase 6 refactor). Data fetching and
+// the update/delete mutations are unchanged: they still flow through
+// useContactRequests exactly as before. The page now only owns UI state
+// (which modal is open, in-flight flags) and delegates rendering to the
+// contact-requests feature components.
+//
+// Two intentional, UI-only behavior changes made during this pass (no logic
+// touched):
+//  - The blocking "success" modal is now an auto-dismissing Alert banner,
+//    consistent with how the rest of the design system surfaces success
+//    messages (still shown for the same 3 seconds).
+//  - The edit form's validation message and the delete/update failure
+//    messages now render via the shared Alert component instead of native
+//    window.alert() popups.
 const MyContactRequests = ({ user }) => {
-  // All data fetching is delegated to useContactRequests — no inline fetch/useEffect.
-  const {
-    requests,
-    loading,
-    error,
-    refetch,
-    updateRequest,
-    deleteRequest,
-  } = useContactRequests();
+  const { requests, loading, error, refetch, updateRequest, deleteRequest } =
+    useContactRequests();
 
   const [refreshing, setRefreshing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [editingRequest, setEditingRequest] = useState(null);
-  const [editForm, setEditForm] = useState({ subject: "", description: "" });
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [actionError, setActionError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     document.title = "הפניות שלי - Course4Me";
@@ -85,6 +40,12 @@ const MyContactRequests = ({ user }) => {
       document.title = "Course4Me";
     };
   }, []);
+
+  useEffect(() => {
+    if (!successMessage) return undefined;
+    const timeout = setTimeout(() => setSuccessMessage(""), 3000);
+    return () => clearTimeout(timeout);
+  }, [successMessage]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -95,61 +56,40 @@ const MyContactRequests = ({ user }) => {
     }
   };
 
-  const handleEditClick = (request) => {
-    setEditingRequest(request);
-    setEditForm({
-      subject: request.subject,
-      description: request.description,
-    });
-  };
-
-  const handleEditSubmit = async (e) => {
-    e.preventDefault();
+  const handleEditSubmit = async (payload) => {
     if (!editingRequest) return;
-
-    if (!editForm.subject?.trim() || !editForm.description?.trim()) {
-      alert("נושא ותיאור הם שדות חובה");
-      return;
-    }
-
     setSaving(true);
+    setActionError("");
     try {
-      const updated = await updateRequest(editingRequest._id, {
-        subject: editForm.subject.trim(),
-        description: editForm.description.trim(),
-      });
-
+      const updated = await updateRequest(editingRequest._id, payload);
       if (selectedRequest && selectedRequest._id === editingRequest._id) {
         setSelectedRequest(updated);
       }
       setEditingRequest(null);
-      setEditForm({ subject: "", description: "" });
-      setShowSuccessModal(true);
-      setTimeout(() => setShowSuccessModal(false), 3000);
+      setSuccessMessage("הפנייה עודכנה בהצלחה!");
     } catch (err) {
-      alert("שגיאה בעדכון הפנייה: " + (err?.message || ""));
+      setActionError("שגיאה בעדכון הפנייה: " + (err?.message || ""));
     } finally {
       setSaving(false);
     }
   };
 
-  const handleDelete = async (requestId) => {
+  const handleDelete = async () => {
+    if (!deleteTargetId) return;
     setDeleting(true);
+    setActionError("");
     try {
-      await deleteRequest(requestId);
-      setShowDeleteConfirm(null);
-      if (selectedRequest && selectedRequest._id === requestId) {
+      await deleteRequest(deleteTargetId);
+      if (selectedRequest && selectedRequest._id === deleteTargetId) {
         setSelectedRequest(null);
       }
     } catch (err) {
-      alert("שגיאה במחיקת הפנייה: " + (err?.message || ""));
+      setActionError("שגיאה במחיקת הפנייה: " + (err?.message || ""));
     } finally {
+      setDeleteTargetId(null);
       setDeleting(false);
     }
   };
-
-  const openRequestDetails = (request) => setSelectedRequest(request);
-  const closeRequestDetails = () => setSelectedRequest(null);
 
   return (
     <div
@@ -177,10 +117,22 @@ const MyContactRequests = ({ user }) => {
           </div>
         </div>
 
-        {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-card text-center">
-            {error}
-          </div>
+        {(error || actionError) && (
+          <Alert
+            type="error"
+            message={error || actionError}
+            onDismiss={actionError ? () => setActionError("") : undefined}
+            className="mb-4"
+          />
+        )}
+
+        {successMessage && (
+          <Alert
+            type="success"
+            message={successMessage}
+            onDismiss={() => setSuccessMessage("")}
+            className="mb-4"
+          />
         )}
 
         {/* Stats Cards */}
@@ -264,439 +216,43 @@ const MyContactRequests = ({ user }) => {
           </button>
         </div>
 
-        {/* Requests List */}
-        <div className="bg-white rounded-card sm:rounded-card-lg shadow-sm border border-slate-200">
-          <div className="flex items-center justify-between p-4 sm:p-6 border-b border-slate-200">
-            <h2 className="text-lg sm:text-xl font-bold text-slate-800">
-              הפניות שלך ({requests.length})
-            </h2>
-          </div>
-
-          {loading && requests.length === 0 ? (
-            <ElegantLoadingSpinner message="טוען את הפניות שלך..." size="large" />
-          ) : requests.length === 0 ? (
-            <div className="p-8 sm:p-12 lg:p-16 text-center animate-fadeIn">
-              <div className="bg-slate-100 p-3 sm:p-4 rounded-full w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 sm:mb-6 flex items-center justify-center animate-fadeIn">
-                <MessageSquare className="w-8 h-8 sm:w-10 sm:h-10 text-slate-400" />
-              </div>
-              <h3 className="text-lg sm:text-xl font-bold text-slate-800 mb-2">
-                אין פניות עדיין
-              </h3>
-              <p className="text-sm sm:text-base text-slate-600 mb-4">
-                לא יצרת עדיין פניות למערכת
-              </p>
-            </div>
-          ) : (
-            <div className="divide-y divide-slate-100 animate-fadeIn">
-              {requests.map((request, index) => {
-                const statusDisplay = getStatusDisplay(request.status);
-                return (
-                  <div
-                    key={request._id}
-                    className="p-4 sm:p-6 hover:bg-slate-50 transition-all duration-ui animate-fadeIn"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 mb-3">
-                          <span
-                            className={`inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold border ${statusDisplay.color} w-fit`}
-                          >
-                            <div
-                              className={`w-2 h-2 rounded-full ${statusDisplay.dotColor} ml-2`}
-                            />
-                            {statusDisplay.text}
-                          </span>
-                          <div className="flex items-center text-xs sm:text-sm text-slate-500 sm:mr-4">
-                            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
-                            {formatDate(request.createdAt)}
-                          </div>
-                        </div>
-
-                        <div className="mb-3">
-                          <span className="text-xs sm:text-sm font-semibold text-slate-700">
-                            כותרת:{" "}
-                          </span>
-                          <span className="text-base sm:text-lg font-bold text-slate-800 break-words">
-                            {getSubjectDisplay(request.subject)}
-                          </span>
-                        </div>
-
-                        <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-3 line-clamp-2 break-words">
-                          {request.description}
-                        </p>
-
-                        {request.adminResponse && (
-                          <div className="flex items-center text-xs sm:text-sm text-emerald-600 font-medium">
-                            <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 ml-1 flex-shrink-0" />
-                            <span className="break-words">קיבלת תגובה מהצוות</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 justify-end sm:justify-start">
-                        {request.status !== "answered" && (
-                          <button
-                            onClick={() => handleEditClick(request)}
-                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-card transition-all group"
-                            title="ערוך פנייה"
-                          >
-                            <Edit3 className="w-4 h-4 sm:w-5 sm:h-5" />
-                          </button>
-                        )}
-                        <button
-                          onClick={() => setShowDeleteConfirm(request._id)}
-                          className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-card transition-all group"
-                          title="מחק פנייה"
-                        >
-                          <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                        </button>
-                        <button
-                          onClick={() => openRequestDetails(request)}
-                          className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-card transition-all"
-                          title="הצג פרטים"
-                        >
-                          <Eye className="w-4 h-4 sm:w-5 sm:h-5" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        <ContactRequestsList
+          requests={requests}
+          loading={loading}
+          onEdit={setEditingRequest}
+          onDelete={setDeleteTargetId}
+          onView={setSelectedRequest}
+        />
       </div>
 
-      {/* Request Details Modal */}
       {selectedRequest && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-          onClick={closeRequestDetails}
-        >
-          <div
-            className="bg-white rounded-card-lg sm:rounded-3xl shadow-elevated max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 sm:p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center min-w-0 flex-1">
-                  <div className="bg-white/20 p-2 rounded-card ml-2 sm:ml-3 flex-shrink-0">
-                    <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h2 className="text-lg sm:text-xl font-bold truncate">
-                      {getSubjectDisplay(selectedRequest.subject)}
-                    </h2>
-                    <p className="text-indigo-100 text-xs sm:text-sm truncate">
-                      פנייה מתאריך {formatDate(selectedRequest.createdAt)}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={closeRequestDetails}
-                  className="p-2 hover:bg-white/20 rounded-card transition-colors flex-shrink-0"
-                >
-                  <X className="w-5 h-5 sm:w-6 sm:h-6" />
-                </button>
-              </div>
-            </div>
-
-            <div className="p-4 sm:p-6 max-h-[70vh] overflow-y-auto">
-              <div className="space-y-4 sm:space-y-6">
-                <div className="flex items-start gap-2 sm:gap-3">
-                  <div className="bg-indigo-100 p-2 sm:p-3 rounded-full flex-shrink-0">
-                    <User className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
-                      <span className="font-semibold text-slate-800 text-sm sm:text-base">
-                        {user?.fullName || "את/ה"}
-                      </span>
-                      <div className="flex items-center text-slate-500">
-                        <span className="hidden sm:inline text-sm">•</span>
-                        <span className="text-xs sm:text-sm sm:mr-2">
-                          {formatDate(selectedRequest.createdAt)}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="bg-indigo-50 rounded-card sm:rounded-card-lg rounded-tr-sm sm:rounded-tr-lg p-3 sm:p-4 border border-indigo-100">
-                      <p className="text-slate-800 leading-relaxed text-sm sm:text-base break-words">
-                        {selectedRequest.description}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {selectedRequest.adminResponse ? (
-                  <div className="flex items-start gap-2 sm:gap-3">
-                    <div className="bg-emerald-100 p-2 sm:p-3 rounded-full flex-shrink-0">
-                      <Headphones className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-2">
-                        <span className="font-semibold text-slate-800 text-sm sm:text-base">
-                          {selectedRequest.respondedBy?.fullName || "צוות התמיכה"}
-                        </span>
-                        <div className="flex items-center text-slate-500">
-                          <span className="hidden sm:inline text-sm">•</span>
-                          <span className="text-xs sm:text-sm sm:mr-2">
-                            {formatDate(selectedRequest.respondedAt)}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="bg-emerald-50 rounded-card sm:rounded-card-lg rounded-tr-sm sm:rounded-tr-lg p-3 sm:p-4 border border-emerald-100">
-                        <p className="text-slate-800 leading-relaxed text-sm sm:text-base break-words">
-                          {selectedRequest.adminResponse}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-6 sm:py-8">
-                    <div className="bg-slate-100 p-3 sm:p-4 rounded-full w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 flex items-center justify-center">
-                      <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
-                    </div>
-                    <p className="text-slate-600 font-medium text-sm sm:text-base">
-                      ממתין לתגובת הצוות
-                    </p>
-                    <p className="text-slate-500 text-xs sm:text-sm mt-1">
-                      נחזור אליך בהקדם האפשרי
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div className="border-t border-slate-200 p-4 sm:p-6 bg-slate-50">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-0">
-                <div className="order-2 sm:order-1">
-                  {(() => {
-                    const statusDisplay = getStatusDisplay(selectedRequest.status);
-                    const StatusIcon = statusDisplay.icon;
-                    return (
-                      <span
-                        className={`inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-semibold border ${statusDisplay.color}`}
-                      >
-                        <StatusIcon className="w-3 h-3 sm:w-4 sm:h-4 ml-2" />
-                        {statusDisplay.text}
-                      </span>
-                    );
-                  })()}
-                </div>
-                <button
-                  onClick={closeRequestDetails}
-                  className="order-1 sm:order-2 w-full sm:w-auto px-4 sm:px-6 py-2 bg-slate-200 text-slate-700 rounded-card hover:bg-slate-300 transition-colors font-medium text-sm sm:text-base"
-                >
-                  סגור
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ContactRequestDetailsModal
+          request={selectedRequest}
+          user={user}
+          onClose={() => setSelectedRequest(null)}
+        />
       )}
 
-      {/* Edit Modal */}
       {editingRequest && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-card-lg sm:rounded-3xl shadow-elevated max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white p-4 sm:p-6">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center min-w-0 flex-1">
-                  <div className="bg-white/20 p-2 rounded-card ml-2 sm:ml-3 flex-shrink-0">
-                    <Edit3 className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </div>
-                  <div className="min-w-0">
-                    <h2 className="text-lg sm:text-xl font-bold">עריכת פנייה</h2>
-                    <p className="text-blue-100 text-xs sm:text-sm">
-                      ערוך את פרטי הפנייה שלך
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setEditingRequest(null)}
-                  className="p-2 hover:bg-white/20 rounded-card transition-colors flex-shrink-0"
-                >
-                  <X className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
-              </div>
-            </div>
-
-            <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-h-[60vh] overflow-y-auto">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
-                  נושא הפנייה *
-                </label>
-                <select
-                  value={editForm.subject}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, subject: e.target.value })
-                  }
-                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border border-gray-300 rounded-card sm:rounded-card focus:ring-2 focus-visible:ring-2 focus-visible:ring-brand focus:border-blue-500 text-sm sm:text-base"
-                  required
-                >
-                  <option value="">בחר נושא...</option>
-                  <option value="add_lecturer_to_course">הוספת מרצה לקורס</option>
-                  <option value="add_course_to_lecturer">הוספת קורס למרצה</option>
-                  <option value="add_course_to_system">הוספת קורס למערכת</option>
-                  <option value="add_lecturer_to_system">הוספת מרצה למערכת</option>
-                  <option value="general_inquiry">פנייה כללית</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2 sm:mb-3">
-                  תיאור הפנייה *
-                </label>
-                <textarea
-                  value={editForm.description}
-                  onChange={(e) =>
-                    setEditForm({ ...editForm, description: e.target.value })
-                  }
-                  placeholder="פרט את בקשתך או שאלתך..."
-                  rows={5}
-                  maxLength={1000}
-                  className="w-full px-3 sm:px-4 py-3 sm:py-4 border border-gray-300 rounded-card sm:rounded-card focus:ring-2 focus-visible:ring-2 focus-visible:ring-brand focus:border-blue-500 resize-none text-sm sm:text-base leading-relaxed"
-                  required
-                />
-                <div className="text-xs sm:text-sm text-gray-500 mt-2 text-left">
-                  {editForm.description.length}/1000 תווים
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-gray-200 p-4 sm:p-6 bg-gray-50">
-              <div className="flex flex-col sm:flex-row items-center justify-end gap-3 sm:gap-4">
-                <button
-                  type="button"
-                  onClick={() => setEditingRequest(null)}
-                  className="w-full sm:w-auto order-2 sm:order-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-gray-200 text-gray-700 rounded-card sm:rounded-card hover:bg-gray-300 transition-colors font-medium text-sm sm:text-base"
-                >
-                  ביטול
-                </button>
-                <button
-                  onClick={handleEditSubmit}
-                  disabled={saving}
-                  className="w-full sm:w-auto order-1 sm:order-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-blue-600 text-white rounded-card sm:rounded-card hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-card text-sm sm:text-base"
-                >
-                  {saving ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin ml-2" />
-                      שומר...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4 ml-2" />
-                      שמור שינויים
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ContactRequestEditModal
+          request={editingRequest}
+          submitting={saving}
+          error={actionError}
+          onClose={() => setEditingRequest(null)}
+          onSubmit={handleEditSubmit}
+        />
       )}
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-card-lg sm:rounded-3xl shadow-elevated max-w-md w-full">
-            <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-4 sm:p-6 rounded-t-2xl sm:rounded-t-3xl">
-              <div className="flex items-center justify-center">
-                <div className="bg-white/20 p-2 rounded-card ml-2 sm:ml-3">
-                  <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6" />
-                </div>
-                <div>
-                  <h2 className="text-lg sm:text-xl font-bold">מחיקת פנייה</h2>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 sm:p-6 text-center">
-              <div className="bg-red-50 p-3 sm:p-4 rounded-card sm:rounded-card mb-3 sm:mb-4">
-                <Trash2 className="w-10 h-10 sm:w-12 sm:h-12 text-red-500 mx-auto mb-2 sm:mb-3" />
-                <p className="text-slate-700 font-medium mb-2 text-sm sm:text-base">
-                  האם אתה בטוח שברצונך למחוק את הפנייה?
-                </p>
-                <p className="text-red-600 text-xs sm:text-sm font-semibold">
-                  ⚠️ לא ניתן יהיה לשחזר אותה לאחר המחיקה!
-                </p>
-              </div>
-            </div>
-
-            <div className="border-t border-slate-200 p-4 sm:p-6 bg-slate-50 rounded-b-2xl sm:rounded-b-3xl">
-              <div className="flex flex-col sm:flex-row items-center justify-end gap-2 sm:gap-3">
-                <button
-                  onClick={() => setShowDeleteConfirm(null)}
-                  className="w-full sm:w-auto order-2 sm:order-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-slate-200 text-slate-700 rounded-card sm:rounded-card hover:bg-slate-300 transition-colors font-medium text-sm sm:text-base"
-                >
-                  ביטול
-                </button>
-                <button
-                  onClick={() => handleDelete(showDeleteConfirm)}
-                  disabled={deleting}
-                  className="w-full sm:w-auto order-1 sm:order-2 px-4 sm:px-6 py-2.5 sm:py-3 bg-red-600 text-white rounded-card sm:rounded-card hover:bg-red-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-card text-sm sm:text-base"
-                >
-                  {deleting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin ml-2" />
-                      מוחק...
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 className="w-4 h-4 ml-2" />
-                      מחק סופית
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Success Modal */}
-      {showSuccessModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-card-lg sm:rounded-3xl shadow-elevated max-w-md w-full">
-            <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white p-4 sm:p-6 rounded-t-2xl sm:rounded-t-3xl">
-              <div className="flex items-center justify-center">
-                <div className="bg-white/20 p-2 rounded-card ml-2 sm:ml-3">
-                  <CheckCircle2 className="w-5 h-5 sm:w-6 sm:h-6" />
-                </div>
-                <div>
-                  <h2 className="text-lg sm:text-xl font-bold">
-                    הפנייה עודכנה בהצלחה!
-                  </h2>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 sm:p-6 text-center">
-              <div className="bg-emerald-50 p-3 sm:p-4 rounded-card sm:rounded-card mb-3 sm:mb-4">
-                <CheckCircle2 className="w-10 h-10 sm:w-12 sm:h-12 text-emerald-500 mx-auto mb-2 sm:mb-3" />
-                <p className="text-slate-700 font-medium mb-2 text-sm sm:text-base">
-                  השינויים נשמרו בהצלחה
-                </p>
-                <p className="text-emerald-600 text-xs sm:text-sm font-semibold">
-                  ✅ הפנייה שלך עודכנה במערכת
-                </p>
-              </div>
-            </div>
-
-            <div className="border-t border-slate-200 p-4 sm:p-6 bg-slate-50 rounded-b-2xl sm:rounded-b-3xl">
-              <div className="flex justify-center">
-                <button
-                  onClick={() => setShowSuccessModal(false)}
-                  className="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 bg-emerald-600 text-white rounded-card sm:rounded-card hover:bg-emerald-700 transition-colors font-medium text-sm sm:text-base"
-                >
-                  סגור
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        isOpen={Boolean(deleteTargetId)}
+        title="מחיקת פנייה"
+        message="האם אתה בטוח שברצונך למחוק את הפנייה? לא ניתן יהיה לשחזר אותה לאחר המחיקה."
+        confirmLabel="מחק סופית"
+        variant="danger"
+        loading={deleting}
+        onConfirm={handleDelete}
+        onClose={() => setDeleteTargetId(null)}
+      />
     </div>
   );
 };
