@@ -267,7 +267,7 @@ const TrackedCourses = () => {
       </div>
 
       {/* Main content area */}
-      <div className="max-w-7xl mx-auto p-6 pb-12">
+      <div className="max-w-[1800px] mx-auto p-6 pb-12">
         {/* Loading: skeleton grid to avoid layout shift */}
         {isLoading ? (
           <div className="mt-8">
