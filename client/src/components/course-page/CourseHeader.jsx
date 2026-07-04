@@ -68,16 +68,16 @@ const CourseHeader = ({ course, stats }) => {
     };
 
     return (
-        <div className="relative overflow-hidden">
+        <div className="relative overflow-hidden shadow-card-lg">
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800"></div>
 
-            <div className="relative max-w-7xl mx-auto px-6 py-12">
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
                 {/* Course Name and Icon - Centered at top */}
-                <div className="flex items-center justify-center gap-4 mb-8">
-                    <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-card-lg p-4 shadow-card">
-                        <BookOpen className="w-10 h-10 text-white" />
+                <div className="flex items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+                    <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-card-lg p-3 sm:p-4 shadow-card shrink-0">
+                        <BookOpen className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
                     </div>
-                    <h1 className="text-3xl lg:text-4xl font-bold text-white leading-tight text-center">
+                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight text-center">
                         {course.title}
                     </h1>
                 </div>

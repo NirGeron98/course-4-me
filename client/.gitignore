@@ -21,3 +21,6 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# untracked locally, kept on disk
+UI_REFINEMENTS.md

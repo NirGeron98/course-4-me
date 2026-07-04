@@ -11,6 +11,22 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: [
+          "Heebo",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "Oxygen",
+          "Ubuntu",
+          "Cantarell",
+          "Fira Sans",
+          "Droid Sans",
+          "Helvetica Neue",
+          "sans-serif",
+        ],
+      },
       // Semantic color tokens. Prefer these over raw gray-X so color tweaks
       // can happen in one place.
       colors: {
@@ -23,6 +39,7 @@ module.exports = {
           DEFAULT: "#059669",
           soft: "#d1fae5",
           strong: "#047857",
+          tint: "#ecfdf5",
         },
         danger: {
           DEFAULT: "#dc2626",
@@ -49,6 +66,9 @@ module.exports = {
         card: "0 1px 2px 0 rgb(15 23 42 / 0.04), 0 1px 3px 0 rgb(15 23 42 / 0.06)",
         "card-hover":
           "0 4px 6px -1px rgb(15 23 42 / 0.08), 0 2px 4px -2px rgb(15 23 42 / 0.06)",
+        // Slightly richer resting shadow for hero/feature cards, between card-hover and elevated.
+        "card-lg":
+          "0 8px 12px -3px rgb(15 23 42 / 0.10), 0 3px 5px -3px rgb(15 23 42 / 0.08)",
         // Stronger shadow for modals, popovers, menus.
         elevated:
           "0 10px 15px -3px rgb(15 23 42 / 0.12), 0 4px 6px -4px rgb(15 23 42 / 0.10)",

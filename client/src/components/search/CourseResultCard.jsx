@@ -43,8 +43,8 @@ const CourseResultCard = ({ course, onSelect }) => {
   };
 
   return (
-    <div className="border border-gray-200 rounded-card p-6 hover:shadow-card transition-all duration-ui hover:border-blue-300 bg-gradient-to-br from-white to-blue-50/30">
-      <div className="flex items-start justify-between mb-4">
+    <div className="border border-gray-200 rounded-card p-4 sm:p-5 hover:shadow-card transition-all duration-ui hover:border-blue-300 bg-gradient-to-br from-white to-blue-50/30">
+      <div className="flex items-start justify-between mb-3">
         <div className="flex items-start gap-4 flex-1">
           <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-full p-3 shadow-card">
             <BookOpen className="w-6 h-6 text-white" />
@@ -155,7 +155,7 @@ const CourseResultCard = ({ course, onSelect }) => {
       </div>
 
       {/* Action Button */}
-      <div className="flex justify-end pt-4 border-t border-gray-100">
+      <div className="flex justify-end pt-3 border-t border-gray-100">
         <Button onClick={onSelect} leftIcon={Eye} size="sm">
           פרטים מלאים
         </Button>

@@ -4,8 +4,8 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: 'Heebo', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+    'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -17,17 +17,8 @@ code {
 }
 
 /* Custom animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
+/* modalEnter, backdropEnter, and fadeIn are defined once in tailwind.config.js
+   (theme.extend.keyframes/animation) and used via the animate-* utility classes. */
 @keyframes slideInRight {
   from {
     opacity: 0;
@@ -39,40 +30,8 @@ code {
   }
 }
 
-@keyframes modalEnter {
-  from {
-    opacity: 0;
-    transform: scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-@keyframes backdropEnter {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.animate-fadeIn {
-  animation: fadeIn 0.5s ease forwards;
-}
-
 .animate-slideInRight {
   animation: slideInRight 0.5s ease forwards;
-}
-
-.animate-modalEnter {
-  animation: modalEnter 0.2s ease-out forwards;
-}
-
-.animate-backdropEnter {
-  animation: backdropEnter 0.2s ease-out forwards;
 }
 
 /* Accessibility: consistent focus ring (use .focus-ring in JSX with Tailwind) */

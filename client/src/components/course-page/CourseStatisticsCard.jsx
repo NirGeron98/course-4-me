@@ -34,8 +34,8 @@ const CourseStatisticsCard = ({ stats }) => {
 
     if (!stats || Object.values(stats).every(val => val == null)) {
         return (
-            <div className="bg-white rounded-card-lg shadow-card p-6" dir="rtl">
-                <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+            <div className="bg-white rounded-card-lg shadow-card p-4 sm:p-6" dir="rtl">
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                     <BarChart3 className="w-5 h-5 text-emerald-500" />
                     סטטיסטיקות
                 </h3>
@@ -47,8 +47,8 @@ const CourseStatisticsCard = ({ stats }) => {
     }
 
     return (
-        <div className="bg-white rounded-card-lg shadow-card p-6" dir="rtl">
-            <h3 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <div className="bg-white rounded-card-lg shadow-card p-4 sm:p-6" dir="rtl">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-emerald-500" />
                 סטטיסטיקות ({stats.total} ביקורות)
             </h3>
