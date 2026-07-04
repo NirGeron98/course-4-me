@@ -10,12 +10,14 @@ import {
   SkeletonStatGrid,
   SkeletonSection,
 } from "../components/common/Skeleton";
+import PageLayout from "../components/common/PageLayout";
 import StatsCards from "../components/dashboard/StatsCards";
 import { apiFetch, useApi } from "../hooks/useApi";
 import { useCourses } from "../hooks/useCourses";
 import { useTrackedCourses } from "../hooks/useTrackedCourses";
 import { useContactRequests } from "../hooks/useContactRequests";
 import { useMyReviews } from "../hooks/useMyReviews";
+import useResponsiveVisibleCount from "../hooks/useResponsiveVisibleCount";
 import { COURSE_MUTATED_EVENT } from "../contexts/CourseDataContext";
 
 // Dashboard page. All data fetching is delegated to hooks under /hooks, so this
@@ -103,6 +105,7 @@ const Dashboard = () => {
     reviewsLoading;
 
   // UI-only state.
+  const visibleCount = useResponsiveVisibleCount();
   const [isSecondaryLoading, setIsSecondaryLoading] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -185,24 +188,24 @@ const Dashboard = () => {
 
   // Carousel auto-scroll — UI behavior, not data fetching.
   useEffect(() => {
-    if (allCourses.length <= 3) return undefined;
+    if (allCourses.length <= visibleCount) return undefined;
     const interval = setInterval(() => {
       setCourseCarouselIndex((prev) =>
-        prev >= allCourses.length - 3 ? 0 : prev + 1
+        prev >= allCourses.length - visibleCount ? 0 : prev + 1
       );
     }, 4000);
     return () => clearInterval(interval);
-  }, [allCourses.length]);
+  }, [allCourses.length, visibleCount]);
 
   useEffect(() => {
-    if (lecturers.length <= 3) return undefined;
+    if (lecturers.length <= visibleCount) return undefined;
     const interval = setInterval(() => {
       setLecturerCarouselIndex((prev) =>
-        prev >= lecturers.length - 3 ? 0 : prev + 1
+        prev >= lecturers.length - visibleCount ? 0 : prev + 1
       );
     }, 5000);
     return () => clearInterval(interval);
-  }, [lecturers.length]);
+  }, [lecturers.length, visibleCount]);
 
   // Presentation helpers.
   const formatLecturersDisplay = (list, max = 3, badgeClassName = "bg-blue-200 text-blue-800") => {
@@ -238,112 +241,115 @@ const Dashboard = () => {
 
   const handleCourseCarouselPrev = () =>
     setCourseCarouselIndex((prev) =>
-      prev <= 0 ? Math.max(0, allCourses.length - 3) : prev - 1
+      prev <= 0 ? Math.max(0, allCourses.length - visibleCount) : prev - 1
     );
   const handleCourseCarouselNext = () =>
     setCourseCarouselIndex((prev) =>
-      prev >= allCourses.length - 3 ? 0 : prev + 1
+      prev >= allCourses.length - visibleCount ? 0 : prev + 1
     );
   const handleLecturerCarouselPrev = () =>
     setLecturerCarouselIndex((prev) =>
-      prev <= 0 ? Math.max(0, lecturers.length - 3) : prev - 1
+      prev <= 0 ? Math.max(0, lecturers.length - visibleCount) : prev - 1
     );
   const handleLecturerCarouselNext = () =>
     setLecturerCarouselIndex((prev) =>
-      prev >= lecturers.length - 3 ? 0 : prev + 1
+      prev >= lecturers.length - visibleCount ? 0 : prev + 1
     );
   const handleTrackedPrev = () =>
     setTrackedCarouselIndex((prev) =>
-      prev <= 0 ? Math.max(0, trackedCourses.length - 3) : prev - 1
+      prev <= 0 ? Math.max(0, trackedCourses.length - visibleCount) : prev - 1
     );
   const handleTrackedNext = () =>
     setTrackedCarouselIndex((prev) =>
-      prev >= trackedCourses.length - 3 ? 0 : prev + 1
+      prev >= trackedCourses.length - visibleCount ? 0 : prev + 1
     );
 
   const visibleCourses = allCourses.slice(
     courseCarouselIndex,
-    courseCarouselIndex + 3
+    courseCarouselIndex + visibleCount
   );
   const visibleLecturers = lecturers.slice(
     lecturerCarouselIndex,
-    lecturerCarouselIndex + 3
+    lecturerCarouselIndex + visibleCount
   );
   const visibleTrackedCourses = trackedCourses.slice(
     trackedCarouselIndex,
-    trackedCarouselIndex + 3
+    trackedCarouselIndex + visibleCount
   );
 
   return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-blue-50"
-      dir="rtl"
+    <PageLayout
+      accent="emerald"
+      header={
+        <>
+          {isSecondaryLoading && (
+            <ElegantSecondaryLoading message="מרענן נתונים..." />
+          )}
+          <WelcomeHeader userName={userFullName} />
+        </>
+      }
     >
-      {isSecondaryLoading && (
-        <ElegantSecondaryLoading message="מרענן נתונים..." />
+      {statsLoading ? (
+        <SkeletonStatGrid />
+      ) : (
+      <StatsCards
+        coursesCount={stats.coursesCount}
+        trackedLecturersCount={
+          trackedLecturers.filter(({ lecturer }) => lecturer).length
+        }
+        contactRequestsCount={stats.contactRequestsCount}
+        refreshData={refreshAll}
+        isLoadedFromCache={false}
+        allCoursesCount={allCourses.length}
+        lecturersCount={lecturers.length}
+      />
       )}
-      <WelcomeHeader userName={userFullName} />
+      {trackedCoursesLoading ? (
+        <SkeletonSection />
+      ) : (
+      <TrackedCoursesList
+        trackedCourses={trackedCourses}
+        visibleCourses={visibleTrackedCourses}
+        visibleCount={visibleCount}
+        carouselIndex={trackedCarouselIndex}
+        setCarouselIndex={setTrackedCarouselIndex}
+        onPrev={handleTrackedPrev}
+        onNext={handleTrackedNext}
+        onCourseClick={handleTrackedCourseClick}
+        formatLecturersDisplay={formatLecturersDisplay}
+        emptyActionLabel="עבור לקורסים שלי"
+        onEmptyAction={() => navigate("/tracked-courses")}
+      />
+      )}
 
-      <div className="max-w-6xl mx-auto p-3 sm:p-6 space-y-5 sm:space-y-8">
-        {statsLoading ? (
-          <SkeletonStatGrid />
-        ) : (
-        <StatsCards
-          coursesCount={stats.coursesCount}
-          trackedLecturersCount={
-            trackedLecturers.filter(({ lecturer }) => lecturer).length
-          }
-          contactRequestsCount={stats.contactRequestsCount}
-          refreshData={refreshAll}
-          isLoadedFromCache={false}
-          allCoursesCount={allCourses.length}
-          lecturersCount={lecturers.length}
-        />
-        )}
-        {trackedCoursesLoading ? (
-          <SkeletonSection />
-        ) : (
-        <TrackedCoursesList
-          trackedCourses={trackedCourses}
-          visibleCourses={visibleTrackedCourses}
-          carouselIndex={trackedCarouselIndex}
-          setCarouselIndex={setTrackedCarouselIndex}
-          onPrev={handleTrackedPrev}
-          onNext={handleTrackedNext}
-          onCourseClick={handleTrackedCourseClick}
-          formatLecturersDisplay={formatLecturersDisplay}
-          emptyActionLabel="עבור לקורסים שלי"
-          onEmptyAction={() => navigate("/tracked-courses")}
-        />
-        )}
-
-        {coursesLoading ? (
-          <SkeletonSection />
-        ) : (
-        <CourseCarousel
-          courses={allCourses}
-          visibleCourses={visibleCourses}
-          carouselIndex={courseCarouselIndex}
-          onPrev={handleCourseCarouselPrev}
-          onNext={handleCourseCarouselNext}
-          onCourseClick={handleCourseClick}
-          formatLecturersDisplay={formatLecturersDisplay}
-          setCarouselIndex={setCourseCarouselIndex}
-        />
-        )}
-        {lecturersLoading ? (
-          <SkeletonSection />
-        ) : (
-        <LecturerCarousel
-          lecturers={lecturers}
-          visibleLecturers={visibleLecturers}
-          carouselIndex={lecturerCarouselIndex}
-          onPrev={handleLecturerCarouselPrev}
-          onNext={handleLecturerCarouselNext}
-          setCarouselIndex={setLecturerCarouselIndex}
-        />
-        )}
-      </div>
+      {coursesLoading ? (
+        <SkeletonSection />
+      ) : (
+      <CourseCarousel
+        courses={allCourses}
+        visibleCourses={visibleCourses}
+        visibleCount={visibleCount}
+        carouselIndex={courseCarouselIndex}
+        onPrev={handleCourseCarouselPrev}
+        onNext={handleCourseCarouselNext}
+        onCourseClick={handleCourseClick}
+        formatLecturersDisplay={formatLecturersDisplay}
+        setCarouselIndex={setCourseCarouselIndex}
+      />
+      )}
+      {lecturersLoading ? (
+        <SkeletonSection />
+      ) : (
+      <LecturerCarousel
+        lecturers={lecturers}
+        visibleLecturers={visibleLecturers}
+        visibleCount={visibleCount}
+        carouselIndex={lecturerCarouselIndex}
+        onPrev={handleLecturerCarouselPrev}
+        onNext={handleLecturerCarouselNext}
+        setCarouselIndex={setLecturerCarouselIndex}
+      />
+      )}
       {isModalOpen && (
         <CourseDetailsModal
           course={selectedCourse}
@@ -353,7 +359,7 @@ const Dashboard = () => {
           }}
         />
       )}
-    </div>
+    </PageLayout>
   );
 };
 

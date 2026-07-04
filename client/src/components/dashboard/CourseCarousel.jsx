@@ -2,29 +2,30 @@ import React from 'react';
 import { BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 import EmptyState from '../common/EmptyState';
 
-const CourseCarousel = ({ 
-  courses, 
-  visibleCourses, 
-  carouselIndex, 
-  onPrev, 
-  onNext, 
-  onCourseClick, 
+const CourseCarousel = ({
+  courses,
+  visibleCourses,
+  carouselIndex,
+  onPrev,
+  onNext,
+  onCourseClick,
   formatLecturersDisplay,
-  setCarouselIndex 
+  setCarouselIndex,
+  visibleCount = 3,
 }) => {
   const isEmpty = courses.length === 0;
 
   const renderPaginationDots = () => {
-    if (courses.length <= 3) return null;
+    if (courses.length <= visibleCount) return null;
 
-    const totalPages = Math.ceil(courses.length / 3);
-    const currentPage = Math.floor(carouselIndex / 3);
+    const totalPages = Math.ceil(courses.length / visibleCount);
+    const currentPage = Math.floor(carouselIndex / visibleCount);
     
     if (totalPages <= 8) {
       return Array.from({ length: totalPages }).map((_, index) => (
         <button
           key={index}
-          onClick={() => setCarouselIndex(index * 3)}
+          onClick={() => setCarouselIndex(index * visibleCount)}
           className={`w-2 h-2 rounded-full transition-colors flex-shrink-0 ${
             currentPage === index ? 'bg-blue-600' : 'bg-gray-300'
           }`}
@@ -62,7 +63,7 @@ const CourseCarousel = ({
       dots.push(
         <button
           key={i}
-          onClick={() => setCarouselIndex(i * 3)}
+          onClick={() => setCarouselIndex(i * visibleCount)}
           className={`w-2 h-2 rounded-full transition-colors flex-shrink-0 ${
             currentPage === i ? 'bg-blue-600' : 'bg-gray-300'
           }`}
@@ -81,7 +82,7 @@ const CourseCarousel = ({
       dots.push(
         <button
           key={totalPages - 1}
-          onClick={() => setCarouselIndex((totalPages - 1) * 3)}
+          onClick={() => setCarouselIndex((totalPages - 1) * visibleCount)}
           className="w-2 h-2 rounded-full bg-gray-300 flex-shrink-0"
         />
       );
@@ -91,9 +92,9 @@ const CourseCarousel = ({
   };
 
   return (
-    <section className="bg-white rounded-card-lg p-6 shadow-card border border-gray-100 transition-shadow duration-ui hover:shadow-card-hover" aria-labelledby="courses-system-heading">
-      <div className="flex items-center justify-between mb-6">
-        <h2 id="courses-system-heading" className="text-2xl font-bold text-gray-800 flex items-center gap-3">
+    <section className="bg-white rounded-card-lg p-4 sm:p-6 shadow-card border border-gray-100 transition-shadow duration-ui hover:shadow-card-hover" aria-labelledby="courses-system-heading">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <h2 id="courses-system-heading" className="text-lg sm:text-xl font-bold text-gray-800 flex items-center gap-2 sm:gap-3">
           <BookOpen className="w-6 h-6 text-blue-600" aria-hidden="true" />
           קורסים במערכת
         </h2>
@@ -103,7 +104,7 @@ const CourseCarousel = ({
               type="button"
               onClick={onPrev}
               className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50"
-              disabled={courses.length <= 3}
+              disabled={courses.length <= visibleCount}
               aria-label="הקודם"
             >
               <ChevronRight className="w-5 h-5 text-gray-600" />
@@ -112,7 +113,7 @@ const CourseCarousel = ({
               type="button"
               onClick={onNext}
               className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50"
-              disabled={courses.length <= 3}
+              disabled={courses.length <= visibleCount}
               aria-label="הבא"
             >
               <ChevronLeft className="w-5 h-5 text-gray-600" />
@@ -129,7 +130,7 @@ const CourseCarousel = ({
         />
       ) : (
         <>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
         {visibleCourses.map((course) => (
           <div
             key={course._id}
@@ -155,7 +156,7 @@ const CourseCarousel = ({
         ))}
       </div>
 
-      {courses.length > 3 && (
+      {courses.length > visibleCount && (
         <div className="flex justify-center mt-4">
           <div className="flex items-center gap-2 max-w-full overflow-hidden px-4">
             {renderPaginationDots()}

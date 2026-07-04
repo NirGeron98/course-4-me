@@ -8,6 +8,7 @@ import LecturerStatisticsCard from '../components/lecturer-page/LecturerStatisti
 import LecturerQuickActions from '../components/lecturer-page/LecturerQuickActions';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
+import PageLayout from '../components/common/PageLayout';
 
 const LecturerPage = ({ user }) => {
     const { slug } = useParams();
@@ -346,43 +347,45 @@ const LecturerPage = ({ user }) => {
     const filteredReviews = getFilteredReviews();
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-purple-100" dir="rtl">
-            <LecturerHeader lecturer={lecturer} courses={courses} reviews={reviews} renderStars={renderStars} />
+        <PageLayout
+            accent="purple"
+            width="max-w-7xl"
+            header={
+                <LecturerHeader lecturer={lecturer} courses={courses} reviews={reviews} renderStars={renderStars} />
+            }
+        >
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+                    <LecturerReviewsSection
+                        reviews={reviews}
+                        courses={courses}
+                        filterCourse={filterCourse}
+                        setFilterCourse={setFilterCourse}
+                        sortBy={sortBy}
+                        setSortBy={setSortBy}
+                        filteredReviews={filteredReviews}
+                        reviewsLoading={false}
+                        onWriteReview={() => setShowReviewForm(true)}
+                        onEditReview={handleEditReview}
+                        user={user}
+                        lecturerId={lecturer?._id}
+                        onReviewDeleted={handleReviewDeleted}
+                    />
+                </div>
 
-            <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-                    <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-                        <LecturerReviewsSection
-                            reviews={reviews}
-                            courses={courses}
-                            filterCourse={filterCourse}
-                            setFilterCourse={setFilterCourse}
-                            sortBy={sortBy}
-                            setSortBy={setSortBy}
-                            filteredReviews={filteredReviews}
-                            reviewsLoading={false}
-                            onWriteReview={() => setShowReviewForm(true)}
-                            onEditReview={handleEditReview}
-                            user={user}
-                            lecturerId={lecturer?._id}
-                            onReviewDeleted={handleReviewDeleted}
-                        />
-                    </div>
+                <div className="space-y-4 sm:space-y-6">
+                    {stats && (
+                        <LecturerStatisticsCard stats={stats} renderStars={renderStars} />
+                    )}
 
-                    <div className="space-y-6">
-                        {stats && (
-                            <LecturerStatisticsCard stats={stats} renderStars={renderStars} />
-                        )}
-
-                        <LecturerQuickActions
-                            onShowReviewForm={() => setShowReviewForm(true)}
-                            lecturerId={lecturer?._id}
-                            lecturerName={lecturer?.name}
-                            user={user}
-                            reviews={reviews}
-                            onEditReview={handleEditReview}
-                        />
-                    </div>
+                    <LecturerQuickActions
+                        onShowReviewForm={() => setShowReviewForm(true)}
+                        lecturerId={lecturer?._id}
+                        lecturerName={lecturer?.name}
+                        user={user}
+                        reviews={reviews}
+                        onEditReview={handleEditReview}
+                    />
                 </div>
             </div>
 
@@ -399,7 +402,7 @@ const LecturerPage = ({ user }) => {
                     onReviewSubmitted={handleReviewSubmitted}
                 />
             )}
-        </div>
+        </PageLayout>
     );
 };
 

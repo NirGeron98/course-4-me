@@ -6,6 +6,7 @@ import SearchTypeToggle from '../components/search/SearchTypeToggle';
 import SearchFilters from '../components/search/SearchFilters';
 import SearchResults from '../components/search/SearchResults';
 import CourseDetailsModal from '../components/tracked-courses/CourseDetailsModal';
+import PageLayout from '../components/common/PageLayout';
 import { getLecturerSlug } from '../utils/slugUtils';
 
 const AdvancedSearch = ({ user }) => {
@@ -396,66 +397,67 @@ const AdvancedSearch = ({ user }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50" dir="rtl">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-6 sm:py-12 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-            <div className="bg-white/20 rounded-full p-3 sm:p-4 shrink-0">
-              <Search className="w-7 h-7 sm:w-10 sm:h-10 text-white" />
+    <PageLayout
+      accent="indigo"
+      width="max-w-7xl"
+      header={
+        <div className="bg-gradient-to-l from-blue-600 to-indigo-600 text-white py-6 sm:py-8 px-4 sm:px-6 shadow-card-lg">
+          <div className="max-w-7xl mx-auto text-center">
+            <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+              <div className="bg-white/20 rounded-full p-3 sm:p-4 shrink-0">
+                <Search className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+              </div>
+              <div className="text-start">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1">חיפוש מתקדם</h1>
+                <p className="text-blue-100 text-sm sm:text-base">חפש קורסים ומרצים עם פילטרים מתקדמים</p>
+              </div>
             </div>
-            <div className="text-start">
-              <h1 className="text-2xl sm:text-4xl font-bold mb-1 sm:mb-2">חיפוש מתקדם</h1>
-              <p className="text-blue-100 text-sm sm:text-lg">חפש קורסים ומרצים עם פילטרים מתקדמים</p>
-            </div>
-          </div>
 
-          {/* Search Type Toggle */}
-          <SearchTypeToggle
-            searchType={searchType}
-            onSearchTypeChange={handleSearchTypeChange}
-          />
+            {/* Search Type Toggle */}
+            <SearchTypeToggle
+              searchType={searchType}
+              onSearchTypeChange={handleSearchTypeChange}
+            />
+          </div>
         </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-8">
-        {/* Filters Section */}
-        {filtersLoading ? (
-          <div className="bg-white rounded-card-lg shadow-card border border-gray-100 p-6" role="status">
-            <p className="sr-only">טוען פילטרי חיפוש...</p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" aria-hidden="true">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="space-y-2">
-                  <div className="h-3 w-24 rounded bg-gray-200 animate-pulse" />
-                  <div className="h-12 w-full rounded-card bg-gray-200 animate-pulse" />
-                </div>
-              ))}
-            </div>
+      }
+    >
+      {/* Filters Section */}
+      {filtersLoading ? (
+        <div className="bg-white rounded-card-lg shadow-card border border-gray-100 p-4 sm:p-6" role="status">
+          <p className="sr-only">טוען פילטרי חיפוש...</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" aria-hidden="true">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <div className="h-3 w-24 rounded bg-gray-200 animate-pulse" />
+                <div className="h-12 w-full rounded-card bg-gray-200 animate-pulse" />
+              </div>
+            ))}
           </div>
-        ) : (
-          <SearchFilters
-            searchType={searchType}
-            filters={filters}
-            onFilterChange={handleFilterChange}
-            onClearFilters={clearFilters}
-            onSearch={performSearch}
-            loading={loading}
-            departments={departments}
-            institutions={institutions}
-            lecturers={lecturers}
-          />
-        )}
-
-        {/* Results Section */}
-        <SearchResults
+        </div>
+      ) : (
+        <SearchFilters
           searchType={searchType}
-          results={results}
+          filters={filters}
+          onFilterChange={handleFilterChange}
+          onClearFilters={clearFilters}
+          onSearch={performSearch}
           loading={loading}
-          hasSearched={hasSearched}
-          onCourseSelect={handleCourseSelect}
-          onLecturerSelect={handleLecturerSelect}
+          departments={departments}
+          institutions={institutions}
+          lecturers={lecturers}
         />
-      </div>
+      )}
+
+      {/* Results Section */}
+      <SearchResults
+        searchType={searchType}
+        results={results}
+        loading={loading}
+        hasSearched={hasSearched}
+        onCourseSelect={handleCourseSelect}
+        onLecturerSelect={handleLecturerSelect}
+      />
 
       {/* Course Details Modal */}
       {selectedCourse && (
@@ -464,7 +466,7 @@ const AdvancedSearch = ({ user }) => {
           onClose={() => setSelectedCourse(null)}
         />
       )}
-    </div>
+    </PageLayout>
   );
 };
 

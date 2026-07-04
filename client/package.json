@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@fontsource/heebo": "^5.2.8",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -30,7 +31,12 @@
     "rules": {
       "no-console": [
         "warn",
-        { "allow": ["warn", "error"] }
+        {
+          "allow": [
+            "warn",
+            "error"
+          ]
+        }
       ],
       "no-warning-comments": [
         "error",
@@ -39,9 +45,33 @@
             "todo",
             "fixme",
             "xxx",
-            "א", "ב", "ג", "ד", "ה", "ו", "ז", "ח", "ט", "י",
-            "כ", "ך", "ל", "מ", "ם", "נ", "ן", "ס", "ע", "פ",
-            "ף", "צ", "ץ", "ק", "ר", "ש", "ת"
+            "א",
+            "ב",
+            "ג",
+            "ד",
+            "ה",
+            "ו",
+            "ז",
+            "ח",
+            "ט",
+            "י",
+            "כ",
+            "ך",
+            "ל",
+            "מ",
+            "ם",
+            "נ",
+            "ן",
+            "ס",
+            "ע",
+            "פ",
+            "ף",
+            "צ",
+            "ץ",
+            "ק",
+            "ר",
+            "ש",
+            "ת"
           ],
           "location": "anywhere"
         }

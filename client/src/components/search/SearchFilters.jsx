@@ -29,14 +29,14 @@ const SearchFilters = ({
     };
 
     return (
-        <div className="bg-white rounded-card-lg shadow-card border border-gray-100 p-6">
+        <div className="bg-white rounded-card-lg shadow-card border border-gray-100 p-4 sm:p-6">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
                 <div className="flex items-center gap-3">
                     <div className="bg-blue-100 rounded-full p-2">
                         <Filter className="w-5 h-5 text-blue-600" />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-800">פילטרי חיפוש</h3>
+                    <h3 className="text-lg sm:text-xl font-semibold text-gray-800">פילטרי חיפוש</h3>
                 </div>
                 <Button
                     variant="ghost"
@@ -49,7 +49,7 @@ const SearchFilters = ({
             </div>
 
             {/* Basic Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-4 sm:mb-6">
                 {/* General Search */}
                 <div className="lg:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -115,8 +115,8 @@ const SearchFilters = ({
 
                 {/* Advanced Filters */}
                 {showAdvanced && (
-                    <div className="mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-card-lg p-6 border border-blue-100">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="mt-4 sm:mt-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-card-lg p-4 sm:p-6 border border-blue-100">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
                             {searchType === 'courses' ? (
                                 <>
                                     {/* Course Number */}

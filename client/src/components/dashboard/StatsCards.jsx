@@ -70,27 +70,26 @@ const StatsCards = ({
   }, [refreshData]);
 
   return (
-    <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-      
+    <section className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+
       {/* Tracked Courses */}
       <div
         role="button"
         tabIndex={0}
         onClick={() => navigate('/tracked-courses')}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/tracked-courses'); } }}
-        className="bg-white rounded-card-lg p-4 shadow-card border border-emerald-100 hover:shadow-card-hover transition-shadow duration-ui cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+        className="bg-white rounded-card-lg p-3 sm:p-4 shadow-card border border-emerald-100 hover:shadow-card-hover transition-shadow duration-ui cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
       >
-        <div className="flex flex-col items-center text-center gap-3">
-          <div className="bg-emerald-100 rounded-full p-3">
-            <BookOpen className="w-6 h-6 text-emerald-600" />
+        <div className="flex flex-col items-center text-center gap-2">
+          <div className="bg-emerald-100 rounded-full p-2.5">
+            <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-600" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-800">{coursesCount}</h3>
-            <p className="text-sm text-gray-600">הקורסים שלי</p>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800">{coursesCount}</h3>
+            <p className="text-xs sm:text-sm text-gray-600">הקורסים שלי</p>
           </div>
         </div>
       </div>
-
 
       {/* My Lecturers */}
       <div
@@ -98,15 +97,15 @@ const StatsCards = ({
         tabIndex={0}
         onClick={() => navigate('/lecturers')}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/lecturers'); } }}
-        className="bg-white rounded-card-lg p-4 shadow-card border border-purple-100 hover:shadow-card-hover transition-shadow duration-ui cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
+        className="bg-white rounded-card-lg p-3 sm:p-4 shadow-card border border-purple-100 hover:shadow-card-hover transition-shadow duration-ui cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500 focus-visible:ring-offset-2"
       >
-        <div className="flex flex-col items-center text-center gap-3">
-          <div className="bg-purple-100 rounded-full p-3">
-            <Users className="w-6 h-6 text-purple-600" />
+        <div className="flex flex-col items-center text-center gap-2">
+          <div className="bg-purple-100 rounded-full p-2.5">
+            <Users className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-800">{trackedLecturersCount}</h3>
-            <p className="text-sm text-gray-600">המרצים שלי</p>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800">{trackedLecturersCount}</h3>
+            <p className="text-xs sm:text-sm text-gray-600">המרצים שלי</p>
           </div>
         </div>
       </div>
@@ -117,41 +116,41 @@ const StatsCards = ({
         tabIndex={0}
         onClick={() => navigate('/my-contact-requests')}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigate('/my-contact-requests'); } }}
-        className="bg-white rounded-card-lg p-4 shadow-card border border-orange-100 hover:shadow-card-hover transition-shadow duration-ui cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
+        className="bg-white rounded-card-lg p-3 sm:p-4 shadow-card border border-orange-100 hover:shadow-card-hover transition-shadow duration-ui cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 focus-visible:ring-offset-2"
       >
-        <div className="flex flex-col items-center text-center gap-3">
-          <div className="bg-orange-100 rounded-full p-3">
-            <HelpCircle className="w-6 h-6 text-orange-600" />
+        <div className="flex flex-col items-center text-center gap-2">
+          <div className="bg-orange-100 rounded-full p-2.5">
+            <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-800">{contactRequestsCount}</h3>
-            <p className="text-sm text-gray-600">הפניות שלי</p>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800">{contactRequestsCount}</h3>
+            <p className="text-xs sm:text-sm text-gray-600">הפניות שלי</p>
           </div>
         </div>
       </div>
 
       {/* Total Courses */}
-      <div className="bg-white rounded-card-lg p-4 shadow-card border border-blue-100 transition-shadow duration-ui">
-        <div className="flex flex-col items-center text-center gap-3">
-          <div className="bg-blue-100 rounded-full p-3">
-            <TrendingUp className="w-6 h-6 text-blue-600" />
+      <div className="bg-white rounded-card-lg p-3 sm:p-4 shadow-card border border-blue-100 transition-shadow duration-ui">
+        <div className="flex flex-col items-center text-center gap-2">
+          <div className="bg-blue-100 rounded-full p-2.5">
+            <TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-800">{allCoursesCount}</h3>
-            <p className="text-sm text-gray-600">קורסים במערכת</p>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800">{allCoursesCount}</h3>
+            <p className="text-xs sm:text-sm text-gray-600">קורסים במערכת</p>
           </div>
         </div>
       </div>
 
       {/* Total Lecturers */}
-      <div className="bg-white rounded-card-lg p-4 shadow-card border border-purple-100 transition-shadow duration-ui">
-        <div className="flex flex-col items-center text-center gap-3">
-          <div className="bg-purple-100 rounded-full p-3">
-            <Users className="w-6 h-6 text-purple-600" />
+      <div className="bg-white rounded-card-lg p-3 sm:p-4 shadow-card border border-purple-100 transition-shadow duration-ui">
+        <div className="flex flex-col items-center text-center gap-2">
+          <div className="bg-purple-100 rounded-full p-2.5">
+            <Users className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-gray-800">{lecturersCount}</h3>
-            <p className="text-sm text-gray-600">מרצים במערכת</p>
+            <h3 className="text-lg sm:text-xl font-bold text-gray-800">{lecturersCount}</h3>
+            <p className="text-xs sm:text-sm text-gray-600">מרצים במערכת</p>
           </div>
         </div>
       </div>

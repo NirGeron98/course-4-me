@@ -11,6 +11,7 @@ import CourseReviewsSection from '../components/course-page/CourseReviewsSection
 import CourseStatisticsCard from '../components/course-page/CourseStatisticsCard';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import Button from '../components/common/Button';
+import PageLayout from '../components/common/PageLayout';
 
 const CoursePage = ({ user }) => {
     const { courseNumber } = useParams();
@@ -104,32 +105,32 @@ const CoursePage = ({ user }) => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100" dir="rtl">
-            <CourseHeader course={course} stats={reviewStats} reviews={reviews} />
+        <PageLayout
+            accent="emerald"
+            width="max-w-7xl"
+            header={<CourseHeader course={course} stats={reviewStats} reviews={reviews} />}
+        >
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+                <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+                    <CourseDescription course={course} />
+                    <CourseReviewsSection
+                        courseId={course._id}
+                        courseTitle={course.title}
+                        user={user}
+                        onShowReviewForm={handleShowReviewForm}
+                        onReviewDeleted={refreshAllData}
+                    />
+                </div>
 
-            <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-                    <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-                        <CourseDescription course={course} />
-                        <CourseReviewsSection
-                            courseId={course._id}
-                            courseTitle={course.title}
-                            user={user}
-                            onShowReviewForm={handleShowReviewForm}
-                            onReviewDeleted={refreshAllData}
-                        />
-                    </div>
-
-                    <div className="space-y-6">
-                        <CourseStatisticsCard stats={reviewStats} />
-                        <QuickActions
-                            onShowReviewForm={handleShowReviewForm}
-                            courseId={course._id}
-                            courseName={course.title}
-                            user={user}
-                            onDataChanged={refreshAllData}
-                        />
-                    </div>
+                <div className="space-y-4 sm:space-y-6">
+                    <CourseStatisticsCard stats={reviewStats} />
+                    <QuickActions
+                        onShowReviewForm={handleShowReviewForm}
+                        courseId={course._id}
+                        courseName={course.title}
+                        user={user}
+                        onDataChanged={refreshAllData}
+                    />
                 </div>
             </div>
 
@@ -143,7 +144,7 @@ const CoursePage = ({ user }) => {
                     onReviewSubmitted={handleReviewSubmitted}
                 />
             )}
-        </div>
+        </PageLayout>
     );
 };
 

@@ -46,17 +46,17 @@ const LecturerHeader = ({ lecturer, courses, reviews = [], renderStars }) => {
     };
 
     return (
-        <div className="relative overflow-hidden">
+        <div className="relative overflow-hidden shadow-card-lg">
             {/* Background gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800"></div>
 
-            <div className="relative max-w-7xl mx-auto px-6 py-12">
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
                 {/* Lecturer Name and Icon - Centered at top */}
-                <div className="flex items-center justify-center gap-4 mb-8">
-                    <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-card-lg p-3 shadow-card">
-                        <User className="w-8 h-8 text-white" />
+                <div className="flex items-center justify-center gap-3 sm:gap-4 mb-6 sm:mb-8">
+                    <div className="bg-white/20 backdrop-blur-md border border-white/30 rounded-card-lg p-3 shadow-card shrink-0">
+                        <User className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
                     </div>
-                    <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight">
+                    <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight">
                         {lecturer.name}
                     </h1>
                 </div>

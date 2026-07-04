@@ -31,8 +31,8 @@ const LecturerResultCard = ({ lecturer, onSelect }) => {
   };
 
   return (
-    <div className="border border-gray-200 rounded-card p-6 hover:shadow-card transition-all duration-ui hover:border-purple-300 bg-gradient-to-br from-white to-purple-50/30">
-      <div className="flex items-start justify-between mb-4">
+    <div className="border border-gray-200 rounded-card p-4 sm:p-5 hover:shadow-card transition-all duration-ui hover:border-purple-300 bg-gradient-to-br from-white to-purple-50/30">
+      <div className="flex items-start justify-between mb-3">
         <div className="flex items-start gap-4 flex-1">
           <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-full p-3 shadow-card">
             <User className="w-6 h-6 text-white" />
@@ -119,7 +119,7 @@ const LecturerResultCard = ({ lecturer, onSelect }) => {
       </div>
 
       {/* Action Button */}
-      <div className="flex justify-end pt-4 border-t border-gray-100">
+      <div className="flex justify-end pt-3 border-t border-gray-100">
         <Button onClick={onSelect} leftIcon={Eye} size="sm">
           פרטים מלאים
         </Button>
