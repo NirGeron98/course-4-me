@@ -98,22 +98,12 @@ module.exports = {
         ui: "cubic-bezier(0.22, 1, 0.36, 1)",
       },
       keyframes: {
-        modalEnter: {
-          "0%": { opacity: "0", transform: "translateY(8px) scale(0.98)" },
-          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
-        },
-        backdropEnter: {
-          "0%": { opacity: "0" },
-          "100%": { opacity: "1" },
-        },
         fadeIn: {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
       },
       animation: {
-        modalEnter: "modalEnter 200ms cubic-bezier(0.22, 1, 0.36, 1)",
-        backdropEnter: "backdropEnter 200ms ease-out",
         fadeIn: "fadeIn 200ms ease-out",
       },
     },

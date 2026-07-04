@@ -1,4 +1,5 @@
 import React from "react";
+import { LazyMotion, domAnimation, m, useReducedMotion } from "framer-motion";
 
 // PageLayout — shared page shell: full-height gradient background, RTL root,
 // and a centered responsive content column. Codifies the pattern every page
@@ -28,6 +29,7 @@ const PageLayout = ({
   children,
 }) => {
   const gradientClass = ACCENT_GRADIENTS[accent] || ACCENT_GRADIENTS.emerald;
+  const shouldReduceMotion = useReducedMotion();
 
   return (
     <div
@@ -35,23 +37,28 @@ const PageLayout = ({
       dir="rtl"
     >
       {header}
-      <main
-        className={`${width} mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 ${className}`.trim()}
-      >
-        {title && (
-          <div className="text-center">
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900">
-              {title}
-            </h1>
-            {subtitle && (
-              <p className="mt-1.5 text-sm sm:text-base text-muted">
-                {subtitle}
-              </p>
-            )}
-          </div>
-        )}
-        {children}
-      </main>
+      <LazyMotion features={domAnimation}>
+        <m.main
+          className={`${width} mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 ${className}`.trim()}
+          initial={shouldReduceMotion ? false : { opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        >
+          {title && (
+            <div className="text-center">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900">
+                {title}
+              </h1>
+              {subtitle && (
+                <p className="mt-1.5 text-sm sm:text-base text-muted">
+                  {subtitle}
+                </p>
+              )}
+            </div>
+          )}
+          {children}
+        </m.main>
+      </LazyMotion>
     </div>
   );
 };
