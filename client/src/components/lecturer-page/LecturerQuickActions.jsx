@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HeartHandshake, Plus, Check, Copy } from 'lucide-react';
+import { toast } from 'sonner';
 import ExistingReviewModal from '../common/ExistingReviewModal';
 import Button from '../common/Button'; 
 
@@ -55,7 +56,7 @@ const LecturerQuickActions = ({ onShowReviewForm, lecturerId, lecturerName, user
 
     const handleReviewClick = () => {
         if (!user) {
-            alert('יש להתחבר כדי לכתוב ביקורת');
+            toast.error('יש להתחבר כדי לכתוב ביקורת');
             return;
         }
 
@@ -81,7 +82,7 @@ const LecturerQuickActions = ({ onShowReviewForm, lecturerId, lecturerName, user
 
     const handleFollowToggle = async () => {
         if (!user?.token) {
-            alert('יש להתחבר כדי להוסיף מרצים למעקב');
+            toast.error('יש להתחבר כדי להוסיף מרצים למעקב');
             return;
         }
     
@@ -109,14 +110,15 @@ const LecturerQuickActions = ({ onShowReviewForm, lecturerId, lecturerName, user
     
             if (response.ok) {
                 setIsFollowing(!isFollowing);
+                toast.success(isFollowing ? 'המרצה הוסר מהמעקב' : 'המרצה נוסף למעקב');
             } else {
                 const error = await response.json();
-                console.error('שגיאה:', error);
-                alert(error.message || 'שגיאה בעדכון המעקב');
+                console.error('Follow toggle failed:', error);
+                toast.error(error.message || 'שגיאה בעדכון המעקב');
             }
         } catch (error) {
             console.error('Error toggling follow:', error);
-            alert('שגיאה בעדכון המעקב');
+            toast.error('שגיאה בעדכון המעקב');
         } finally {
             setIsLoading(false);
         }
