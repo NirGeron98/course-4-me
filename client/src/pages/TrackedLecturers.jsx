@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { apiFetch } from "../hooks/useApi";
 import { useNavigate } from "react-router-dom";
-import { Plus } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import AddLecturerPopup from "../components/tracked-lecturers/AddLecturerPopup";
 import TrackedLecturerCard from "../components/tracked-lecturers/TrackedLecturerCard";
 import { getLecturerSlug } from '../utils/slugUtils';
 import { SkeletonCardGrid } from '../components/common/Skeleton';
+import PageLayout from '../components/common/PageLayout';
+import EmptyState from '../components/common/EmptyState';
 
 const TRACKED_LECTURERS_CACHE_KEY = 'tracked_lecturers_data';
 const TRACKED_LECTURERS_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -278,123 +280,90 @@ const TrackedLecturers = () => {
     navigate(`/lecturer/${getLecturerSlug(lecturer)}`);
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-purple-50/30 to-indigo-50/40" dir="rtl">
-      {/* Header Section with gradient background */}
-      <div className="relative bg-gradient-to-br from-purple-600 via-purple-500 to-indigo-600 text-white py-10 px-6">
-        {/* Decorative background elements */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-          <div className="absolute top-4 right-12 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
-          <div className="absolute bottom-4 left-12 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
-        </div>
+  const hero = (
+    <div className="relative bg-gradient-to-br from-accent-lecturer to-accent-lecturer-strong text-white py-8 px-6 overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden" aria-hidden="true">
+        <div className="absolute top-4 right-12 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-4 left-12 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
+      </div>
 
-        {/* Add Lecturer Button - positioned at top left */}
-        <button
-          onClick={openPopup}
-          className="absolute top-4 left-4 bg-white text-purple-600 hover:text-purple-700 py-2.5 px-5 rounded-card font-semibold transition-all duration-ui shadow-card hover:shadow-card-hover hover:scale-105 flex items-center gap-2 group text-sm border-2 border-white hover:bg-gray-50"
-        >
-          <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-ui" />
-          <span className="hidden sm:inline">הוספת מרצה</span>
-        </button>
-
-        {/* Centered header content with title and description */}
-        <div className="relative z-10 max-w-3xl mx-auto text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3 leading-tight text-white">
+      <div className="relative z-10 max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="text-center sm:text-right">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2 leading-tight text-white">
             המרצים שלי
           </h1>
-          <p className="text-base md:text-lg text-purple-50 font-medium max-w-xl mx-auto leading-relaxed">
+          <p className="text-base md:text-lg text-purple-50 font-medium leading-relaxed">
             נהל את רשימת המרצים שלך ועקוב אחר עדכונים
           </p>
 
-          {/* Stats or additional info */}
           {!isLoading && trackedLecturers.length > 0 && trackedLecturers.some(({ lecturer }) => lecturer) && (
-            <div className="mt-4">
+            <div className="mt-3">
               <div className="inline-flex items-center bg-white/15 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20 text-sm">
                 <span className="font-semibold">
-                 {trackedLecturers.filter(({ lecturer }) => lecturer).length} מרצים במעקב
+                  {trackedLecturers.filter(({ lecturer }) => lecturer).length} מרצים במעקב
                 </span>
               </div>
             </div>
           )}
         </div>
-      </div>
 
-      {/* Main content area */}
-      <div className="max-w-[1800px] mx-auto p-6 pb-12">
+        <button
+          type="button"
+          onClick={openPopup}
+          className="shrink-0 bg-white text-accent-lecturer hover:text-accent-lecturer-strong py-2.5 px-5 rounded-card font-semibold transition-all duration-ui shadow-card hover:shadow-card-hover flex items-center gap-2 group text-sm hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-accent-lecturer"
+        >
+          <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-ui" aria-hidden="true" />
+          הוספת מרצה
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <PageLayout accent="purple" width="max-w-[1800px]" header={hero}>
         {/* Loading: skeleton grid to avoid layout shift */}
         {isLoading ? (
-          <div className="mt-8" role="status">
+          <div className="mt-4" role="status">
             <p className="sr-only">טוען מרצים...</p>
-            <div className="h-7 w-48 rounded bg-gray-200 animate-pulse mb-6" aria-hidden="true" />
+            <div className="h-7 w-48 rounded bg-slate-200 animate-pulse mb-6" aria-hidden="true" />
             <SkeletonCardGrid count={6} />
           </div>
         ) : (
           <>
             {/* Empty state - shown when no lecturers or all lecturers are null */}
             {trackedLecturers.length === 0 || trackedLecturers.every(({ lecturer }) => !lecturer) ? (
-              <div className="flex flex-col justify-center items-center min-h-[60vh] text-center px-4">
-                {/* Animated icon with gradient background */}
-                <div className="relative mx-auto mb-8 w-32 h-32">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-full animate-pulse"></div>
-                  {/* User/lecturer icon SVG */}
-                  <div className="absolute inset-3 bg-white rounded-full flex items-center justify-center shadow-card border border-gray-100">
-                    <svg className="w-16 h-16 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                  </div>
-                </div>
-
-                {/* Empty state title and description */}
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
-                  עדיין לא עוקבים אחר מרצים
-                </h2>
-                <p className="text-gray-600 text-lg mb-8 max-w-md mx-auto leading-relaxed">
-                  התחילו לעקוב אחר המרצים שמעניינים אתכם כדי לקבל גישה מהירה לביקורות ודירוגים
-                </p>
-
-                {/* Primary call-to-action button */}
-                <button
-                  onClick={openPopup}
-                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white py-4 px-8 rounded-card font-bold text-lg transition-all duration-ui shadow-card hover:shadow-card-hover transform hover:scale-105 flex items-center gap-3 mx-auto group"
-                >
-                  <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform duration-ui" />
-                  הוסיפו את המרצה הראשון
-                </button>
-
-                {/* Additional helpful information */}
-                <div className="mt-12 text-center">
-                  <p className="text-sm text-gray-500 bg-gray-50 px-6 py-3 rounded-full inline-block border">
-                    👨‍🏫 עקבו אחר מרצים וקבלו התראות על ביקורות חדשות
-                  </p>
-                </div>
-              </div>
+              <EmptyState
+                icon={Users}
+                title="עדיין לא עוקבים אחר מרצים"
+                description="התחילו לעקוב אחר המרצים שמעניינים אתכם כדי לקבל גישה מהירה לביקורות ודירוגים"
+                actionLabel="הוסיפו את המרצה הראשון"
+                onAction={openPopup}
+                className="py-16 min-h-[50vh]"
+              />
             ) : (
-              <>
-                {/* Grid layout for lecturer cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mt-6 sm:mt-8">
-                  {trackedLecturers
-                    .filter(({ lecturer }) => lecturer) // Filter out null/undefined lecturers
-                    .map(({ lecturer }) => (
-                      <TrackedLecturerCard
-                        key={lecturer._id}
-                        lecturer={lecturer}
-                        onRemove={handleRemoveLecturer}
-                        onViewDetails={handleViewLecturerDetails}
-                      />
-                    ))
-                  }
-                </div>
-              </>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mt-2 sm:mt-4">
+                {trackedLecturers
+                  .filter(({ lecturer }) => lecturer) // Filter out null/undefined lecturers
+                  .map(({ lecturer }) => (
+                    <TrackedLecturerCard
+                      key={lecturer._id}
+                      lecturer={lecturer}
+                      onRemove={handleRemoveLecturer}
+                      onViewDetails={handleViewLecturerDetails}
+                    />
+                  ))
+                }
+              </div>
             )}
           </>
         )}
-      </div>
 
       {/* Modal for adding new lecturers */}
       {isPopupOpen && (
         <AddLecturerPopup onClose={closePopup} onLecturerAdded={onLecturerAdded} />
       )}
-    </div>
+    </PageLayout>
   );
 };
 

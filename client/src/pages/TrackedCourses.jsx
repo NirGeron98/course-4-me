@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { apiFetch } from "../hooks/useApi";
-import { Plus } from "lucide-react";
+import { Plus, BookOpen } from "lucide-react";
 import AddCoursePopup from "../components/tracked-courses/AddCoursePopup";
 import TrackedCourseCard from "../components/tracked-courses/TrackedCourseCard";
 import CourseDetailsModal from "../components/tracked-courses/CourseDetailsModal";
@@ -9,6 +9,8 @@ import {
   COURSE_MUTATED_EVENT,
 } from "../contexts/CourseDataContext";
 import { SkeletonCardGrid } from '../components/common/Skeleton';
+import PageLayout from '../components/common/PageLayout';
+import EmptyState from '../components/common/EmptyState';
 
 const CACHE_KEY = 'tracked_courses_data';
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -223,118 +225,84 @@ const TrackedCourses = () => {
     setSelectedCourse(null);
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-emerald-50/30 to-blue-50/40" dir="rtl">
-      {/* Header Section with gradient background */}
-      <div className="relative bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-600 text-white py-10 px-6">
-        {/* Decorative background elements */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-          <div className="absolute top-4 right-12 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
-          <div className="absolute bottom-4 left-12 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
-        </div>
+  const hero = (
+    <div className="relative bg-gradient-to-br from-brand to-brand-strong text-white py-8 px-6 overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden" aria-hidden="true">
+        <div className="absolute top-4 right-12 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-4 left-12 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
+      </div>
 
-        {/* Add Course Button - positioned at top left */}
-        <button
-          type="button"
-          onClick={openPopup}
-          className="absolute top-4 left-4 bg-white text-emerald-600 hover:text-emerald-700 py-2.5 px-5 rounded-card font-semibold transition-all duration-ui shadow-card hover:shadow-card-hover flex items-center gap-2 group text-sm border-2 border-white hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-emerald-600"
-          aria-label="הוספת קורס"
-        >
-          <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-ui" />
-          <span className="hidden sm:inline">הוספת קורס</span>
-        </button>
-
-        {/* Centered header content with title and description */}
-        <div className="relative z-10 max-w-3xl mx-auto text-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3 leading-tight text-white">
+      <div className="relative z-10 max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="text-center sm:text-right">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2 leading-tight text-white">
             הקורסים שלי
           </h1>
-          <p className="text-base md:text-lg text-emerald-50 font-medium max-w-xl mx-auto leading-relaxed">
+          <p className="text-base md:text-lg text-emerald-50 font-medium leading-relaxed">
             נהל את רשימת הקורסים שלך ועקוב אחר עדכונים
           </p>
 
-          {/* Stats or additional info */}
           {!isLoading && trackedCourses.length > 0 && trackedCourses.some(({ course }) => course) && (
-            <div className="mt-4">
+            <div className="mt-3">
               <div className="inline-flex items-center bg-white/15 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20 text-sm">
                 <span className="font-semibold">
-                    {trackedCourses.filter(({ course }) => course).length} קורסים במעקב
+                  {trackedCourses.filter(({ course }) => course).length} קורסים במעקב
                 </span>
               </div>
             </div>
           )}
         </div>
-      </div>
 
-      {/* Main content area */}
-      <div className="max-w-[1800px] mx-auto p-6 pb-12">
+        <button
+          type="button"
+          onClick={openPopup}
+          className="shrink-0 bg-white text-brand hover:text-brand-strong py-2.5 px-5 rounded-card font-semibold transition-all duration-ui shadow-card hover:shadow-card-hover flex items-center gap-2 group text-sm hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-brand"
+        >
+          <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-ui" aria-hidden="true" />
+          הוספת קורס
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <PageLayout accent="emerald" width="max-w-[1800px]" header={hero}>
         {/* Loading: skeleton grid to avoid layout shift */}
         {isLoading ? (
-          <div className="mt-8">
-            <div className="h-7 w-48 rounded bg-gray-200 animate-pulse mb-6" aria-hidden="true" />
+          <div className="mt-4" role="status">
+            <p className="sr-only">טוען קורסים...</p>
+            <div className="h-7 w-48 rounded bg-slate-200 animate-pulse mb-6" aria-hidden="true" />
             <SkeletonCardGrid count={6} />
           </div>
         ) : (
           <>
             {/* Empty state - shown when no courses or all courses are null */}
             {trackedCourses.length === 0 || trackedCourses.every(({ course }) => !course) ? (
-              <div className="flex flex-col justify-center items-center min-h-[60vh] text-center px-4">
-                {/* Animated icon with gradient background */}
-                <div className="relative mx-auto mb-8 w-32 h-32">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-100 to-blue-100 rounded-full animate-pulse"></div>
-                  {/* Book/courses icon SVG */}
-                  <div className="absolute inset-3 bg-white rounded-full flex items-center justify-center shadow-card border border-gray-100">
-                    <svg className="w-16 h-16 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                  </div>
-                </div>
-
-                {/* Empty state title and description */}
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4">
-                  עדיין לא עוקבים אחר קורסים
-                </h2>
-                <p className="text-gray-600 text-lg mb-8 max-w-md mx-auto leading-relaxed">
-                  התחילו לעקוב אחר הקורסים שמעניינים אתכם כדי לקבל עדכונים ותזכורות בזמן אמת
-                </p>
-
-                {/* Primary call-to-action button */}
-                <button
-                  onClick={openPopup}
-                  className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white py-4 px-8 rounded-card font-bold text-lg transition-all duration-ui shadow-card hover:shadow-card-hover transform hover:scale-105 flex items-center gap-3 mx-auto group"
-                >
-                  <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform duration-ui" />
-                  הוסיפו את הקורס הראשון
-                </button>
-
-                {/* Additional helpful information */}
-                <div className="mt-12 text-center">
-                  <p className="text-sm text-gray-500 bg-gray-50 px-6 py-3 rounded-full inline-block border">
-                    💡 עקבו אחר קורסים וקבלו התראות על עדכונים חדשים
-                  </p>
-                </div>
-              </div>
+              <EmptyState
+                icon={BookOpen}
+                title="עדיין לא עוקבים אחר קורסים"
+                description="התחילו לעקוב אחר הקורסים שמעניינים אתכם כדי לקבל עדכונים ותזכורות בזמן אמת"
+                actionLabel="הוסיפו את הקורס הראשון"
+                onAction={openPopup}
+                className="py-16 min-h-[50vh]"
+              />
             ) : (
-              <>
-                {/* Grid layout for course cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mt-6 sm:mt-8">
-                  {trackedCourses
-                    .filter(({ course }) => course) // Filter out null/undefined courses
-                    .map(({ course }) => (
-                      <TrackedCourseCard
-                        key={course._id}
-                        course={course}
-                        onRemove={handleRemoveCourse}
-                        onViewDetails={handleViewCourseDetails}
-                      />
-                    ))
-                  }
-                </div>
-              </>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 mt-2 sm:mt-4">
+                {trackedCourses
+                  .filter(({ course }) => course) // Filter out null/undefined courses
+                  .map(({ course }) => (
+                    <TrackedCourseCard
+                      key={course._id}
+                      course={course}
+                      onRemove={handleRemoveCourse}
+                      onViewDetails={handleViewCourseDetails}
+                    />
+                  ))
+                }
+              </div>
             )}
           </>
         )}
-      </div>
 
       {/* Modal for adding new courses */}
       {isPopupOpen && (
@@ -348,7 +316,7 @@ const TrackedCourses = () => {
           onClose={closeModal}
         />
       )}
-    </div>
+    </PageLayout>
   );
 };
 

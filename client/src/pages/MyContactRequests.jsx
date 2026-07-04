@@ -138,7 +138,7 @@ const MyContactRequests = ({ user }) => {
         {/* Stats Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8 animate-fadeIn">
           <div
-            className="bg-white rounded-card shadow-sm border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui animate-fadeIn"
+            className="bg-white rounded-card border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui animate-fadeIn"
             style={{ animationDelay: "0.1s" }}
           >
             <div className="flex items-center">
@@ -155,7 +155,7 @@ const MyContactRequests = ({ user }) => {
           </div>
 
           <div
-            className="bg-white rounded-card shadow-sm border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui animate-fadeIn"
+            className="bg-white rounded-card border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui animate-fadeIn"
             style={{ animationDelay: "0.2s" }}
           >
             <div className="flex items-center">
@@ -172,7 +172,7 @@ const MyContactRequests = ({ user }) => {
           </div>
 
           <div
-            className="bg-white rounded-card shadow-sm border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui animate-fadeIn"
+            className="bg-white rounded-card border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui animate-fadeIn"
             style={{ animationDelay: "0.3s" }}
           >
             <div className="flex items-center">
@@ -189,7 +189,7 @@ const MyContactRequests = ({ user }) => {
           </div>
 
           <div
-            className="bg-white rounded-card shadow-sm border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui animate-fadeIn"
+            className="bg-white rounded-card border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui animate-fadeIn"
             style={{ animationDelay: "0.4s" }}
           >
             <div className="flex items-center">
@@ -208,7 +208,7 @@ const MyContactRequests = ({ user }) => {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="col-span-2 lg:col-span-1 bg-white rounded-card shadow-sm border border-slate-200 flex items-center justify-center px-3 sm:px-4 py-3 text-indigo-600 hover:bg-indigo-50 transition-colors disabled:opacity-50 animate-fadeIn"
+            className="col-span-2 lg:col-span-1 bg-white rounded-card border border-slate-200 flex items-center justify-center px-3 sm:px-4 py-3 text-indigo-600 hover:bg-indigo-50 transition-colors disabled:opacity-50 animate-fadeIn"
             style={{ animationDelay: "0.5s" }}
           >
             <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ml-1 ${refreshing ? "animate-spin" : ""}`} />

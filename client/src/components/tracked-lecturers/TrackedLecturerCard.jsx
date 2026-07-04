@@ -1,108 +1,55 @@
 import React from 'react';
-import { User, Star, Building, X, Eye, Mail } from 'lucide-react';
+import { User, Building, Mail } from 'lucide-react';
 import { getLecturerSlug } from '../../utils/slugUtils';
+import TrackedEntityCard, { TrackedCardStars } from '../common/TrackedEntityCard';
 
-const TrackedLecturerCard = ({ lecturer, onRemove, onViewDetails }) => {
-    const renderStars = (rating) => {
-        const stars = [];
-        const fullStars = Math.floor(rating);
-        const hasHalfStar = rating % 1 >= 0.5;
-
-        for (let i = 0; i < fullStars; i++) {
-            stars.push(<Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />);
-        }
-
-        if (hasHalfStar) {
-            stars.push(<Star key="half" className="w-4 h-4 fill-yellow-200 text-yellow-400" />);
-        }
-
-        const emptyStars = 5 - Math.ceil(rating);
-        for (let i = 0; i < emptyStars; i++) {
-            stars.push(<Star key={`empty-${i}`} className="w-4 h-4 text-gray-300" />);
-        }
-
-        return stars;
-    };
-
-    const handleViewDetails = () => {
-        // Navigate using lecturer slug instead of _id
-        window.location.href = `/lecturer/${getLecturerSlug(lecturer)}`;
-    };
-
+const TrackedLecturerCard = ({ lecturer, onRemove }) => {
     return (
-        <div
-            onClick={handleViewDetails}
-            className="bg-white rounded-card-lg shadow-card p-6 hover:shadow-card-hover transition-all duration-ui cursor-pointer transform hover:-translate-y-1 border border-purple-100"
-        >
-            {/* Header */}
-            <div className="flex items-start gap-4 mb-4">
-                <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-full p-3 shadow-card">
-                    <User className="w-6 h-6 text-white" />
-                </div>
-                <div className="flex-1 min-w-0">
-                    <h3 className="text-xl font-bold text-gray-800 mb-1 truncate">
-                        {lecturer.name}
-                    </h3>
-                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
-                        <Building className="w-4 h-4" />
+        <TrackedEntityCard
+            to={`/lecturer/${getLecturerSlug(lecturer)}`}
+            accent="lecturer"
+            icon={User}
+            title={lecturer.name}
+            removeLabel="הסר מרשימה"
+            onRemove={() => onRemove(lecturer._id)}
+            footerNote={lecturer.academicInstitution || 'מכללת אפקה'}
+            meta={
+                <>
+                    <div className="flex items-center gap-2 text-sm text-slate-600 mb-1">
+                        <Building className="w-4 h-4" aria-hidden="true" />
                         <span className="truncate">{lecturer.department}</span>
                     </div>
                     {lecturer.email && (
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Mail className="w-4 h-4" />
+                        <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <Mail className="w-4 h-4" aria-hidden="true" />
                             <span className="truncate">{lecturer.email}</span>
                         </div>
                     )}
-                </div>
-
-                {/* Remove Button */}
-                <button
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        onRemove(lecturer._id);
-                    }}
-                    className="text-gray-400 hover:text-red-500 p-1 rounded-full hover:bg-red-50 transition-colors"
-                    title="הסר מרשימה"
-                >
-                    <X className="w-4 h-4" />
-                </button>
-            </div>
-
+                </>
+            }
+        >
             {/* Rating */}
             {lecturer.averageRating && lecturer.ratingsCount > 0 ? (
                 <div className="bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-card p-4 mb-4">
                     <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-gray-700">דירוג</span>
+                        <span className="text-sm font-medium text-slate-700">דירוג</span>
                         <span className="text-lg font-bold text-yellow-600">
                             {lecturer.averageRating.toFixed(1)}/5.0
                         </span>
                     </div>
                     <div className="flex items-center justify-between">
-                        <div className="flex gap-1">
-                            {renderStars(lecturer.averageRating)}
-                        </div>
-                        <span className="text-xs text-gray-600">
+                        <TrackedCardStars rating={lecturer.averageRating} />
+                        <span className="text-xs text-slate-600">
                             {lecturer.ratingsCount} ביקורות
                         </span>
                     </div>
                 </div>
             ) : (
-                <div className="bg-gray-50 rounded-card p-4 mb-4 text-center">
-                    <span className="text-sm text-gray-500">עדיין אין ביקורות</span>
+                <div className="bg-surface-sunken rounded-card p-4 mb-4 text-center">
+                    <span className="text-sm text-muted">עדיין אין ביקורות</span>
                 </div>
             )}
-
-            {/* Action */}
-            <div className="flex items-center justify-between">
-                <button className="text-purple-500 hover:text-purple-600 font-medium text-sm flex items-center gap-2">
-                    <Eye className="w-4 h-4" />
-                    צפה בפרטים
-                </button>
-                <div className="text-xs text-gray-500">
-                    {lecturer.academicInstitution || 'מכללת אפקה'}
-                </div>
-            </div>
-        </div>
+        </TrackedEntityCard>
     );
 };
 

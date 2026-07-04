@@ -30,6 +30,7 @@
       "react-app/jest"
     ],
     "rules": {
+      "no-alert": "error",
       "no-console": [
         "warn",
         {
