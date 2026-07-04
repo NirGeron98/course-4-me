@@ -2,13 +2,6 @@
 // See client/UI_REFINEMENTS.md for usage guidelines and primitive component APIs.
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
-  safelist: [
-    "bg-red-500", "border-red-500", "text-red-500",
-    "bg-yellow-500", "border-yellow-500", "text-yellow-500",
-    "bg-orange-500", "border-orange-500", "text-orange-500",
-    "bg-green-500", "border-green-500", "text-green-500",
-    "bg-purple-500", "border-purple-500", "text-purple-500",
-  ],
   theme: {
     extend: {
       fontFamily: {
@@ -46,6 +39,29 @@ module.exports = {
           soft: "#fee2e2",
           strong: "#b91c1c",
         },
+        // Entity accent families: courses/self = emerald (same hue as brand),
+        // lecturers = purple, search/contact = indigo. Prefer these over raw
+        // emerald-*/purple-*/indigo-* so the mapping stays consistent app-wide.
+        accent: {
+          course: {
+            DEFAULT: "#059669",
+            soft: "#d1fae5",
+            strong: "#047857",
+            tint: "#ecfdf5",
+          },
+          lecturer: {
+            DEFAULT: "#9333ea",
+            soft: "#f3e8ff",
+            strong: "#7e22ce",
+            tint: "#faf5ff",
+          },
+          info: {
+            DEFAULT: "#4f46e5",
+            soft: "#e0e7ff",
+            strong: "#4338ca",
+            tint: "#eef2ff",
+          },
+        },
       },
       textColor: {
         muted: "#64748b",
@@ -82,22 +98,12 @@ module.exports = {
         ui: "cubic-bezier(0.22, 1, 0.36, 1)",
       },
       keyframes: {
-        modalEnter: {
-          "0%": { opacity: "0", transform: "translateY(8px) scale(0.98)" },
-          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
-        },
-        backdropEnter: {
-          "0%": { opacity: "0" },
-          "100%": { opacity: "1" },
-        },
         fadeIn: {
           "0%": { opacity: "0" },
           "100%": { opacity: "1" },
         },
       },
       animation: {
-        modalEnter: "modalEnter 200ms cubic-bezier(0.22, 1, 0.36, 1)",
-        backdropEnter: "backdropEnter 200ms ease-out",
         fadeIn: "fadeIn 200ms ease-out",
       },
     },

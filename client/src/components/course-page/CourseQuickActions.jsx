@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { HeartHandshake, Plus, Check, Copy } from 'lucide-react';
+import { toast } from 'sonner';
 import ExistingReviewModal from '../common/ExistingReviewModal';
 import Button from '../common/Button';
 
@@ -67,7 +68,7 @@ const CourseQuickActions = ({ onShowReviewForm, courseId, courseName, user, onDa
 
     const handleWriteReviewClick = () => {
         if (!user) {
-            alert('יש להתחבר כדי לכתוב ביקורת');
+            toast.error('יש להתחבר כדי לכתוב ביקורת');
             return;
         }
 
@@ -94,7 +95,7 @@ const CourseQuickActions = ({ onShowReviewForm, courseId, courseName, user, onDa
 
     const handleFollowToggle = async () => {
         if (!user?.token) {
-            alert('יש להתחבר כדי להוסיף קורסים למעקב');
+            toast.error('יש להתחבר כדי להוסיף קורסים למעקב');
             return;
         }
     
@@ -123,6 +124,7 @@ const CourseQuickActions = ({ onShowReviewForm, courseId, courseName, user, onDa
     
             if (response.ok) {
                 setIsFollowing(!isFollowing);
+                toast.success(isFollowing ? 'הקורס הוסר מהמעקב' : 'הקורס נוסף למעקב');
                 // Call callback to refresh parent data if provided
                 if (onDataChanged) {
                     onDataChanged();
@@ -156,11 +158,11 @@ const CourseQuickActions = ({ onShowReviewForm, courseId, courseName, user, onDa
             } else {
                 const error = await response.json();
                 console.error('Follow error:', error);
-                alert(error.message || 'שגיאה בעדכון המעקב');
+                toast.error(error.message || 'שגיאה בעדכון המעקב');
             }
         } catch (error) {
             console.error('Error toggling follow:', error);
-            alert('שגיאה בעדכון המעקב');
+            toast.error('שגיאה בעדכון המעקב');
         } finally {
             setIsLoading(false);
         }

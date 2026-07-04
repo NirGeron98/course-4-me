@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 //  - primary: filled brand action
 //  - secondary: outlined neutral action
 //  - ghost: borderless tonal action
+//  - soft: tinted brand action for secondary emphasis (nav pills, quick actions)
 //  - danger: destructive action
 // Sizes: sm | md | lg
 // Props:
@@ -25,6 +26,8 @@ const VARIANTS = {
     "bg-surface-raised text-slate-800 border border-slate-300 hover:bg-slate-50 hover:border-slate-400 focus-visible:ring-slate-400",
   ghost:
     "bg-transparent text-slate-700 hover:bg-slate-100 focus-visible:ring-slate-300",
+  soft:
+    "bg-brand-tint text-brand-strong border border-brand-soft hover:bg-brand-soft focus-visible:ring-brand",
   danger:
     "bg-danger text-white shadow-card hover:bg-danger-strong hover:shadow-card-hover focus-visible:ring-danger",
 };

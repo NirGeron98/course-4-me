@@ -1,10 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { MessageCircle } from "lucide-react";
+import { toast } from "sonner";
 import ReviewFilters from "../components/my-reviews/ReviewFilters";
 import ReviewsList from "../components/my-reviews/ReviewsList";
 import ReviewEditModal from "../components/my-reviews/ReviewEditModal";
 import DeleteConfirmationModal from "../components/common/DeleteConfirmationModal";
 import { SkeletonReviewList, SkeletonLine } from "../components/common/Skeleton";
+import Alert from "../components/common/Alert";
+import PageLayout from "../components/common/PageLayout";
 import { useMyReviews } from "../hooks/useMyReviews";
 
 const DEFAULT_FILTERS = {
@@ -189,8 +192,9 @@ const MyReviewsPage = ({ user }) => {
       await deleteReview(reviewToDelete);
       setShowDeleteModal(false);
       setReviewToDelete(null);
+      toast.success("הביקורת נמחקה בהצלחה");
     } catch (err) {
-      alert(err?.message || "שגיאה במחיקת הביקורת");
+      toast.error(err?.message || "שגיאה במחיקת הביקורת");
     }
   };
 
@@ -206,37 +210,32 @@ const MyReviewsPage = ({ user }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-3 sm:p-6" dir="rtl">
-      <div className="max-w-[100rem] mx-auto">
+    <PageLayout accent="emerald" width="max-w-7xl">
         {/* Header */}
-        <div className="mb-8 sm:mb-12 text-center">
+        <div className="mb-2 sm:mb-4 text-center">
           <div className="inline-flex flex-col items-center">
-            <div className="mb-4 p-4 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full shadow-card">
+            <div className="mb-4 p-4 bg-gradient-to-br from-brand to-brand-strong rounded-full shadow-card" aria-hidden="true">
               <MessageCircle className="w-5 h-5 sm:w-8 sm:h-8 text-white" />
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 bg-clip-text text-transparent mb-3">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-3">
               הביקורות שלי
             </h1>
-            <div className="flex items-center gap-3 text-gray-600">
-              <div className="h-px w-8 bg-gradient-to-r from-transparent to-gray-300" />
+            <div className="flex items-center gap-3 text-muted">
+              <div className="h-px w-8 bg-gradient-to-r from-transparent to-slate-300" aria-hidden="true" />
               {loading ? (
                 <SkeletonLine width="180px" className="h-5" />
               ) : (
                 <p className="text-base sm:text-lg font-medium">
-                  נמצאו <span className="text-gray-600 font-bold">{filteredReviews.length}</span> ביקורות מתוך <span className="text-gray-600 font-bold">{reviews.length}</span> סה"כ
+                  נמצאו <span className="text-brand-strong font-bold">{filteredReviews.length}</span> ביקורות מתוך <span className="text-brand-strong font-bold">{reviews.length}</span> סה"כ
                 </p>
               )}
-              <div className="h-px w-8 bg-gradient-to-l from-transparent to-gray-300" />
+              <div className="h-px w-8 bg-gradient-to-l from-transparent to-slate-300" aria-hidden="true" />
             </div>
-            <div className="mt-4 w-24 h-1 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full" />
+            <div className="mt-4 w-24 h-1 bg-gradient-to-r from-brand to-brand-strong rounded-full" aria-hidden="true" />
           </div>
         </div>
 
-        {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-card text-center">
-            {error}
-          </div>
-        )}
+        {error && <Alert type="error" message={error} className="mb-4" />}
 
         {loading ? (
           <div role="status">
@@ -287,8 +286,7 @@ const MyReviewsPage = ({ user }) => {
             message="האם אתה בטוח שברצונך למחוק את הביקורת? פעולה זו אינה ניתנת לביטול."
           />
         )}
-      </div>
-    </div>
+    </PageLayout>
   );
 };
 

@@ -5,6 +5,7 @@ import ProfileForm from '../components/profile/ProfileForm';
 import PasswordForm from '../components/profile/PasswordForm';
 import SecurityInfo from '../components/profile/SecurityInfo';
 import { SkeletonForm } from '../components/common/Skeleton';
+import PageLayout from '../components/common/PageLayout';
 
 // Mock data for development when API is not available
 const mockUserProfile = {
@@ -259,38 +260,41 @@ const ProfileManagement = () => {
   };
 
   if (loading.profile) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-emerald-50/30 to-blue-50/40" dir="rtl" role="status">
-        <p className="sr-only">טוען פרטי פרופיל...</p>
-        {/* Header placeholder */}
-        <div className="bg-white border-b border-gray-100 py-10 px-6" aria-hidden="true">
-          <div className="max-w-4xl mx-auto flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-gray-200 animate-pulse" />
-            <div className="space-y-2">
-              <div className="h-6 w-48 rounded bg-gray-200 animate-pulse" />
-              <div className="h-4 w-32 rounded bg-gray-200 animate-pulse" />
-            </div>
+    const headerPlaceholder = (
+      <div className="bg-white border-b border-slate-100 py-10 px-6" aria-hidden="true">
+        <div className="max-w-4xl mx-auto flex items-center gap-4">
+          <div className="w-16 h-16 rounded-full bg-slate-200 animate-pulse" />
+          <div className="space-y-2">
+            <div className="h-6 w-48 rounded bg-slate-200 animate-pulse" />
+            <div className="h-4 w-32 rounded bg-slate-200 animate-pulse" />
           </div>
         </div>
-        <div className="max-w-4xl mx-auto px-6 py-8">
+      </div>
+    );
+
+    return (
+      <PageLayout accent="emerald" width="max-w-4xl" header={headerPlaceholder}>
+        <div role="status">
+          <p className="sr-only">טוען פרטי פרופיל...</p>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
             <SkeletonForm rows={4} />
             <SkeletonForm rows={3} />
           </div>
         </div>
-      </div>
+      </PageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-emerald-50/30 to-blue-50/40" dir="rtl">
-      <ProfileHeader userProfile={userProfile} />
-
-      <div className="max-w-4xl mx-auto px-6 py-8">
+    <PageLayout
+      accent="emerald"
+      width="max-w-4xl"
+      header={<ProfileHeader userProfile={userProfile} />}
+    >
         {useMockData && (
-          <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-card p-4">
+          <div className="bg-yellow-50 border border-yellow-200 rounded-card p-4">
             <div className="flex items-center gap-2">
-              <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></div>
+              <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse" aria-hidden="true"></div>
               <span className="text-yellow-800 font-medium">מצב פיתוח - עובד עם נתונים לדוגמה</span>
             </div>
             <p className="text-yellow-700 text-sm mt-1">
@@ -311,7 +315,7 @@ const ProfileManagement = () => {
             messages={messages}
             formatDate={formatDate}
           />
-          
+
           <PasswordForm
             passwords={passwords}
             setPasswords={setPasswords}
@@ -324,8 +328,7 @@ const ProfileManagement = () => {
         </div>
 
         <SecurityInfo />
-      </div>
-    </div>
+    </PageLayout>
   );
 };
 

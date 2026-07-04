@@ -3,7 +3,7 @@ import { apiFetch } from "../hooks/useApi";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Mail, LogIn } from "lucide-react";
 import Alert from "../components/common/Alert";
-import Card from "../components/common/Card";
+import AuthLayout from "../components/common/AuthLayout";
 import Input from "../components/common/Input";
 import PasswordInput from "../components/common/PasswordInput";
 import Button from "../components/common/Button";
@@ -18,7 +18,10 @@ const Login = ({ onLogin, user }) => {
     password: "",
   });
 
-  const [message, setMessage] = useState("");
+  // Explicit message-type state: errorMessage drives the Alert; the
+  // preload panel is driven only by isDataLoading + progress state (no
+  // substring sniffing on a shared message string).
+  const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isDataLoading, setIsDataLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -30,12 +33,11 @@ const Login = ({ onLogin, user }) => {
       if (event.detail && typeof event.detail.progress === 'number') {
         setLoadingProgress(event.detail.progress);
         setLoadingDetails(event.detail.message || "");
-        setMessage(`טוען נתונים: ${event.detail.message || ""}`);
       }
     };
 
     window.addEventListener('userDataLoadingProgress', handleLoadingProgress);
-    
+
     return () => {
       window.removeEventListener('userDataLoadingProgress', handleLoadingProgress);
     };
@@ -43,15 +45,14 @@ const Login = ({ onLogin, user }) => {
 
   // Listen to user-data loading lifecycle events
   useEffect(() => {
-    const handleDataLoading = (event) => {
+    const handleDataLoading = () => {
       setIsDataLoading(true);
-      setMessage("טוען את הנתונים שלך...");
     };
 
     const handleDataLoaded = (event) => {
       setIsDataLoading(false);
       const status = event.detail?.status;
-      
+
       if (status === 'completed') {
         // All data loaded successfully - navigate to dashboard
         const urlParams = new URLSearchParams(location.search);
@@ -109,7 +110,7 @@ const Login = ({ onLogin, user }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setMessage("");
+    setErrorMessage("");
 
     try {
       const data = await apiFetch(`/api/auth/login`, {
@@ -135,8 +136,6 @@ const Login = ({ onLogin, user }) => {
         return;
       }
 
-      // Surface a loading message while preload runs
-      setMessage("מתחבר וטוען נתונים... (אנא המתן)");
       setIsDataLoading(true);
 
       // onLogin is async and waits for preload to finish
@@ -145,102 +144,88 @@ const Login = ({ onLogin, user }) => {
       // Navigation to dashboard happens in the preload-finished listener (useEffect)
 
     } catch (err) {
-      setMessage(err.message || "התחברות נכשלה");
+      setErrorMessage(err.message || "התחברות נכשלה");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 flex items-center justify-center p-4" dir="rtl">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-500 rounded-full mb-4 shadow-card">
-            <LogIn className="w-8 h-8 text-white" aria-hidden="true" />
+    <AuthLayout icon={LogIn} title="התחברות" subtitle="ברוך שובך! התחבר כדי להמשיך">
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <Input
+          type="email"
+          name="email"
+          label="כתובת אימייל"
+          autoComplete="email"
+          leftIcon={Mail}
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
+
+        <div>
+          <PasswordInput
+            name="password"
+            label="סיסמה"
+            autoComplete="current-password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+          <div className="mt-2 text-left">
+            <Link
+              to="/forgot-password"
+              className="text-sm text-brand hover:text-brand-strong font-medium hover:underline transition-colors duration-ui"
+            >
+              שכחתי סיסמה
+            </Link>
           </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">התחברות</h1>
-          <p className="text-gray-600">ברוך שובך! התחבר כדי להמשיך</p>
         </div>
 
-        <Card variant="raised" padding="lg">
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <Input
-              type="email"
-              name="email"
-              label="כתובת אימייל"
-              autoComplete="email"
-              leftIcon={Mail}
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
+        <Button
+          type="submit"
+          size="lg"
+          fullWidth
+          loading={isLoading || isDataLoading}
+        >
+          {isDataLoading ? "טוען נתונים..." : isLoading ? "מתחבר..." : "התחבר"}
+        </Button>
+      </form>
 
-            <div>
-              <PasswordInput
-                name="password"
-                label="סיסמה"
-                autoComplete="current-password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-              <div className="mt-2 text-left">
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-emerald-600 hover:text-emerald-700 font-medium hover:underline transition-colors duration-ui"
-                >
-                  שכחתי סיסמה
-                </Link>
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              size="lg"
-              fullWidth
-              loading={isLoading || isDataLoading}
-            >
-              {isDataLoading ? "טוען נתונים..." : isLoading ? "מתחבר..." : "התחבר"}
-            </Button>
-          </form>
-
-          {message && (message.includes('טוען') || message.includes('נתונים')) && (
-            <div className="mt-6 p-4 rounded-card-lg bg-blue-50 text-blue-700 border border-blue-200 flex flex-col space-y-3" role="status">
-              <div className="flex items-center">
-                <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin ml-3" aria-hidden="true" />
-                <p className="text-right font-medium flex-grow">{message}</p>
-              </div>
-              {isDataLoading && (
-                <div className="w-full">
-                  <div className="text-xs text-blue-700 mb-1">{loadingDetails || "טוען נתונים..."}</div>
-                  <div className="w-full bg-blue-100 rounded-full h-2.5 mb-1">
-                    <div className="bg-gradient-to-r from-blue-400 to-indigo-500 h-2.5 rounded-full transition-all duration-ui" style={{ width: `${loadingProgress}%` }} />
-                  </div>
-                  <div className="text-xs text-right text-blue-600">{loadingProgress}%</div>
-                </div>
-              )}
-            </div>
-          )}
-          {message && !message.includes('טוען') && !message.includes('נתונים') && (
-            <div className="mt-6">
-              <Alert type={message.includes('בהצלחה') ? 'success' : 'error'} message={message} onDismiss={() => setMessage('')} />
-            </div>
-          )}
-
-          <div className="mt-8 pt-6 border-t border-slate-200 text-center">
-            <p className="text-gray-600">
-              עוד לא נרשמת?{" "}
-              <Link
-                to="/signup"
-                className="text-emerald-600 hover:text-emerald-700 font-semibold hover:underline transition-colors duration-ui"
-              >
-                הירשם עכשיו
-              </Link>
-            </p>
+      {isDataLoading && (
+        <div className="mt-6 p-4 rounded-card-lg bg-brand-tint text-brand-strong border border-brand-soft flex flex-col space-y-3" role="status">
+          <div className="flex items-center">
+            <div className="w-5 h-5 border-2 border-brand border-t-transparent rounded-full animate-spin ml-3" aria-hidden="true" />
+            <p className="text-right font-medium flex-grow">טוען את הנתונים שלך...</p>
           </div>
-        </Card>
+          <div className="w-full">
+            <div className="text-xs text-brand-strong mb-1">{loadingDetails || "טוען נתונים..."}</div>
+            <div className="w-full bg-brand-soft rounded-full h-2.5 mb-1">
+              <div className="bg-brand h-2.5 rounded-full transition-all duration-ui" style={{ width: `${loadingProgress}%` }} />
+            </div>
+            <div className="text-xs text-right text-brand-strong">{loadingProgress}%</div>
+          </div>
+        </div>
+      )}
+      {errorMessage && (
+        <div className="mt-6">
+          <Alert type="error" message={errorMessage} onDismiss={() => setErrorMessage('')} />
+        </div>
+      )}
+
+      <div className="mt-8 pt-6 border-t border-slate-200 text-center">
+        <p className="text-muted">
+          עוד לא נרשמת?{" "}
+          <Link
+            to="/signup"
+            className="text-brand hover:text-brand-strong font-semibold hover:underline transition-colors duration-ui"
+          >
+            הירשם עכשיו
+          </Link>
+        </p>
       </div>
-    </div>
+    </AuthLayout>
   );
 };
 

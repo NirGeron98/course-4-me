@@ -2,25 +2,27 @@ import React from 'react';
 import { BarChart3, Eye, Users, Clock, Zap, Award } from 'lucide-react';
 
 const LecturerStatisticsCard = ({ stats }) => {
+    // Full literal class names so Tailwind's content scan keeps them in the
+    // production build (dynamic `bg-${color}` strings get purged).
     const colors = {
-        clarity: 'blue-500',
-        responsiveness: 'green-500',
-        availability: 'orange-500',
-        organization: 'red-500',
-        knowledge: 'yellow-500'
+        clarity: { text: 'text-blue-500', bar: 'bg-blue-500' },
+        responsiveness: { text: 'text-green-500', bar: 'bg-green-500' },
+        availability: { text: 'text-orange-500', bar: 'bg-orange-500' },
+        organization: { text: 'text-red-500', bar: 'bg-red-500' },
+        knowledge: { text: 'text-yellow-500', bar: 'bg-yellow-500' }
     };
 
     const renderStat = (Icon, label, value, color) => (
         <div className="flex items-center gap-3">
-            <Icon className={`w-5 h-5 text-${color}`} />
+            <Icon className={`w-5 h-5 ${color.text}`} />
             <div className="flex-1">
                 <div className="flex justify-between">
                     <span className="text-gray-600">{label}</span>
-                    <span className={`font-bold text-${color}`}>{value}</span>
+                    <span className={`font-bold ${color.text}`}>{value}</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
                     <div
-                        className={`bg-${color} h-2 rounded-full`}
+                        className={`${color.bar} h-2 rounded-full`}
                         style={{ width: `${(value / 5) * 100}%` }}
                     ></div>
                 </div>

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
+import { AnimatePresence, LazyMotion, domAnimation, m, useReducedMotion } from "framer-motion";
 
 // Modal — accessible dialog primitive. Handles:
 //  - Portal to document.body
@@ -68,7 +69,7 @@ const Modal = ({
     }
   }, [isOpen, initialFocusRef]);
 
-  if (!isOpen) return null;
+  const shouldReduceMotion = useReducedMotion();
 
   const titleId = title ? "modal-title" : undefined;
   const descriptionId = description ? "modal-description" : undefined;
@@ -80,54 +81,68 @@ const Modal = ({
   };
 
   return createPortal(
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/50 backdrop-blur-sm animate-backdropEnter"
-      onMouseDown={handleBackdropClick}
-      dir="rtl"
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        aria-describedby={descriptionId}
-        className={`w-full ${sizeClass} max-h-[100dvh] sm:max-h-[90vh] bg-surface-raised rounded-t-card-lg sm:rounded-card-lg shadow-elevated-lg overflow-hidden flex flex-col animate-modalEnter ${className}`.trim()}
-      >
-        {(title || showCloseButton) && (
-          <div className="flex items-start justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-200">
-            <div className="min-w-0">
-              {title && (
-                <h2
-                  id={titleId}
-                  className="text-lg font-bold text-slate-900 truncate"
-                >
-                  {title}
-                </h2>
+    <LazyMotion features={domAnimation}>
+      <AnimatePresence>
+        {isOpen && (
+          <m.div
+            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/50 backdrop-blur-sm"
+            onMouseDown={handleBackdropClick}
+            dir="rtl"
+            initial={shouldReduceMotion ? false : { opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={shouldReduceMotion ? undefined : { opacity: 0 }}
+            transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <m.div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby={titleId}
+              aria-describedby={descriptionId}
+              className={`w-full ${sizeClass} max-h-[100dvh] sm:max-h-[90vh] bg-surface-raised rounded-t-card-lg sm:rounded-card-lg shadow-elevated-lg overflow-hidden flex flex-col ${className}`.trim()}
+              initial={shouldReduceMotion ? false : { opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={shouldReduceMotion ? undefined : { opacity: 0, y: 16, scale: 0.98 }}
+              transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {(title || showCloseButton) && (
+                <div className="flex items-start justify-between gap-3 px-4 sm:px-6 py-3 sm:py-4 border-b border-slate-200">
+                  <div className="min-w-0">
+                    {title && (
+                      <h2
+                        id={titleId}
+                        className="text-lg font-bold text-slate-900 truncate"
+                      >
+                        {title}
+                      </h2>
+                    )}
+                    {description && (
+                      <p
+                        id={descriptionId}
+                        className="mt-1 text-sm text-muted"
+                      >
+                        {description}
+                      </p>
+                    )}
+                  </div>
+                  {showCloseButton && (
+                    <button
+                      type="button"
+                      onClick={onClose}
+                      aria-label="סגור"
+                      className="shrink-0 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-button p-1.5 transition-colors duration-ui ease-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
               )}
-              {description && (
-                <p
-                  id={descriptionId}
-                  className="mt-1 text-sm text-muted"
-                >
-                  {description}
-                </p>
-              )}
-            </div>
-            {showCloseButton && (
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="סגור"
-                className="shrink-0 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-button p-1.5 transition-colors duration-ui ease-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            )}
-          </div>
-        )}
 
-        <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 py-4 sm:py-5">{children}</div>
-      </div>
-    </div>,
+              <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-6 py-4 sm:py-5">{children}</div>
+            </m.div>
+          </m.div>
+        )}
+      </AnimatePresence>
+    </LazyMotion>,
     document.body
   );
 };

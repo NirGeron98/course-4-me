@@ -4,8 +4,8 @@ import FilterBar from "../../common/admin/FilterBar";
 import ListTable from "../../common/admin/ListTable";
 import RowActions from "../../common/admin/RowActions";
 import Card from "../../common/Card";
-import Modal, { ModalFooter } from "../../common/Modal";
-import Button from "../../common/Button";
+import ConfirmDialog from "../../common/ConfirmDialog";
+import Select from "../../common/Select";
 import useAdminContactRequests from "../../../hooks/useAdminContactRequests";
 import { getSubjectLabel } from "./StatusBadge";
 import {
@@ -129,18 +129,20 @@ const ContactRequestManagement = ({ onMessage, onError }) => {
         onRefresh={() => fetchRequests({ status: filters.status })}
         refreshing={loading}
       >
-        <select
+        <Select
           value={filters.status}
           onChange={(event) =>
             setFilters((prev) => ({ ...prev, status: event.target.value }))
           }
-          className="rounded-button bg-surface-raised border border-slate-300 text-sm px-3 py-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:border-brand"
+          aria-label="סינון לפי סטטוס"
+          fullWidth={false}
+          className="text-sm"
         >
           <option value="all">כל הסטטוסים</option>
           <option value="pending">ממתין לטיפול</option>
           <option value="in_progress">בטיפול</option>
           <option value="answered">נענתה</option>
-        </select>
+        </Select>
       </FilterBar>
 
       <ListTable
@@ -173,38 +175,20 @@ const ContactRequestManagement = ({ onMessage, onError }) => {
         />
       )}
 
-      <Modal
+      <ConfirmDialog
         isOpen={Boolean(deleteTarget)}
         onClose={() => setDeleteTarget(null)}
+        onConfirm={confirmDeleteRequest}
         title="מחיקת פנייה"
         description="כל המידע לרבות התגובות יימחק. פעולה זו אינה ניתנת לביטול."
-        size="sm"
-      >
-        <p className="text-sm text-slate-700" dir="rtl">
-          {`האם אתה בטוח שברצונך למחוק את הפנייה בנושא "${getSubjectLabel(
-            deleteTarget?.subject
-          )}"?`}
-        </p>
-        <ModalFooter className="-mx-6 -mb-5 mt-6">
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={() => setDeleteTarget(null)}
-            disabled={mutating}
-          >
-            ביטול
-          </Button>
-          <Button
-            type="button"
-            variant="danger"
-            leftIcon={Trash2}
-            loading={mutating}
-            onClick={confirmDeleteRequest}
-          >
-            מחק פנייה
-          </Button>
-        </ModalFooter>
-      </Modal>
+        message={`האם אתה בטוח שברצונך למחוק את הפנייה בנושא "${getSubjectLabel(
+          deleteTarget?.subject
+        )}"?`}
+        confirmLabel="מחק פנייה"
+        confirmIcon={Trash2}
+        variant="danger"
+        loading={mutating}
+      />
     </div>
   );
 };
