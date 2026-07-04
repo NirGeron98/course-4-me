@@ -138,20 +138,20 @@ const Navbar = ({ user, onLogout }) => {
           <div className="flex-shrink-0">
             <Link
               to="/dashboard"
-              className="flex items-center space-x-3 group rounded-card focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              className="flex items-center gap-2.5 group rounded-card focus:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             >
-              <div className="bg-gradient-to-r from-slate-600 to-slate-700 rounded-card p-2 shadow-card group-hover:shadow-card-hover transition-all duration-ui ml-2">
+              <div className="bg-gradient-to-r from-slate-600 to-slate-700 rounded-card p-2 shadow-card group-hover:shadow-card-hover transition-all duration-ui">
                 <BookOpen className="w-5 h-5 lg:w-6 lg:h-6 text-white" />
               </div>
-              <span className="text-xl lg:text-2xl font-bold bg-gradient-to-r from-slate-700 to-slate-800 bg-clip-text text-transparent mr-3">
+              <span className="hidden sm:inline text-xl lg:text-2xl font-bold bg-gradient-to-r from-slate-700 to-slate-800 bg-clip-text text-transparent">
                 {'Course4Me'}
               </span>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:block flex-1 max-w-4xl mx-8">
-            <div className="flex items-center justify-center gap-x-6">
+          <div className="hidden lg:flex flex-1 justify-center min-w-0 mx-4">
+            <div className="flex items-center gap-x-1 xl:gap-x-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -159,12 +159,11 @@ const Navbar = ({ user, onLogout }) => {
                     key={item.path}
                     to={item.path}
                     aria-current={isActivePage(item.path) ? "page" : undefined}
-                    className={`flex items-center space-x-2 px-3 xl:px-4 py-2 rounded-card font-medium transition-all duration-ui whitespace-nowrap text-sm xl:text-base focus:outline-none focus-visible:ring-2 focus-visible:ring-brand ${linkClass(item.path)}`}
+                    className={`flex items-center gap-1.5 px-2.5 xl:px-3 py-2 rounded-card font-medium transition-all duration-ui whitespace-nowrap text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-brand ${linkClass(item.path)}`}
                     title={item.fullLabel}
                   >
-                    <Icon className="w-4 h-4 ml-1.5" />
-                    <span className="hidden xl:inline">{item.fullLabel}</span>
-                    <span className="xl:hidden">{item.label}</span>
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span>{item.label}</span>
                   </Link>
                 );
               })}
@@ -172,8 +171,8 @@ const Navbar = ({ user, onLogout }) => {
           </div>
 
           {/* Medium screens navigation (tablet) */}
-          <div className="hidden md:flex lg:hidden flex-1 justify-center mx-6">
-            <div className="flex items-center space-x-3 space-x-reverse">
+          <div className="hidden md:flex lg:hidden flex-1 justify-center mx-4">
+            <div className="flex items-center gap-2">
               {navItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -193,15 +192,15 @@ const Navbar = ({ user, onLogout }) => {
           </div>
 
           {/* User menu & logout */}
-          <div className="hidden md:flex items-center space-x-2 lg:space-x-3 space-x-reverse">
-            {/* Contact request button — info accent */}
+          <div className="hidden md:flex items-center gap-1.5 lg:gap-2 shrink-0">
+            {/* Contact request button — info accent, soft treatment so it doesn't compete with logout */}
             <button
               onClick={() => setIsContactModalOpen(true)}
-              className="flex items-center space-x-2 bg-accent-info hover:bg-accent-info-strong text-white px-3 py-2 rounded-card font-medium text-sm shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5 transition-all duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-info"
+              className="flex items-center gap-1.5 bg-accent-info-tint text-accent-info-strong border border-accent-info-soft hover:bg-accent-info-soft px-2.5 lg:px-3 py-2 rounded-card font-medium text-sm transition-all duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-info"
               title="פתח פנייה חדשה"
               aria-label="פתח פנייה חדשה"
             >
-              <HelpCircle className="w-3.5 h-3.5 ml-1" />
+              <HelpCircle className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden lg:inline">פתח פנייה</span>
             </button>
 
@@ -210,19 +209,19 @@ const Navbar = ({ user, onLogout }) => {
               onClick={handleUserNameClick}
               aria-current={isActivePage('/profile') ? "page" : undefined}
               aria-label="ניהול פרופיל"
-              className={`flex items-center space-x-2 lg:space-x-3 rounded-card px-2 lg:px-3 py-2 transition-all duration-ui cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isActivePage('/profile')
+              className={`flex items-center gap-1.5 lg:gap-2 rounded-card px-2 lg:px-3 py-2 transition-all duration-ui cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isActivePage('/profile')
                   ? 'bg-slate-100 hover:bg-slate-200'
                   : 'bg-slate-50 hover:bg-slate-100'
                 }`}
             >
-              <div className={`rounded-full p-1.5 ml-2 lg:ml-3 ${user?.user?.role === 'admin' ? 'bg-accent-lecturer' : 'bg-slate-600'}`}>
+              <div className={`rounded-full p-1.5 ${user?.user?.role === 'admin' ? 'bg-accent-lecturer' : 'bg-slate-600'}`}>
                 {user?.user?.role === 'admin' ? (
                   <Shield className="w-3.5 h-3.5 text-white" />
                 ) : (
                   <User className="w-3.5 h-3.5 text-white" />
                 )}
               </div>
-              <div className="text-right mr-2 lg:mr-3 hidden lg:block">
+              <div className="text-right hidden lg:block">
                 <span className={`font-medium text-sm block ${isActivePage('/profile') ? 'text-slate-900' : 'text-slate-700'
                   }`}>
                   {(user?.user?.fullName || user?.fullName || user?.name || 'משתמש').split(' ')[0]}
@@ -231,17 +230,17 @@ const Navbar = ({ user, onLogout }) => {
                   <span className="text-accent-lecturer text-xs font-medium">מנהל</span>
                 )}
               </div>
-              <Settings className="w-3.5 h-3.5 ml-1 text-slate-500" />
+              <Settings className="w-3.5 h-3.5 text-slate-500 hidden lg:block shrink-0" />
             </button>
 
             {/* Logout button — danger tokens */}
             <button
               onClick={handleLogout}
-              className="flex items-center space-x-1 bg-danger hover:bg-danger-strong text-white px-2 lg:px-3 py-2 rounded-card font-medium text-sm shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5 transition-all duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-danger"
+              className="flex items-center gap-1 bg-danger hover:bg-danger-strong text-white px-2 lg:px-3 py-2 rounded-card font-medium text-sm shadow-card hover:shadow-card-hover transform hover:-translate-y-0.5 transition-all duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-danger"
               title="יציאה מהמערכת"
               aria-label="יציאה מהמערכת"
             >
-              <LogOut className="w-3.5 h-3.5 ml-1" />
+              <LogOut className="w-3.5 h-3.5 shrink-0" />
               <span className="hidden lg:inline">יציאה</span>
             </button>
           </div>
@@ -274,20 +273,20 @@ const Navbar = ({ user, onLogout }) => {
                   handleUserNameClick();
                   setIsMobileMenuOpen(false);
                 }}
-                className={`w-full flex items-center space-x-3 rounded-card px-4 py-3 mb-4 transition-all duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isActivePage('/profile')
+                className={`w-full flex items-center gap-3 rounded-card px-4 py-3 mb-4 transition-all duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isActivePage('/profile')
                     ? 'bg-slate-100'
                     : 'bg-slate-50 hover:bg-slate-100'
                   }`}
               >
-                <div className={`rounded-full p-2 ${user?.user?.role === 'admin' ? 'bg-accent-lecturer' : 'bg-slate-600'}`}>
+                <div className={`rounded-full p-2 shrink-0 ${user?.user?.role === 'admin' ? 'bg-accent-lecturer' : 'bg-slate-600'}`}>
                   {user?.user?.role === 'admin' ? (
                     <Shield className="w-5 h-5 text-white" />
                   ) : (
                     <User className="w-5 h-5 text-white" />
                   )}
                 </div>
-                <div className="text-right mr-3 flex-1">
-                  <span className={`font-medium block ${isActivePage('/profile') ? 'text-slate-900' : 'text-slate-700'
+                <div className="text-right flex-1 min-w-0">
+                  <span className={`font-medium block truncate ${isActivePage('/profile') ? 'text-slate-900' : 'text-slate-700'
                     }`}>
                     שלום, {user?.user?.fullName || user?.fullName || user?.name || 'משתמש'}
                   </span>
@@ -295,7 +294,7 @@ const Navbar = ({ user, onLogout }) => {
                     <span className="text-accent-lecturer text-sm font-medium">מנהל מערכת</span>
                   )}
                 </div>
-                <Settings className="w-4 h-4 text-slate-600" />
+                <Settings className="w-4 h-4 text-slate-600 shrink-0" />
               </button>
 
               {/* Navigation items */}
@@ -307,9 +306,9 @@ const Navbar = ({ user, onLogout }) => {
                     to={item.path}
                     onClick={() => setIsMobileMenuOpen(false)}
                     aria-current={isActivePage(item.path) ? "page" : undefined}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-card font-medium transition-all duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-brand ${linkClass(item.path)}`}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-card font-medium transition-all duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-brand ${linkClass(item.path)}`}
                   >
-                    <Icon className="w-5 h-5 ml-3" />
+                    <Icon className="w-5 h-5 shrink-0" />
                     <span>{item.fullLabel}</span>
                   </Link>
                 );
@@ -319,9 +318,9 @@ const Navbar = ({ user, onLogout }) => {
               <div className="w-full space-y-2 mt-4">
                 <button
                   onClick={() => setIsContactModalOpen(true)}
-                  className="flex items-center space-x-3 bg-accent-info hover:bg-accent-info-strong text-white px-4 py-3 rounded-card font-medium shadow-card w-full justify-center transition-colors duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-info"
+                  className="flex items-center gap-3 bg-accent-info hover:bg-accent-info-strong text-white px-4 py-3 rounded-card font-medium shadow-card w-full justify-center transition-colors duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-accent-info"
                 >
-                  <HelpCircle className="w-5 h-5 ml-3" />
+                  <HelpCircle className="w-5 h-5 shrink-0" />
                   <span>פתח פנייה</span>
                 </button>
                 <button
@@ -329,9 +328,9 @@ const Navbar = ({ user, onLogout }) => {
                     handleLogout();
                     setIsMobileMenuOpen(false);
                   }}
-                  className="flex items-center space-x-3 bg-danger hover:bg-danger-strong text-white px-4 py-3 rounded-card font-medium shadow-card w-full justify-center transition-colors duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-danger"
+                  className="flex items-center gap-3 bg-danger hover:bg-danger-strong text-white px-4 py-3 rounded-card font-medium shadow-card w-full justify-center transition-colors duration-ui focus:outline-none focus-visible:ring-2 focus-visible:ring-danger"
                 >
-                  <LogOut className="w-5 h-5 ml-3" />
+                  <LogOut className="w-5 h-5 shrink-0" />
                   <span>יציאה</span>
                 </button>
               </div>
