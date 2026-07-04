@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 import { apiFetch } from "../hooks/useApi";
 import CourseManagement from "../components/admin/CourseManagement";
 import LecturerManagement from "../components/admin/LecturerManagement";
@@ -7,8 +8,28 @@ import ContactRequestManagement from "../components/admin/ContactRequestManageme
 import { AlertCircle, BookOpen, Users, Building, MessageSquare } from "lucide-react";
 import Alert from "../components/common/Alert";
 
+const TABS = [
+  { key: "courses", label: "ניהול קורסים", icon: BookOpen },
+  { key: "lecturers", label: "ניהול מרצים", icon: Users },
+  { key: "departments", label: "ניהול מחלקות", icon: Building },
+  { key: "contact-requests", label: "ניהול פניות", icon: MessageSquare },
+];
+const TAB_KEYS = TABS.map((tab) => tab.key);
+
 const AdminPanel = ({ user }) => {
-  const [activeTab, setActiveTab] = useState("courses");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabParam = searchParams.get("tab");
+  const activeTab = TAB_KEYS.includes(tabParam) ? tabParam : "courses";
+  const setActiveTab = useCallback(
+    (nextTab) => {
+      setSearchParams((prev) => {
+        const next = new URLSearchParams(prev);
+        next.set("tab", nextTab);
+        return next;
+      });
+    },
+    [setSearchParams]
+  );
   const [lecturers, setLecturers] = useState([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -40,13 +61,13 @@ const AdminPanel = ({ user }) => {
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-red-50 via-white to-red-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-danger-soft via-white to-danger-soft flex items-center justify-center p-4">
         <div className="text-center">
-          <div className="bg-red-100 rounded-full p-4 w-16 h-16 flex items-center justify-center mx-auto mb-4">
-            <AlertCircle className="w-8 h-8 text-red-500" />
+          <div className="bg-danger-soft rounded-full p-4 w-16 h-16 flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-danger" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">אין הרשאה</h1>
-          <p className="text-gray-600">דף זה מיועד למנהלי המערכת בלבד</p>
+          <h1 className="text-2xl font-bold text-slate-800 mb-2">אין הרשאה</h1>
+          <p className="text-slate-600">דף זה מיועד למנהלי המערכת בלבד</p>
         </div>
       </div>
     );
@@ -65,57 +86,33 @@ const AdminPanel = ({ user }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100" dir="rtl">
-      <div className="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white py-6 sm:py-8 px-4 sm:px-6">
+    <div className="min-h-screen bg-gradient-to-br from-brand-tint via-white to-brand-soft" dir="rtl">
+      <div className="bg-gradient-to-r from-brand to-brand-strong text-white py-6 sm:py-8 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
           <h1 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2">פאנל ניהול מערכת</h1>
-          <p className="text-emerald-100 text-sm sm:text-base">ניהול קורסים ומרצים במערכת</p>
+          <p className="text-brand-soft text-sm sm:text-base">ניהול קורסים ומרצים במערכת</p>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
-        <div className="bg-white rounded-card-lg shadow-card border border-emerald-100">
-          <div className="flex border-b border-gray-200 overflow-x-auto">
-            <button
-              onClick={() => setActiveTab("courses")}
-              className={`flex-1 min-w-max whitespace-nowrap py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base text-center font-medium transition-colors ${activeTab === "courses"
-                ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
-                : "text-gray-600 hover:text-emerald-600"
-              }`}
-            >
-              <BookOpen className="w-5 h-5 inline-block ml-2" />
-              ניהול קורסים
-            </button>
-            <button
-              onClick={() => setActiveTab("lecturers")}
-              className={`flex-1 min-w-max whitespace-nowrap py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base text-center font-medium transition-colors ${activeTab === "lecturers"
-                ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
-                : "text-gray-600 hover:text-emerald-600"
-              }`}
-            >
-              <Users className="w-5 h-5 inline-block ml-2" />
-              ניהול מרצים
-            </button>
-            <button
-              onClick={() => setActiveTab("departments")}
-              className={`flex-1 min-w-max whitespace-nowrap py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base text-center font-medium transition-colors ${activeTab === "departments"
-                ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
-                : "text-gray-600 hover:text-emerald-600"
-              }`}
-            >
-              <Building className="w-5 h-5 inline-block ml-2" />
-              ניהול מחלקות
-            </button>
-            <button
-              onClick={() => setActiveTab("contact-requests")}
-              className={`flex-1 min-w-max whitespace-nowrap py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base text-center font-medium transition-colors ${activeTab === "contact-requests"
-                ? "text-emerald-600 border-b-2 border-emerald-600 bg-emerald-50"
-                : "text-gray-600 hover:text-emerald-600"
-              }`}
-            >
-              <MessageSquare className="w-5 h-5 inline-block ml-2" />
-              ניהול פניות
-            </button>
+        <div className="bg-white rounded-card-lg shadow-card border border-brand-soft">
+          <div className="flex border-b border-slate-200 overflow-x-auto">
+            {TABS.map(({ key, label, icon: Icon }) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => setActiveTab(key)}
+                aria-current={activeTab === key ? "page" : undefined}
+                className={`flex-1 min-w-max whitespace-nowrap py-3 sm:py-4 px-3 sm:px-6 text-sm sm:text-base text-center font-medium transition-colors duration-ui ${
+                  activeTab === key
+                    ? "text-brand border-b-2 border-brand bg-brand-tint"
+                    : "text-slate-600 hover:text-brand"
+                }`}
+              >
+                <Icon className="w-5 h-5 inline-block ml-2" aria-hidden="true" />
+                {label}
+              </button>
+            ))}
           </div>
 
           {message && (

@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { ChevronLeft, ChevronRight, Plus, Users, Trash2 } from "lucide-react";
+import { Plus, Users, Trash2 } from "lucide-react";
 import FilterBar from "../../common/admin/FilterBar";
 import ListTable from "../../common/admin/ListTable";
+import Pagination from "../../common/admin/Pagination";
 import ConfirmDialog from "../../common/ConfirmDialog";
 import useLecturers from "../../../hooks/useLecturers";
 import { lecturerColumns, renderLecturerRowActions } from "./LecturerRow";
@@ -135,53 +136,11 @@ const LecturerManagement = ({ onMessage, onError, onLecturersUpdate }) => {
         })}
       />
 
-      {filteredLecturers.length > LECTURERS_PER_PAGE && (
-        <div className="flex items-center justify-center gap-2 py-2">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-            className={`p-2 rounded-button ${
-              currentPage === 1
-                ? "text-slate-300 cursor-not-allowed"
-                : "text-slate-600 hover:text-brand hover:bg-brand/10"
-            }`}
-            aria-label="עמוד קודם"
-          >
-            <ChevronRight className="w-4 h-4" aria-hidden="true" />
-          </button>
-
-          <div className="flex items-center gap-1">
-            {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter((pageNumber) => Math.abs(pageNumber - currentPage) <= 2)
-              .map((pageNumber) => (
-                <button
-                  key={pageNumber}
-                  onClick={() => setCurrentPage(pageNumber)}
-                  className={`w-8 h-8 rounded-button text-sm font-medium ${
-                    currentPage === pageNumber
-                      ? "bg-brand text-white shadow-card"
-                      : "text-slate-600 hover:text-brand hover:bg-brand/10"
-                  }`}
-                >
-                  {pageNumber}
-                </button>
-              ))}
-          </div>
-
-          <button
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className={`p-2 rounded-button ${
-              currentPage === totalPages
-                ? "text-slate-300 cursor-not-allowed"
-                : "text-slate-600 hover:text-brand hover:bg-brand/10"
-            }`}
-            aria-label="עמוד הבא"
-          >
-            <ChevronLeft className="w-4 h-4" aria-hidden="true" />
-          </button>
-        </div>
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
 
       {formMode && (
         <LecturerFormModal

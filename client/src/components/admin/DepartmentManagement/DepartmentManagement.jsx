@@ -107,8 +107,8 @@ const DepartmentManagement = ({ onMessage, onError }) => {
   return (
     <div className="p-3 sm:p-6 flex flex-col gap-4">
       <div className="flex items-center gap-3">
-        <Building className="w-7 h-7 text-emerald-600" aria-hidden="true" />
-        <h2 className="text-2xl font-bold text-gray-800">ניהול מחלקות אקדמיות</h2>
+        <Building className="w-7 h-7 text-brand" aria-hidden="true" />
+        <h2 className="text-2xl font-bold text-slate-800">ניהול מחלקות אקדמיות</h2>
       </div>
 
       <FilterBar
