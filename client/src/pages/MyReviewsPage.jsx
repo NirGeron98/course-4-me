@@ -207,7 +207,7 @@ const MyReviewsPage = ({ user }) => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-3 sm:p-6" dir="rtl">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[100rem] mx-auto">
         {/* Header */}
         <div className="mb-8 sm:mb-12 text-center">
           <div className="inline-flex flex-col items-center">

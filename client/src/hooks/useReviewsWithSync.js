@@ -9,7 +9,7 @@ export const useReviewsWithSync = (courseId, token) => {
   const [sortBy, setSortBy] = useState("newest");
   const { updateCourseData, triggerCourseRefresh } = useCourseDataContext();
 
-  const fetchReviews = useCallback(async () => {
+  const fetchReviews = useCallback(async ({ notify = true } = {}) => {
     if (!courseId || !token) return;
     try {
       const response = await fetch(
@@ -55,7 +55,6 @@ export const useReviewsWithSync = (courseId, token) => {
           ratingsCount: calculatedStats.total,
           lastUpdated: Date.now(),
         });
-        triggerCourseRefresh(courseId);
       } else {
         updateCourseData(courseId, {
           stats: null,
@@ -64,7 +63,7 @@ export const useReviewsWithSync = (courseId, token) => {
           lastUpdated: Date.now(),
         });
       }
-      triggerCourseRefresh(courseId);
+      if (notify) triggerCourseRefresh(courseId);
     } catch (err) {
       console.error("Error fetching reviews:", err);
       setReviews([]);
@@ -75,7 +74,7 @@ export const useReviewsWithSync = (courseId, token) => {
 
   useEffect(() => {
     if (courseId && token) {
-      fetchReviews();
+      fetchReviews({ notify: false });
     } else if (courseId) {
       setReviewsLoading(false);
     }
