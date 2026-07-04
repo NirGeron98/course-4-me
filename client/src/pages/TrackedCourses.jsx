@@ -229,8 +229,8 @@ const TrackedCourses = () => {
       <div className="relative bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-600 text-white py-10 px-6">
         {/* Decorative background elements */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-          <div className="absolute top-4 right-12 w-20 h-20 bg-white/8 rounded-full blur-xl"></div>
-          <div className="absolute bottom-4 left-12 w-16 h-16 bg-white/8 rounded-full blur-xl"></div>
+          <div className="absolute top-4 right-12 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+          <div className="absolute bottom-4 left-12 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
         </div>
 
         {/* Add Course Button - positioned at top left */}

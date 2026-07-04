@@ -8,7 +8,10 @@ import React from "react";
 //  - width: max-width utility for the content column (default "max-w-6xl").
 //  - header: optional element rendered full-bleed above the padded column
 //    (e.g. a sticky/gradient hero that should span edge-to-edge).
+//  - title / subtitle: optional page heading rendered at the top of the
+//    content column (skip when the page supplies its own hero via `header`).
 //  - className: extra utility classes appended to the inner content column.
+// The content column renders as <main> so every page gets a landmark.
 const ACCENT_GRADIENTS = {
   emerald: "from-emerald-50 via-white to-blue-50",
   purple: "from-purple-50 via-white to-indigo-50",
@@ -19,6 +22,8 @@ const PageLayout = ({
   accent = "emerald",
   width = "max-w-6xl",
   header = null,
+  title = null,
+  subtitle = null,
   className = "",
   children,
 }) => {
@@ -30,11 +35,23 @@ const PageLayout = ({
       dir="rtl"
     >
       {header}
-      <div
+      <main
         className={`${width} mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 space-y-4 sm:space-y-6 ${className}`.trim()}
       >
+        {title && (
+          <div className="text-center">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-slate-900">
+              {title}
+            </h1>
+            {subtitle && (
+              <p className="mt-1.5 text-sm sm:text-base text-muted">
+                {subtitle}
+              </p>
+            )}
+          </div>
+        )}
         {children}
-      </div>
+      </main>
     </div>
   );
 };

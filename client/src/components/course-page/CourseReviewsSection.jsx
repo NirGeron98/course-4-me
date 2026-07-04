@@ -327,7 +327,7 @@ const CourseReviewsSection = ({ courseId, courseTitle, user, onShowReviewForm, o
                                                 {renderStars(parseFloat(review.recommendation || 0))}
                                             </div>
                                             <span className="text-sm font-medium text-gray-700">
-                                                {review.recommendation.toFixed(1) || 0}/5.0
+                                                {(review.recommendation ?? 0).toFixed(1)}/5.0
                                             </span>
                                             <span className="text-xs text-gray-500">
                                                 {new Date(review.createdAt).toLocaleDateString('he-IL')}

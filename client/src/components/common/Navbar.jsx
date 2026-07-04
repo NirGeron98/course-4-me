@@ -93,8 +93,7 @@ const Navbar = ({ user, onLogout }) => {
 
   return (
     <nav className="bg-white/95 backdrop-blur-md border-b-2 border-gray-200 shadow-card sticky top-0 z-50">
-      {/* Make container wider */}
-      <div className="max-w-8xl mx-auto px-3 sm:px-4 lg:px-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6">
         <div className="flex items-center justify-between h-16" dir="rtl">
 
           {/* Logo - Updated with neutral colors */}
