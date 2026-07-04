@@ -3,15 +3,15 @@ import { apiFetch } from '../hooks/useApi';
 import { useNavigate } from 'react-router-dom';
 import {
   CheckCircle,
-  AlertCircle,
   Save,
   Loader2,
   Shield,
   LogOut
 } from 'lucide-react';
 import Alert from '../components/common/Alert';
-import Card from '../components/common/Card';
+import AuthLayout from '../components/common/AuthLayout';
 import PasswordInput from '../components/common/PasswordInput';
+import PasswordRules, { passwordSatisfiesRules } from '../components/common/PasswordRules';
 import Button from '../components/common/Button';
 
 const ResetPassword = ({ user, onLogout, updateUser }) => {
@@ -24,12 +24,13 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [passwordErrors, setPasswordErrors] = useState([]);
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [redirectBarFilled, setRedirectBarFilled] = useState(false);
-  
+
   // Check if user is using temporary password
   const isUsingTempPassword = user?.requiresPasswordReset || localStorage.getItem("requiresPasswordReset") === "true";
+
+  const newPasswordValid = passwordSatisfiesRules(formData.newPassword);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -43,7 +44,7 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
 
   useEffect(() => {
     document.title = 'שינוי סיסמה - Course4Me';
-    
+
     return () => {
       document.title = 'Course4Me';
     };
@@ -56,31 +57,12 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
     }
   }, [user, navigate]);
 
-  const validatePassword = (password) => {
-    const errors = [];
-    if (password.length < 6) {
-      errors.push('הסיסמה חייבת להכיל לפחות 6 תווים');
-    }
-    if (!/[A-Za-z]/.test(password)) {
-      errors.push('הסיסמה חייבת להכיל לפחות אות אחת');
-    }
-    if (!/[0-9]/.test(password)) {
-      errors.push('הסיסמה חייבת להכיל לפחות ספרה אחת');
-    }
-    return errors;
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     // Reset messages when user types
     setMessage('');
-    
-    // Validate new password in real-time
-    if (name === 'newPassword') {
-      setPasswordErrors(validatePassword(value));
-    }
   };
 
   const handleSubmit = async (e) => {
@@ -88,10 +70,8 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
     setIsLoading(true);
     setMessage('');
 
-    // Validate passwords
-    const newPasswordErrors = validatePassword(formData.newPassword);
-    if (newPasswordErrors.length > 0) {
-      setPasswordErrors(newPasswordErrors);
+    // The live PasswordRules checklist shows what is missing.
+    if (!newPasswordValid) {
       setIsLoading(false);
       return;
     }
@@ -114,15 +94,15 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
 
       setMessage(data.message);
       setIsSuccess(true);
-      
+
       // Clear the password reset requirement
       localStorage.removeItem("requiresPasswordReset");
-      
+
       // Update user state to remove password reset requirement
       const updatedUser = { ...user };
       delete updatedUser.requiresPasswordReset;
       updateUser(updatedUser);
-      
+
       // Clear form
       setFormData({
         currentPassword: '',
@@ -154,31 +134,20 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 flex items-center justify-center p-4" dir="rtl">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-500 rounded-full mb-4 shadow-card">
-            <Shield className="w-8 h-8 text-white" aria-hidden="true" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            {isUsingTempPassword ? 'הגדרת סיסמה חדשה' : 'שינוי סיסמה'}
-          </h1>
-          <p className="text-gray-600">
-            {isUsingTempPassword
-              ? 'אנא הגדר סיסמה חדשה וחזקה למשך השימוש במערכת'
-              : 'הגדר סיסמה חדשה וחזקה'
-            }
-          </p>
-        </div>
-
-        <Card variant="raised" padding="lg">
+    <AuthLayout
+      icon={Shield}
+      title={isUsingTempPassword ? 'הגדרת סיסמה חדשה' : 'שינוי סיסמה'}
+      subtitle={isUsingTempPassword
+        ? 'אנא הגדר סיסמה חדשה וחזקה למשך השימוש במערכת'
+        : 'הגדר סיסמה חדשה וחזקה'}
+    >
           {isUsingTempPassword && (
-            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-card">
+            <div className="mb-6 p-4 bg-accent-info-tint border border-accent-info-soft rounded-card">
               <div className="flex items-center">
-                <Shield className="w-5 h-5 text-blue-600 ml-2" aria-hidden="true" />
+                <Shield className="w-5 h-5 text-accent-info ml-2" aria-hidden="true" />
                 <div>
-                  <h3 className="text-blue-800 font-semibold mb-1">הגדרת סיסמה חדשה</h3>
-                  <p className="text-blue-700 text-sm">
+                  <h3 className="text-accent-info-strong font-semibold mb-1">הגדרת סיסמה חדשה</h3>
+                  <p className="text-accent-info-strong text-sm">
                     התחברת עם סיסמה זמנית. כדי להמשיך להשתמש במערכת, הגדר סיסמה חדשה וחזקה.
                   </p>
                 </div>
@@ -206,23 +175,18 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
                 required
               />
 
-              {passwordErrors.length > 0 && (
-                <div className="bg-red-50 border border-red-200 rounded-card p-4">
-                  <ul className="text-red-700 text-sm space-y-1">
-                    {passwordErrors.map((error, index) => (
-                      <li key={index} className="flex items-center">
-                        <AlertCircle className="w-4 h-4 ml-2 flex-shrink-0" aria-hidden="true" />
-                        {error}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              <PasswordRules password={formData.newPassword} />
 
               <PasswordInput
                 name="confirmPassword"
                 label="אישור סיסמה חדשה"
                 autoComplete="new-password"
+                error={
+                  formData.confirmPassword.length > 0 &&
+                  formData.confirmPassword !== formData.newPassword
+                    ? 'הסיסמאות החדשות אינן זהות'
+                    : undefined
+                }
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
@@ -233,7 +197,7 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
                 size="lg"
                 fullWidth
                 loading={isLoading}
-                disabled={passwordErrors.length > 0}
+                disabled={formData.newPassword.length > 0 && !newPasswordValid}
                 leftIcon={!isLoading ? Save : undefined}
               >
                 {isLoading ? "משנה סיסמה..." : "שמור סיסמה חדשה"}
@@ -254,33 +218,33 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
             </form>
           ) : (
             <div className="text-center space-y-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-100 rounded-full mb-4">
-                <CheckCircle className="w-8 h-8 text-emerald-500" />
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-soft rounded-full mb-4">
+                <CheckCircle className="w-8 h-8 text-brand" />
               </div>
-              
+
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-gray-800">הסיסמה שונתה בהצלחה!</h3>
-                <p className="text-gray-600">
+                <h3 className="text-xl font-semibold text-slate-900">הסיסמה שונתה בהצלחה!</h3>
+                <p className="text-muted">
                   עכשיו אתה יכול להמשיך להשתמש במערכת עם הסיסמה החדשה שלך.
                 </p>
               </div>
 
               {isRedirecting ? (
-                <div className="bg-emerald-50 border border-emerald-200 rounded-card p-4">
+                <div className="bg-brand-tint border border-brand-soft rounded-card p-4">
                   <div className="flex items-center justify-center space-x-2">
-                    <Loader2 className="ml-3 w-5 h-5 animate-spin text-emerald-600" />
-                    <p className="text-emerald-700 text-sm mr-2">מעביר אותך לדף הראשי...</p>
+                    <Loader2 className="ml-3 w-5 h-5 animate-spin text-brand" />
+                    <p className="text-brand-strong text-sm mr-2">מעביר אותך לדף הראשי...</p>
                   </div>
-                  <div className="mt-3 bg-emerald-200 rounded-full h-2 overflow-hidden">
+                  <div className="mt-3 bg-brand-soft rounded-full h-2 overflow-hidden">
                     <div
-                      className="bg-emerald-500 h-full rounded-full transition-all duration-[3000ms] ease-in-out"
+                      className="bg-brand h-full rounded-full transition-all duration-[3000ms] ease-in-out"
                       style={{ width: redirectBarFilled ? '100%' : '0%' }}
                     ></div>
                   </div>
                 </div>
               ) : (
-                <div className="bg-emerald-50 border border-emerald-200 rounded-card p-4">
-                  <p className="text-emerald-700 text-sm">
+                <div className="bg-brand-tint border border-brand-soft rounded-card p-4">
+                  <p className="text-brand-strong text-sm">
                     הכנה למעבר לדף הראשי...
                   </p>
                 </div>
@@ -293,9 +257,7 @@ const ResetPassword = ({ user, onLogout, updateUser }) => {
               <Alert type="error" message={message} onDismiss={() => setMessage('')} />
             </div>
           )}
-        </Card>
-      </div>
-    </div>
+    </AuthLayout>
   );
 };
 
