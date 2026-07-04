@@ -5,28 +5,31 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { Toaster } from "sonner";
 import Navbar from "./components/common/Navbar";
 import LoadingSpinner from "./components/common/LoadingSpinner";
 import NotFound from "./components/common/NotFound";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import TrackedCourses from "./pages/TrackedCourses";
-import TrackedLecturers from "./pages/TrackedLecturers";
-import CoursePage from "./pages/CoursePage";
-import LecturerPage from "./pages/LecturerPage";
-import ProfileManagement from "./pages/ProfileManagement";
-import MyReviewsPage from "./pages/MyReviewsPage";
-import MyContactRequests from "./pages/MyContactRequests";
 import { CourseDataProvider } from "./contexts/CourseDataContext";
 import { initializeCacheCleanup, clearAllUserCache } from "./utils/cacheUtils";
 import preloadUserData, { abortPreload } from "./utils/preloadUserData";
 
-// Lazy-load heavier routes to reduce initial bundle and improve TTI
+// Every route except Login (the landing page) and Dashboard (first screen
+// after login, and the target of the post-login preload events) is
+// lazy-loaded so the initial bundle stays small.
 const AdminPanel = lazy(() => import("./pages/AdminPanel"));
 const AdvancedSearch = lazy(() => import("./pages/AdvancedSearch"));
+const Signup = lazy(() => import("./pages/Signup"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const TrackedCourses = lazy(() => import("./pages/TrackedCourses"));
+const TrackedLecturers = lazy(() => import("./pages/TrackedLecturers"));
+const CoursePage = lazy(() => import("./pages/CoursePage"));
+const LecturerPage = lazy(() => import("./pages/LecturerPage"));
+const ProfileManagement = lazy(() => import("./pages/ProfileManagement"));
+const MyReviewsPage = lazy(() => import("./pages/MyReviewsPage"));
+const MyContactRequests = lazy(() => import("./pages/MyContactRequests"));
 
 const PageLoader = () => <LoadingSpinner message="טוען עמוד..." />;
 
@@ -138,7 +141,15 @@ function App() {
     <CourseDataProvider>
       <Router>
         <div className="App">
+          <Toaster
+            dir="rtl"
+            position="top-center"
+            richColors
+            closeButton
+            toastOptions={{ style: { fontFamily: "inherit" } }}
+          />
           <Navbar user={user} onLogout={handleLogout} />
+          <Suspense fallback={<PageLoader />}>
           <Routes>
             {/* Public Routes */}
             <Route
@@ -185,9 +196,7 @@ function App() {
               path="/search"
               element={
                 <ProtectedRoute>
-                  <Suspense fallback={<PageLoader />}>
-                    <AdvancedSearch user={user} />
-                  </Suspense>
+                  <AdvancedSearch user={user} />
                 </ProtectedRoute>
               }
             />
@@ -226,9 +235,7 @@ function App() {
               element={
                 <ProtectedRoute>
                   {user?.user?.role === "admin" ? (
-                    <Suspense fallback={<PageLoader />}>
-                      <AdminPanel user={user} />
-                    </Suspense>
+                    <AdminPanel user={user} />
                   ) : (
                     <Navigate to="/dashboard" />
                   )}
@@ -247,6 +254,7 @@ function App() {
             {/* Catch all route - 404 */}
             <Route path="*" element={<NotFound isLoggedIn={!!user} />} />
           </Routes>
+          </Suspense>
         </div>
       </Router>
     </CourseDataProvider>
