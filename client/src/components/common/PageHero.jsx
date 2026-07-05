@@ -10,20 +10,23 @@ import React from "react";
 // below the title block (e.g. a type toggle).
 //
 // `color` picks the background gradient: "neutral" (default, generic pages
-// that aren't course/lecturer specific — reviews, contact requests, search,
+// that aren't course/lecturer specific — reviews, contact requests,
 // dashboard, profile, admin), "course" (emerald, matches accent.course /
-// CourseHeader), or "lecturer" (purple, matches accent.lecturer /
-// LecturerHeader).
+// CourseHeader), "lecturer" (purple, matches accent.lecturer /
+// LecturerHeader), or "search" (blue, matches the search page's existing
+// blue accents).
 const COLOR_GRADIENTS = {
   neutral: "from-slate-600 via-slate-700 to-slate-800",
   course: "from-emerald-600 via-emerald-700 to-teal-800",
   lecturer: "from-purple-600 via-purple-700 to-purple-800",
+  search: "from-blue-600 via-blue-700 to-blue-800",
 };
 
 const ACTION_TEXT_COLORS = {
   neutral: "text-slate-700 hover:text-slate-800 focus-visible:ring-offset-slate-700",
   course: "text-emerald-700 hover:text-emerald-800 focus-visible:ring-offset-emerald-700",
   lecturer: "text-purple-700 hover:text-purple-800 focus-visible:ring-offset-purple-700",
+  search: "text-blue-700 hover:text-blue-800 focus-visible:ring-offset-blue-700",
 };
 
 const PageHero = ({ icon: Icon, title, subtitle, badge, action, aside, children, color = "neutral", className = "" }) => {

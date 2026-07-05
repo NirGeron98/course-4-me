@@ -406,6 +406,7 @@ const AdvancedSearch = ({ user }) => {
           icon={Search}
           title="חיפוש מתקדם"
           subtitle="חפש קורסים ומרצים עם פילטרים מתקדמים"
+          color="search"
         >
           <div className="flex justify-center">
             <SearchTypeToggle
