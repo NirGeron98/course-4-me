@@ -209,32 +209,36 @@ const MyReviewsPage = ({ user }) => {
     setEditingReview(null);
   };
 
-  return (
-    <PageLayout accent="emerald" width="max-w-screen-2xl">
-        {/* Header */}
-        <div className="mb-2 sm:mb-4 text-center">
-          <div className="inline-flex flex-col items-center">
-            <div className="mb-4 p-4 bg-gradient-to-br from-brand to-brand-strong rounded-full shadow-card" aria-hidden="true">
-              <MessageCircle className="w-5 h-5 sm:w-8 sm:h-8 text-white" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 mb-3">
-              הביקורות שלי
-            </h1>
-            <div className="flex items-center gap-3 text-muted">
-              <div className="h-px w-8 bg-gradient-to-r from-transparent to-slate-300" aria-hidden="true" />
-              {loading ? (
-                <SkeletonLine width="180px" className="h-5" />
-              ) : (
-                <p className="text-base sm:text-lg font-medium">
-                  נמצאו <span className="text-brand-strong font-bold">{filteredReviews.length}</span> ביקורות מתוך <span className="text-brand-strong font-bold">{reviews.length}</span> סה"כ
-                </p>
-              )}
-              <div className="h-px w-8 bg-gradient-to-l from-transparent to-slate-300" aria-hidden="true" />
-            </div>
-            <div className="mt-4 w-24 h-1 bg-gradient-to-r from-brand to-brand-strong rounded-full" aria-hidden="true" />
-          </div>
-        </div>
+  const hero = (
+    <div className="relative bg-gradient-to-br from-brand to-brand-strong text-white py-8 px-6 overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden" aria-hidden="true">
+        <div className="absolute top-4 right-12 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-4 left-12 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
+      </div>
 
+      <div className="relative z-10 max-w-5xl mx-auto flex flex-col items-center text-center gap-3">
+        <div className="p-4 bg-white/15 backdrop-blur-sm rounded-full border border-white/20" aria-hidden="true">
+          <MessageCircle className="w-5 h-5 sm:w-8 sm:h-8 text-white" />
+        </div>
+        <h1 className="text-3xl md:text-4xl font-bold leading-tight text-white">
+          הביקורות שלי
+        </h1>
+        {loading ? (
+          <SkeletonLine width="180px" className="h-5" />
+        ) : (
+          <div className="inline-flex items-center bg-white/15 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20 text-sm">
+            <span className="font-semibold">
+              נמצאו {filteredReviews.length} ביקורות מתוך {reviews.length} סה"כ
+            </span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  return (
+    <PageLayout accent="emerald" width="max-w-screen-2xl" header={hero}>
         {error && <Alert type="error" message={error} className="mb-4" />}
 
         {loading ? (
