@@ -210,7 +210,7 @@ const MyReviewsPage = ({ user }) => {
   };
 
   return (
-    <PageLayout accent="emerald" width="max-w-7xl">
+    <PageLayout accent="emerald" width="max-w-screen-2xl">
         {/* Header */}
         <div className="mb-2 sm:mb-4 text-center">
           <div className="inline-flex flex-col items-center">
