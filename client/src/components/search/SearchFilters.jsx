@@ -333,7 +333,7 @@ const SearchFilters = ({
             {/* Search Button */}
             <div className="mt-6 flex justify-center">
                 <Button
-                    variant="primary"
+                    variant="info"
                     size="lg"
                     leftIcon={Search}
                     loading={loading}

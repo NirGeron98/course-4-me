@@ -1,0 +1,6 @@
+# Local scripts workspace (e.g. Yedion extraction, dry-run, and additive import tooling).
+# Contains generated reports, raw HTML snapshots, and local DB validation scripts.
+scripts/
+
+# Local pre-import backup snapshots
+backup-before-yedion-import-*/
