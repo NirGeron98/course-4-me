@@ -7,7 +7,7 @@ const WelcomeHeader = ({ userName }) => {
     <div className="bg-white/10 rounded-card-lg p-3 backdrop-blur-sm">
       <div className="text-center">
         <div className="text-lg font-bold">{new Date().toLocaleDateString('he-IL')}</div>
-        <div className="text-emerald-100 text-xs">היום</div>
+        <div className="text-white/70 text-xs">היום</div>
       </div>
     </div>
   );

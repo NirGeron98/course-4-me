@@ -8,13 +8,33 @@ import React from "react";
 // course/lecturer), `aside` for arbitrary non-button content on the
 // opposite side (e.g. a date widget), and `children` for extra content
 // below the title block (e.g. a type toggle).
-const PageHero = ({ icon: Icon, title, subtitle, badge, action, aside, children, className = "" }) => {
+//
+// `color` picks the background gradient: "neutral" (default, generic pages
+// that aren't course/lecturer specific — reviews, contact requests, search,
+// dashboard, profile, admin), "course" (emerald, matches accent.course /
+// CourseHeader), or "lecturer" (purple, matches accent.lecturer /
+// LecturerHeader).
+const COLOR_GRADIENTS = {
+  neutral: "from-slate-600 via-slate-700 to-slate-800",
+  course: "from-emerald-600 via-emerald-700 to-teal-800",
+  lecturer: "from-purple-600 via-purple-700 to-purple-800",
+};
+
+const ACTION_TEXT_COLORS = {
+  neutral: "text-slate-700 hover:text-slate-800 focus-visible:ring-offset-slate-700",
+  course: "text-emerald-700 hover:text-emerald-800 focus-visible:ring-offset-emerald-700",
+  lecturer: "text-purple-700 hover:text-purple-800 focus-visible:ring-offset-purple-700",
+};
+
+const PageHero = ({ icon: Icon, title, subtitle, badge, action, aside, children, color = "neutral", className = "" }) => {
   const ActionIcon = action?.icon;
   const hasSideContent = Boolean(action || aside);
+  const gradient = COLOR_GRADIENTS[color] || COLOR_GRADIENTS.neutral;
+  const actionTextColor = ACTION_TEXT_COLORS[color] || ACTION_TEXT_COLORS.neutral;
 
   return (
     <div
-      className={`relative bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 text-white py-5 sm:py-6 px-6 overflow-hidden ${className}`.trim()}
+      className={`relative bg-gradient-to-br ${gradient} text-white py-5 sm:py-6 px-6 overflow-hidden ${className}`.trim()}
     >
       {/* Decorative background elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden" aria-hidden="true">
@@ -38,7 +58,7 @@ const PageHero = ({ icon: Icon, title, subtitle, badge, action, aside, children,
               {title}
             </h1>
             {subtitle && (
-              <p className="mt-0.5 text-xs sm:text-sm text-emerald-50/90 font-medium leading-relaxed">
+              <p className="mt-0.5 text-xs sm:text-sm text-white/80 font-medium leading-relaxed">
                 {subtitle}
               </p>
             )}
@@ -54,7 +74,7 @@ const PageHero = ({ icon: Icon, title, subtitle, badge, action, aside, children,
           <button
             type="button"
             onClick={action.onClick}
-            className="shrink-0 bg-white text-emerald-700 hover:text-emerald-800 py-2 px-4 rounded-card font-semibold transition-all duration-ui shadow-card hover:shadow-card-hover flex items-center gap-2 group text-sm hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-emerald-700"
+            className={`shrink-0 bg-white py-2 px-4 rounded-card font-semibold transition-all duration-ui shadow-card hover:shadow-card-hover flex items-center gap-2 group text-sm hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white ${actionTextColor}`}
           >
             {ActionIcon && (
               <ActionIcon className="w-4 h-4 group-hover:rotate-90 transition-transform duration-ui" aria-hidden="true" />

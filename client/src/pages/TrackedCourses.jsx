@@ -237,6 +237,7 @@ const TrackedCourses = () => {
           : null
       }
       action={{ label: "הוספת קורס", icon: Plus, onClick: openPopup }}
+      color="course"
     />
   );
 

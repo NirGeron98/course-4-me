@@ -292,6 +292,7 @@ const TrackedLecturers = () => {
           : null
       }
       action={{ label: "הוספת מרצה", icon: Plus, onClick: openPopup }}
+      color="lecturer"
     />
   );
 
