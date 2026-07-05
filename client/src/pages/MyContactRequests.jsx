@@ -6,6 +6,7 @@ import ContactRequestsList from "../components/contact-requests/ContactRequestsL
 import ContactRequestDetailsModal from "../components/contact-requests/ContactRequestDetailsModal";
 import ContactRequestEditModal from "../components/contact-requests/ContactRequestEditModal";
 import PageLayout from "../components/common/PageLayout";
+import PageHero from "../components/common/PageHero";
 import { useContactRequests } from "../hooks/useContactRequests";
 
 // MyContactRequests — thin page shell (Phase 6 refactor). Data fetching and
@@ -93,31 +94,16 @@ const MyContactRequests = ({ user }) => {
   };
 
   const hero = (
-    <div className="relative bg-gradient-to-br from-indigo-500 to-purple-600 text-white py-8 px-6 overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden" aria-hidden="true">
-        <div className="absolute top-4 right-12 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
-        <div className="absolute bottom-4 left-12 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
-      </div>
-
-      <div className="relative z-10 max-w-5xl mx-auto flex flex-col items-center text-center gap-3">
-        <div className="p-4 bg-white/15 backdrop-blur-sm rounded-full border border-white/20" aria-hidden="true">
-          <MessageSquare className="w-5 h-5 sm:w-8 sm:h-8 text-white" />
-        </div>
-        <h1 className="text-3xl md:text-4xl font-bold leading-tight text-white">
-          הפניות שלי
-        </h1>
-        <div className="inline-flex items-center bg-white/15 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20 text-sm">
-          <span className="font-semibold">
-            נמצאו {requests.length} פניות
-          </span>
-        </div>
-      </div>
-    </div>
+    <PageHero
+      icon={MessageSquare}
+      title="הפניות שלי"
+      subtitle="עקבו אחר הפניות שלכם לצוות התמיכה וסטטוס הטיפול בהן"
+      badge={`נמצאו ${requests.length} פניות`}
+    />
   );
 
   return (
-    <PageLayout accent="indigo" header={hero}>
+    <PageLayout accent="slate" header={hero}>
         {(error || actionError) && (
           <Alert
             type="error"

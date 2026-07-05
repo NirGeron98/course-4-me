@@ -10,6 +10,7 @@ import {
 } from "../contexts/CourseDataContext";
 import { SkeletonCardGrid } from '../components/common/Skeleton';
 import PageLayout from '../components/common/PageLayout';
+import PageHero from '../components/common/PageHero';
 import EmptyState from '../components/common/EmptyState';
 
 const CACHE_KEY = 'tracked_courses_data';
@@ -226,47 +227,21 @@ const TrackedCourses = () => {
   };
 
   const hero = (
-    <div className="relative bg-gradient-to-br from-brand to-brand-strong text-white py-8 px-6 overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden" aria-hidden="true">
-        <div className="absolute top-4 right-12 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
-        <div className="absolute bottom-4 left-12 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
-      </div>
-
-      <div className="relative z-10 max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="text-center sm:text-right">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2 leading-tight text-white">
-            הקורסים שלי
-          </h1>
-          <p className="text-base md:text-lg text-emerald-50 font-medium leading-relaxed">
-            נהל את רשימת הקורסים שלך ועקוב אחר עדכונים
-          </p>
-
-          {!isLoading && trackedCourses.length > 0 && trackedCourses.some(({ course }) => course) && (
-            <div className="mt-3">
-              <div className="inline-flex items-center bg-white/15 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20 text-sm">
-                <span className="font-semibold">
-                  {trackedCourses.filter(({ course }) => course).length} קורסים במעקב
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <button
-          type="button"
-          onClick={openPopup}
-          className="shrink-0 bg-white text-brand hover:text-brand-strong py-2.5 px-5 rounded-card font-semibold transition-all duration-ui shadow-card hover:shadow-card-hover flex items-center gap-2 group text-sm hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-brand"
-        >
-          <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-ui" aria-hidden="true" />
-          הוספת קורס
-        </button>
-      </div>
-    </div>
+    <PageHero
+      icon={BookOpen}
+      title="הקורסים שלי"
+      subtitle="נהל את רשימת הקורסים שלך ועקוב אחר עדכונים"
+      badge={
+        !isLoading && trackedCourses.length > 0 && trackedCourses.some(({ course }) => course)
+          ? `${trackedCourses.filter(({ course }) => course).length} קורסים במעקב`
+          : null
+      }
+      action={{ label: "הוספת קורס", icon: Plus, onClick: openPopup }}
+    />
   );
 
   return (
-    <PageLayout accent="emerald" width="max-w-[1800px]" header={hero}>
+    <PageLayout accent="slate" width="max-w-[1800px]" header={hero}>
         {/* Loading: skeleton grid to avoid layout shift */}
         {isLoading ? (
           <div className="mt-4" role="status">

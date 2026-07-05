@@ -7,6 +7,7 @@ import TrackedLecturerCard from "../components/tracked-lecturers/TrackedLecturer
 import { getLecturerSlug } from '../utils/slugUtils';
 import { SkeletonCardGrid } from '../components/common/Skeleton';
 import PageLayout from '../components/common/PageLayout';
+import PageHero from '../components/common/PageHero';
 import EmptyState from '../components/common/EmptyState';
 
 const TRACKED_LECTURERS_CACHE_KEY = 'tracked_lecturers_data';
@@ -281,47 +282,21 @@ const TrackedLecturers = () => {
   };
 
   const hero = (
-    <div className="relative bg-gradient-to-br from-accent-lecturer to-accent-lecturer-strong text-white py-8 px-6 overflow-hidden">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden" aria-hidden="true">
-        <div className="absolute top-4 right-12 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
-        <div className="absolute bottom-4 left-12 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
-      </div>
-
-      <div className="relative z-10 max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="text-center sm:text-right">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2 leading-tight text-white">
-            המרצים שלי
-          </h1>
-          <p className="text-base md:text-lg text-purple-50 font-medium leading-relaxed">
-            נהל את רשימת המרצים שלך ועקוב אחר עדכונים
-          </p>
-
-          {!isLoading && trackedLecturers.length > 0 && trackedLecturers.some(({ lecturer }) => lecturer) && (
-            <div className="mt-3">
-              <div className="inline-flex items-center bg-white/15 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20 text-sm">
-                <span className="font-semibold">
-                  {trackedLecturers.filter(({ lecturer }) => lecturer).length} מרצים במעקב
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <button
-          type="button"
-          onClick={openPopup}
-          className="shrink-0 bg-white text-accent-lecturer hover:text-accent-lecturer-strong py-2.5 px-5 rounded-card font-semibold transition-all duration-ui shadow-card hover:shadow-card-hover flex items-center gap-2 group text-sm hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-accent-lecturer"
-        >
-          <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-ui" aria-hidden="true" />
-          הוספת מרצה
-        </button>
-      </div>
-    </div>
+    <PageHero
+      icon={Users}
+      title="המרצים שלי"
+      subtitle="נהל את רשימת המרצים שלך ועקוב אחר עדכונים"
+      badge={
+        !isLoading && trackedLecturers.length > 0 && trackedLecturers.some(({ lecturer }) => lecturer)
+          ? `${trackedLecturers.filter(({ lecturer }) => lecturer).length} מרצים במעקב`
+          : null
+      }
+      action={{ label: "הוספת מרצה", icon: Plus, onClick: openPopup }}
+    />
   );
 
   return (
-    <PageLayout accent="purple" width="max-w-[1800px]" header={hero}>
+    <PageLayout accent="slate" width="max-w-[1800px]" header={hero}>
         {/* Loading: skeleton grid to avoid layout shift */}
         {isLoading ? (
           <div className="mt-4" role="status">
