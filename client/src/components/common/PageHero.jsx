@@ -1,49 +1,60 @@
 import React from "react";
 
-// PageHero — shared full-bleed page header for the "my X" list pages
-// (tracked courses/lecturers, my reviews, my contact requests). Solid
-// neutral background so no single page "owns" a color; pass `action`
-// for pages that need an inline button (e.g. add course/lecturer).
-const PageHero = ({ icon: Icon, title, subtitle, badge, action }) => {
+// PageHero — shared, compact page header used across the app's "my X" and
+// detail pages (tracked courses/lecturers, my reviews, my contact requests,
+// search, profile, course/lecturer pages, admin). Icon sits beside the
+// title/subtitle block (not above it) and the whole group is centered as
+// one unit; pass `action` for pages that need an inline button (e.g. add
+// course/lecturer), `aside` for arbitrary non-button content on the
+// opposite side (e.g. a date widget), and `children` for extra content
+// below the title block (e.g. a type toggle).
+const PageHero = ({ icon: Icon, title, subtitle, badge, action, aside, children, className = "" }) => {
   const ActionIcon = action?.icon;
+  const hasSideContent = Boolean(action || aside);
 
   return (
-    <div className="relative bg-gradient-to-br from-slate-800 to-slate-900 text-white py-8 px-6 overflow-hidden">
+    <div
+      className={`relative bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 text-white py-5 sm:py-6 px-6 overflow-hidden ${className}`.trim()}
+    >
       {/* Decorative background elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden" aria-hidden="true">
-        <div className="absolute top-4 right-12 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
-        <div className="absolute bottom-4 left-12 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute top-2 right-12 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-2 left-12 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
       </div>
 
-      <div className="relative z-10 max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div className="flex flex-col items-center sm:items-start text-center sm:text-right gap-3">
+      <div
+        className={`relative z-10 max-w-5xl mx-auto flex flex-col sm:flex-row items-center gap-3 sm:gap-4 ${
+          hasSideContent ? "sm:justify-between" : "sm:justify-center"
+        }`}
+      >
+        <div className="flex items-center gap-3 sm:gap-4">
           {Icon && (
-            <div className="p-4 bg-white/15 backdrop-blur-sm rounded-full border border-white/20" aria-hidden="true">
-              <Icon className="w-5 h-5 sm:w-8 sm:h-8 text-white" />
+            <div className="shrink-0 p-2.5 sm:p-3 bg-white/15 backdrop-blur-sm rounded-full border border-white/20" aria-hidden="true">
+              <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
           )}
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold leading-tight text-white">
+          <div className="text-center sm:text-right">
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold leading-tight text-white">
               {title}
             </h1>
             {subtitle && (
-              <p className="mt-2 text-base md:text-lg text-slate-300 font-medium leading-relaxed">
+              <p className="mt-0.5 text-xs sm:text-sm text-emerald-50/90 font-medium leading-relaxed">
                 {subtitle}
               </p>
             )}
+            {badge && (
+              <div className="mt-2 inline-flex items-center bg-white/15 backdrop-blur-sm rounded-full px-3 py-1 border border-white/20 text-xs sm:text-sm">
+                <span className="font-semibold">{badge}</span>
+              </div>
+            )}
           </div>
-          {badge && (
-            <div className="inline-flex items-center bg-white/15 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20 text-sm">
-              <span className="font-semibold">{badge}</span>
-            </div>
-          )}
         </div>
 
         {action && (
           <button
             type="button"
             onClick={action.onClick}
-            className="shrink-0 bg-white text-slate-800 hover:text-slate-900 py-2.5 px-5 rounded-card font-semibold transition-all duration-ui shadow-card hover:shadow-card-hover flex items-center gap-2 group text-sm hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-slate-800"
+            className="shrink-0 bg-white text-emerald-700 hover:text-emerald-800 py-2 px-4 rounded-card font-semibold transition-all duration-ui shadow-card hover:shadow-card-hover flex items-center gap-2 group text-sm hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-white focus-visible:ring-offset-emerald-700"
           >
             {ActionIcon && (
               <ActionIcon className="w-4 h-4 group-hover:rotate-90 transition-transform duration-ui" aria-hidden="true" />
@@ -51,7 +62,13 @@ const PageHero = ({ icon: Icon, title, subtitle, badge, action }) => {
             {action.label}
           </button>
         )}
+
+        {aside && <div className="shrink-0 hidden md:block">{aside}</div>}
       </div>
+
+      {children && (
+        <div className="relative z-10 max-w-5xl mx-auto mt-4">{children}</div>
+      )}
     </div>
   );
 };

@@ -7,6 +7,7 @@ import SearchFilters from '../components/search/SearchFilters';
 import SearchResults from '../components/search/SearchResults';
 import CourseDetailsModal from '../components/tracked-courses/CourseDetailsModal';
 import PageLayout from '../components/common/PageLayout';
+import PageHero from '../components/common/PageHero';
 import { getLecturerSlug } from '../utils/slugUtils';
 
 const AdvancedSearch = ({ user }) => {
@@ -398,28 +399,21 @@ const AdvancedSearch = ({ user }) => {
 
   return (
     <PageLayout
-      accent="indigo"
+      accent="slate"
       width="max-w-7xl"
       header={
-        <div className="bg-gradient-to-l from-blue-600 to-indigo-600 text-white py-6 sm:py-8 px-4 sm:px-6 shadow-card-lg">
-          <div className="max-w-7xl mx-auto text-center">
-            <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-              <div className="bg-white/20 rounded-full p-3 sm:p-4 shrink-0">
-                <Search className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-              </div>
-              <div className="text-start">
-                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-1">חיפוש מתקדם</h1>
-                <p className="text-blue-100 text-sm sm:text-base">חפש קורסים ומרצים עם פילטרים מתקדמים</p>
-              </div>
-            </div>
-
-            {/* Search Type Toggle */}
+        <PageHero
+          icon={Search}
+          title="חיפוש מתקדם"
+          subtitle="חפש קורסים ומרצים עם פילטרים מתקדמים"
+        >
+          <div className="flex justify-center">
             <SearchTypeToggle
               searchType={searchType}
               onSearchTypeChange={handleSearchTypeChange}
             />
           </div>
-        </div>
+        </PageHero>
       }
     >
       {/* Filters Section */}

@@ -5,8 +5,9 @@ import CourseManagement from "../components/admin/CourseManagement";
 import LecturerManagement from "../components/admin/LecturerManagement";
 import DepartmentManagement from "../components/admin/DepartmentManagement";
 import ContactRequestManagement from "../components/admin/ContactRequestManagement";
-import { AlertCircle, BookOpen, Users, Building, MessageSquare } from "lucide-react";
+import { AlertCircle, BookOpen, Users, Building, MessageSquare, Settings } from "lucide-react";
 import Alert from "../components/common/Alert";
+import PageHero from "../components/common/PageHero";
 
 const TABS = [
   { key: "courses", label: "ניהול קורסים", icon: BookOpen },
@@ -87,12 +88,11 @@ const AdminPanel = ({ user }) => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-brand-tint via-white to-brand-soft" dir="rtl">
-      <div className="bg-gradient-to-r from-brand to-brand-strong text-white py-6 sm:py-8 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-1 sm:mb-2">פאנל ניהול מערכת</h1>
-          <p className="text-brand-soft text-sm sm:text-base">ניהול קורסים ומרצים במערכת</p>
-        </div>
-      </div>
+      <PageHero
+        icon={Settings}
+        title="פאנל ניהול מערכת"
+        subtitle="ניהול קורסים ומרצים במערכת"
+      />
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
         <div className="bg-white rounded-card-lg shadow-card border border-brand-soft">
