@@ -5,7 +5,7 @@ import { LazyMotion, domAnimation, m, useReducedMotion } from "framer-motion";
 // and a centered responsive content column. Codifies the pattern every page
 // used to hand-roll independently (see UI_REFINEMENTS.md).
 // Props:
-//  - accent: "emerald" | "purple" | "indigo" — picks the background gradient.
+//  - accent: "emerald" | "purple" | "indigo" | "amber" — picks the background gradient.
 //  - width: max-width utility for the content column (default "max-w-6xl").
 //  - header: optional element rendered full-bleed above the padded column
 //    (e.g. a sticky/gradient hero that should span edge-to-edge).
@@ -17,6 +17,7 @@ const ACCENT_GRADIENTS = {
   emerald: "from-emerald-50 via-white to-blue-50",
   purple: "from-purple-50 via-white to-indigo-50",
   indigo: "from-indigo-50 via-white to-blue-50",
+  amber: "from-amber-50 via-white to-orange-50",
 };
 
 const PageLayout = ({

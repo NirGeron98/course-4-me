@@ -210,7 +210,7 @@ const MyReviewsPage = ({ user }) => {
   };
 
   const hero = (
-    <div className="relative bg-gradient-to-br from-brand to-brand-strong text-white py-8 px-6 overflow-hidden">
+    <div className="relative bg-gradient-to-br from-amber-500 to-orange-600 text-white py-8 px-6 overflow-hidden">
       {/* Decorative background elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden" aria-hidden="true">
         <div className="absolute top-4 right-12 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
@@ -238,7 +238,7 @@ const MyReviewsPage = ({ user }) => {
   );
 
   return (
-    <PageLayout accent="emerald" width="max-w-screen-2xl" header={hero}>
+    <PageLayout accent="amber" width="max-w-screen-2xl" header={hero}>
         {error && <Alert type="error" message={error} className="mb-4" />}
 
         {loading ? (

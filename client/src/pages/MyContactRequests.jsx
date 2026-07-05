@@ -5,6 +5,7 @@ import ConfirmDialog from "../components/common/ConfirmDialog";
 import ContactRequestsList from "../components/contact-requests/ContactRequestsList";
 import ContactRequestDetailsModal from "../components/contact-requests/ContactRequestDetailsModal";
 import ContactRequestEditModal from "../components/contact-requests/ContactRequestEditModal";
+import PageLayout from "../components/common/PageLayout";
 import { useContactRequests } from "../hooks/useContactRequests";
 
 // MyContactRequests — thin page shell (Phase 6 refactor). Data fetching and
@@ -91,32 +92,32 @@ const MyContactRequests = ({ user }) => {
     }
   };
 
-  return (
-    <div
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100"
-      dir="rtl"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
-        {/* Header */}
-        <div className="mb-6 sm:mb-8 text-center">
-          <div className="inline-flex flex-col items-center">
-            <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full shadow-card">
-              <MessageSquare className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
-            </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 bg-clip-text text-transparent mb-2 sm:mb-3">
-              הפניות שלי
-            </h1>
-            <div className="flex items-center gap-2 sm:gap-3 text-slate-600">
-              <div className="h-px w-4 sm:w-6 md:w-8 bg-gradient-to-r from-transparent to-indigo-300" />
-              <p className="text-sm sm:text-base lg:text-lg font-medium">
-                נמצאו <span className="text-indigo-600 font-bold">{requests.length}</span> פניות
-              </p>
-              <div className="h-px w-4 sm:w-6 md:w-8 bg-gradient-to-l from-transparent to-indigo-300" />
-            </div>
-            <div className="mt-3 sm:mt-4 w-16 sm:w-20 md:w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full" />
-          </div>
-        </div>
+  const hero = (
+    <div className="relative bg-gradient-to-br from-indigo-500 to-purple-600 text-white py-8 px-6 overflow-hidden">
+      {/* Decorative background elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden" aria-hidden="true">
+        <div className="absolute top-4 right-12 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+        <div className="absolute bottom-4 left-12 w-16 h-16 bg-white/10 rounded-full blur-xl"></div>
+      </div>
 
+      <div className="relative z-10 max-w-5xl mx-auto flex flex-col items-center text-center gap-3">
+        <div className="p-4 bg-white/15 backdrop-blur-sm rounded-full border border-white/20" aria-hidden="true">
+          <MessageSquare className="w-5 h-5 sm:w-8 sm:h-8 text-white" />
+        </div>
+        <h1 className="text-3xl md:text-4xl font-bold leading-tight text-white">
+          הפניות שלי
+        </h1>
+        <div className="inline-flex items-center bg-white/15 backdrop-blur-sm rounded-full px-4 py-2 border border-white/20 text-sm">
+          <span className="font-semibold">
+            נמצאו {requests.length} פניות
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <PageLayout accent="indigo" header={hero}>
         {(error || actionError) && (
           <Alert
             type="error"
@@ -136,11 +137,8 @@ const MyContactRequests = ({ user }) => {
         )}
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8 animate-fadeIn">
-          <div
-            className="bg-white rounded-card border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui animate-fadeIn"
-            style={{ animationDelay: "0.1s" }}
-          >
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div className="bg-white rounded-card border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui">
             <div className="flex items-center">
               <span className="text-xl sm:text-2xl font-bold text-indigo-600 ml-2">
                 {requests.length}
@@ -154,10 +152,7 @@ const MyContactRequests = ({ user }) => {
             </div>
           </div>
 
-          <div
-            className="bg-white rounded-card border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui animate-fadeIn"
-            style={{ animationDelay: "0.2s" }}
-          >
+          <div className="bg-white rounded-card border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui">
             <div className="flex items-center">
               <span className="text-xl sm:text-2xl font-bold text-emerald-600 ml-2">
                 {requests.filter((r) => r.status === "answered").length}
@@ -171,10 +166,7 @@ const MyContactRequests = ({ user }) => {
             </div>
           </div>
 
-          <div
-            className="bg-white rounded-card border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui animate-fadeIn"
-            style={{ animationDelay: "0.3s" }}
-          >
+          <div className="bg-white rounded-card border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui">
             <div className="flex items-center">
               <span className="text-xl sm:text-2xl font-bold text-amber-500 ml-2">
                 {requests.filter((r) => r.status === "pending").length}
@@ -188,10 +180,7 @@ const MyContactRequests = ({ user }) => {
             </div>
           </div>
 
-          <div
-            className="bg-white rounded-card border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui animate-fadeIn"
-            style={{ animationDelay: "0.4s" }}
-          >
+          <div className="bg-white rounded-card border border-slate-200 px-3 sm:px-4 py-3 flex flex-col sm:flex-row items-center justify-center hover:shadow-card transition-shadow duration-ui">
             <div className="flex items-center">
               <span className="text-xl sm:text-2xl font-bold text-blue-500 ml-2">
                 {requests.filter((r) => r.status === "in_progress").length}
@@ -208,8 +197,7 @@ const MyContactRequests = ({ user }) => {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="col-span-2 lg:col-span-1 bg-white rounded-card border border-slate-200 flex items-center justify-center px-3 sm:px-4 py-3 text-indigo-600 hover:bg-indigo-50 transition-colors disabled:opacity-50 animate-fadeIn"
-            style={{ animationDelay: "0.5s" }}
+            className="col-span-2 lg:col-span-1 bg-white rounded-card border border-slate-200 flex items-center justify-center px-3 sm:px-4 py-3 text-indigo-600 hover:bg-indigo-50 transition-colors disabled:opacity-50"
           >
             <RefreshCw className={`w-3 h-3 sm:w-4 sm:h-4 ml-1 ${refreshing ? "animate-spin" : ""}`} />
             <span className="text-xs sm:text-sm">{refreshing ? "מרענן..." : "רענן"}</span>
@@ -223,7 +211,6 @@ const MyContactRequests = ({ user }) => {
           onDelete={setDeleteTargetId}
           onView={setSelectedRequest}
         />
-      </div>
 
       {selectedRequest && (
         <ContactRequestDetailsModal
@@ -253,7 +240,7 @@ const MyContactRequests = ({ user }) => {
         onConfirm={handleDelete}
         onClose={() => setDeleteTargetId(null)}
       />
-    </div>
+    </PageLayout>
   );
 };
 
