@@ -34,6 +34,35 @@ const MyContactRequests = lazy(() => import("./pages/MyContactRequests"));
 
 const PageLoader = () => <LoadingSpinner message="טוען עמוד..." />;
 
+const clearStoredAuth = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("userFullName");
+  localStorage.removeItem("userRole");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("requiresPasswordReset");
+};
+
+const persistUserSession = ({ token, user, requiresPasswordReset = false }) => {
+  localStorage.setItem("token", token);
+  localStorage.setItem("userFullName", user.fullName);
+  localStorage.setItem("userRole", user.role);
+  localStorage.setItem("userId", user._id);
+  localStorage.setItem("requiresPasswordReset", requiresPasswordReset);
+};
+
+const consumeAuthTokenFromUrl = () => {
+  const url = new URL(window.location.href);
+  const token = url.searchParams.get("token");
+
+  if (!token) return null;
+
+  url.searchParams.delete("token");
+  const cleanUrl = `${url.pathname}${url.search}${url.hash}`;
+  window.history.replaceState({}, document.title, cleanUrl);
+
+  return token;
+};
+
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -42,7 +71,13 @@ function App() {
     // Initialize cache cleanup on app start
     initializeCacheCleanup();
 
-    const token = localStorage.getItem("token");
+    const oauthToken = consumeAuthTokenFromUrl();
+    if (oauthToken) {
+      localStorage.setItem("token", oauthToken);
+      localStorage.removeItem("requiresPasswordReset");
+    }
+
+    const token = oauthToken || localStorage.getItem("token");
 
     if (!token) {
       setLoading(false);
@@ -62,9 +97,7 @@ function App() {
       try {
         const freshUser = await apiFetch("/api/user/me", { token });
 
-        localStorage.setItem("userFullName", freshUser.fullName);
-        localStorage.setItem("userRole", freshUser.role);
-        localStorage.setItem("userId", freshUser._id);
+        persistUserSession({ token, user: freshUser, requiresPasswordReset });
 
         setUser({
           token,
@@ -74,11 +107,7 @@ function App() {
       } catch (error) {
         // Invalid/expired token — treat as logged out rather than showing a
         // UI that looks authenticated but can't load any user-specific data.
-        localStorage.removeItem("token");
-        localStorage.removeItem("userFullName");
-        localStorage.removeItem("userRole");
-        localStorage.removeItem("userId");
-        localStorage.removeItem("requiresPasswordReset");
+        clearStoredAuth();
         clearAllUserCache();
         setUser(null);
       } finally {
@@ -88,11 +117,11 @@ function App() {
   }, []);
 
   const handleLogin = async (userData) => {
-    localStorage.setItem("token", userData.token);
-    localStorage.setItem("userFullName", userData.user.fullName);
-    localStorage.setItem("userRole", userData.user.role);
-    localStorage.setItem("userId", userData.user._id);
-    localStorage.setItem("requiresPasswordReset", userData.requiresPasswordReset || false);
+    persistUserSession({
+      token: userData.token,
+      user: userData.user,
+      requiresPasswordReset: userData.requiresPasswordReset || false,
+    });
     
     setUser(userData);
     
@@ -126,11 +155,7 @@ function App() {
     // session so stale responses cannot land in the next user's cache.
     abortPreload();
 
-    localStorage.removeItem("token");
-    localStorage.removeItem("userFullName");
-    localStorage.removeItem("userRole");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("requiresPasswordReset");
+    clearStoredAuth();
 
     // clearAllUserCache() walks every registered CacheManager prefix
     // (dashboard_, course_, lecturer_) plus the per-feature localStorage

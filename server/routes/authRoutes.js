@@ -23,6 +23,8 @@ router.post(
   }),
   authController.login
 );
+router.get("/google", authController.googleAuth);
+router.get("/google/callback", authController.googleCallback);
 router.post(
   "/forgot-password",
   validate({ email: { type: "string", required: true } }),

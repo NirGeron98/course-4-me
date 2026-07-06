@@ -7,6 +7,7 @@ import AuthLayout from "../components/common/AuthLayout";
 import Input from "../components/common/Input";
 import PasswordInput from "../components/common/PasswordInput";
 import Button from "../components/common/Button";
+import GoogleAuthButton from "../components/common/GoogleAuthButton";
 
 const Login = ({ onLogin, user }) => {
 
@@ -87,6 +88,17 @@ const Login = ({ onLogin, user }) => {
       document.title = 'Course4Me';
     };
   }, []);
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const authError = urlParams.get("error");
+
+    if (authError === "google_auth_failed") {
+      setErrorMessage("התחברות עם Google נכשלה, נסה שוב");
+    } else if (authError === "google_auth_unavailable") {
+      setErrorMessage("התחברות עם Google אינה זמינה כרגע");
+    }
+  }, [location.search]);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -192,6 +204,14 @@ const Login = ({ onLogin, user }) => {
           {isDataLoading ? "טוען נתונים..." : isLoading ? "מתחבר..." : "התחבר"}
         </Button>
       </form>
+
+      <div className="my-6 flex items-center gap-4" aria-hidden="true">
+        <div className="h-px flex-1 bg-slate-200" />
+        <span className="text-sm font-medium text-slate-500">או</span>
+        <div className="h-px flex-1 bg-slate-200" />
+      </div>
+
+      <GoogleAuthButton disabled={isLoading || isDataLoading} />
 
       {isDataLoading && (
         <div className="mt-6 p-4 rounded-card-lg bg-brand-tint text-brand-strong border border-brand-soft flex flex-col space-y-3" role="status">

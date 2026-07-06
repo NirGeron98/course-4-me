@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+const passport = require("passport");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/User");
 const emailService = require("../services/emailService");
 const { generateTempPassword, getTempPasswordExpiration, isExpired } = require("../utils/passwordUtils");
@@ -9,6 +11,95 @@ const createToken = (id) => {
     expiresIn: "7d",
   });
 };
+
+const isGoogleAuthConfigured = () =>
+  Boolean(
+    process.env.GOOGLE_CLIENT_ID &&
+    process.env.GOOGLE_CLIENT_SECRET &&
+    process.env.GOOGLE_CALLBACK_URL &&
+    process.env.FRONTEND_URL
+  );
+
+const getFrontendUrl = () =>
+  (process.env.FRONTEND_URL || process.env.CLIENT_URL || "http://localhost:3001")
+    .split(",")[0]
+    .replace(/\/$/, "");
+
+const redirectToFrontendLogin = (res, params = {}) => {
+  const url = new URL("/login", getFrontendUrl());
+  Object.entries(params).forEach(([key, value]) => {
+    if (value) url.searchParams.set(key, value);
+  });
+  return res.redirect(url.toString());
+};
+
+if (isGoogleAuthConfigured()) {
+  passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: process.env.GOOGLE_CALLBACK_URL,
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        try {
+          const email = profile.emails?.[0]?.value?.toLowerCase()?.trim();
+
+          if (!email) {
+            return done(null, false, { message: "google_email_missing" });
+          }
+
+          const googleId = profile.id;
+          const profilePicture = profile.photos?.[0]?.value || null;
+          const fullName =
+            profile.displayName ||
+            [profile.name?.givenName, profile.name?.familyName].filter(Boolean).join(" ") ||
+            email;
+
+          let user = await User.findOne({ email });
+
+          if (user) {
+            let shouldSave = false;
+
+            if (!user.googleId) {
+              user.googleId = googleId;
+              shouldSave = true;
+            }
+
+            if (user.authProvider !== "google" && !user.password) {
+              user.authProvider = "google";
+              shouldSave = true;
+            }
+
+            if (profilePicture && !user.profilePicture) {
+              user.profilePicture = profilePicture;
+              shouldSave = true;
+            }
+
+            if (shouldSave) {
+              await user.save();
+            }
+
+            return done(null, user);
+          }
+
+          user = await User.create({
+            fullName,
+            email,
+            authProvider: "google",
+            googleId,
+            profilePicture,
+            role: "student",
+          });
+
+          return done(null, user);
+        } catch (error) {
+          return done(error);
+        }
+      }
+    )
+  );
+}
 
 exports.signup = async (req, res) => {
   try {
@@ -100,6 +191,32 @@ exports.login = async (req, res) => {
   } catch (err) {
     res.status(500).json({ message: "שגיאת שרת פנימית, נסה שוב מאוחר יותר" });
   }
+};
+
+exports.googleAuth = (req, res, next) => {
+  if (!isGoogleAuthConfigured()) {
+    return res.status(503).json({ message: "התחברות עם Google אינה מוגדרת כרגע" });
+  }
+
+  return passport.authenticate("google", {
+    scope: ["profile", "email"],
+    session: false,
+  })(req, res, next);
+};
+
+exports.googleCallback = (req, res, next) => {
+  if (!isGoogleAuthConfigured()) {
+    return redirectToFrontendLogin(res, { error: "google_auth_unavailable" });
+  }
+
+  return passport.authenticate("google", { session: false }, (err, user) => {
+    if (err || !user) {
+      return redirectToFrontendLogin(res, { error: "google_auth_failed" });
+    }
+
+    const token = createToken(user._id);
+    return redirectToFrontendLogin(res, { token });
+  })(req, res, next);
 };
 
 // Forgot Password - Send temporary password via email
