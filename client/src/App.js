@@ -14,6 +14,7 @@ import Login from "./pages/Login";
 import { CourseDataProvider } from "./contexts/CourseDataContext";
 import { initializeCacheCleanup, clearAllUserCache } from "./utils/cacheUtils";
 import preloadUserData, { abortPreload } from "./utils/preloadUserData";
+import { apiFetch } from "./hooks/useApi";
 
 // Every route except Login (the landing page) and Dashboard (first screen
 // after login, and the target of the post-login preload events) is
@@ -40,25 +41,50 @@ function App() {
   useEffect(() => {
     // Initialize cache cleanup on app start
     initializeCacheCleanup();
-    
-    const token = localStorage.getItem("token");
-    const userFullName = localStorage.getItem("userFullName");
-    const userRole = localStorage.getItem("userRole");
-    const userId = localStorage.getItem("userId");
-    const requiresPasswordReset = localStorage.getItem("requiresPasswordReset");
 
-    if (token && userFullName && userRole && userId) {
-      setUser({
-        token,
-        user: {
-          fullName: userFullName,
-          role: userRole,
-          _id: userId,
-        },
-        requiresPasswordReset: requiresPasswordReset === "true"
-      });
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setLoading(false);
+      return;
     }
-    setLoading(false);
+
+    // A token in localStorage only proves a session existed at some point —
+    // it may have expired since (e.g. the tab was closed and reopened days
+    // later from a bookmark). Revalidate against the backend and hydrate
+    // from the fresh user doc instead of trusting the cached localStorage
+    // fields, so a stale/expired token can't leave the UI stuck in a
+    // half-logged-in state where personal data silently fails to load.
+    (async () => {
+      const requiresPasswordReset =
+        localStorage.getItem("requiresPasswordReset") === "true";
+
+      try {
+        const freshUser = await apiFetch("/api/user/me", { token });
+
+        localStorage.setItem("userFullName", freshUser.fullName);
+        localStorage.setItem("userRole", freshUser.role);
+        localStorage.setItem("userId", freshUser._id);
+
+        setUser({
+          token,
+          user: freshUser,
+          requiresPasswordReset,
+        });
+      } catch (error) {
+        // Invalid/expired token — treat as logged out rather than showing a
+        // UI that looks authenticated but can't load any user-specific data.
+        localStorage.removeItem("token");
+        localStorage.removeItem("userFullName");
+        localStorage.removeItem("userRole");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("requiresPasswordReset");
+        clearAllUserCache();
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
   const handleLogin = async (userData) => {
