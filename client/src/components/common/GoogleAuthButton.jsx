@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL;
+const BUTTON_TEXT = "המשך עם Google";
 
 const GoogleLogo = () => (
   <svg
@@ -42,12 +43,21 @@ const GoogleAuthButton = ({ disabled = false }) => {
       type="button"
       onClick={handleClick}
       disabled={disabled || loading}
-      aria-label="המשך עם Google"
+      aria-label={BUTTON_TEXT}
       aria-busy={loading || undefined}
-      className="inline-flex min-h-[48px] w-full items-center justify-center gap-3 rounded-button border border-slate-300 bg-white px-5 text-base font-semibold text-slate-800 shadow-sm transition-all duration-ui ease-ui hover:border-slate-400 hover:bg-slate-50 hover:shadow-card focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-[44px]"
+      className="group relative inline-flex min-h-[48px] w-full items-center justify-center gap-3 overflow-hidden rounded-button border border-slate-300 bg-white px-5 text-base font-semibold text-slate-800 shadow-sm transition-all duration-ui ease-ui hover:-translate-y-0.5 hover:border-slate-400 hover:bg-slate-50 hover:shadow-card focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 active:translate-y-0 active:border-slate-300 active:bg-slate-100 active:shadow-sm disabled:pointer-events-none disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:min-h-[44px]"
     >
-      <GoogleLogo />
-      <span>{loading ? "מעביר ל-Google..." : "המשך עם Google"}</span>
+      <span className="absolute inset-0 bg-gradient-to-l from-white via-transparent to-white opacity-0 transition-opacity duration-ui group-hover:opacity-80" />
+      <span className="relative flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white shadow-sm">
+        <GoogleLogo />
+      </span>
+      <span className="relative">{loading ? "מעביר ל-Google..." : BUTTON_TEXT}</span>
+      {loading && (
+        <span
+          className="relative h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-brand"
+          aria-hidden="true"
+        />
+      )}
     </button>
   );
 };

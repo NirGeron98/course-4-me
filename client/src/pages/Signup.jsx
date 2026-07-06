@@ -8,6 +8,7 @@ import Input from "../components/common/Input";
 import PasswordInput from "../components/common/PasswordInput";
 import Button from "../components/common/Button";
 import GoogleAuthButton from "../components/common/GoogleAuthButton";
+import AuthDivider from "../components/common/AuthDivider";
 
 const Signup = ({ onLogin }) => {
   const navigate = useNavigate();
@@ -136,12 +137,7 @@ const Signup = ({ onLogin }) => {
             </Button>
           </form>
 
-          <div className="my-6 flex items-center gap-4" aria-hidden="true">
-            <div className="h-px flex-1 bg-slate-200" />
-            <span className="text-sm font-medium text-slate-500">או</span>
-            <div className="h-px flex-1 bg-slate-200" />
-          </div>
-
+          <AuthDivider />
           <GoogleAuthButton disabled={isLoading} />
 
           {message && (
