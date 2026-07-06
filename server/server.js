@@ -66,6 +66,14 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get("/api/health", (req, res) => {
+  res.json({
+    status: "ok",
+    authUserShape: "normalized-id",
+    currentUserSource: "req-user-first",
+  });
+});
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
