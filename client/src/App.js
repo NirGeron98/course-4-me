@@ -52,12 +52,22 @@ const persistUserSession = ({ token, user, requiresPasswordReset = false }) => {
 
 const consumeAuthTokenFromUrl = () => {
   const url = new URL(window.location.href);
-  const token = url.searchParams.get("token");
+  const hashParams = new URLSearchParams(url.hash.replace(/^#/, ""));
+  const token =
+    url.searchParams.get("token") ||
+    url.searchParams.get("authToken") ||
+    hashParams.get("token") ||
+    hashParams.get("authToken");
 
   if (!token) return null;
 
   url.searchParams.delete("token");
-  const cleanUrl = `${url.pathname}${url.search}${url.hash}`;
+  url.searchParams.delete("authToken");
+  hashParams.delete("token");
+  hashParams.delete("authToken");
+
+  const cleanHash = hashParams.toString();
+  const cleanUrl = `${url.pathname}${url.search}${cleanHash ? `#${cleanHash}` : ""}`;
   window.history.replaceState({}, document.title, cleanUrl);
 
   return token;

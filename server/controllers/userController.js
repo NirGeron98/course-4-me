@@ -1,10 +1,12 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 
+const getRequestUserId = (req) => req.user?._id || req.user?.id;
+
 // Get user profile
 const getUserProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password").lean();
+    const user = await User.findById(getRequestUserId(req)).select("-password").lean();
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -39,7 +41,7 @@ const updateUserProfile = async (req, res) => {
     // Check if email is already taken by another user
     const existingUser = await User.findOne({
       email: email.toLowerCase(),
-      _id: { $ne: req.user.id }
+      _id: { $ne: getRequestUserId(req) }
     }).select("_id").lean();
 
     if (existingUser) {
@@ -48,7 +50,7 @@ const updateUserProfile = async (req, res) => {
 
     // Update user
     const updatedUser = await User.findByIdAndUpdate(
-      req.user.id,
+      getRequestUserId(req),
       {
         fullName: fullName.trim(),
         email: email.toLowerCase().trim(),
@@ -100,7 +102,7 @@ const updateUserPassword = async (req, res) => {
     }
 
     // Get user with password
-    const user = await User.findById(req.user.id);
+    const user = await User.findById(getRequestUserId(req));
     
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -127,7 +129,7 @@ const updateUserPassword = async (req, res) => {
 // Get current user (for /me endpoint)
 const getCurrentUser = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select("-password").lean();
+    const user = await User.findById(getRequestUserId(req)).select("-password").lean();
     
     if (!user) {
       return res.status(404).json({ message: "User not found" });

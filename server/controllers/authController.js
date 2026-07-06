@@ -25,13 +25,19 @@ const getFrontendUrl = () =>
     .split(",")[0]
     .replace(/\/$/, "");
 
-const redirectToFrontendLogin = (res, params = {}) => {
-  const url = new URL("/login", getFrontendUrl());
+const redirectToFrontend = (res, path, params = {}) => {
+  const url = new URL(path, getFrontendUrl());
   Object.entries(params).forEach(([key, value]) => {
     if (value) url.searchParams.set(key, value);
   });
   return res.redirect(url.toString());
 };
+
+const redirectToFrontendLogin = (res, params = {}) =>
+  redirectToFrontend(res, "/login", params);
+
+const redirectToFrontendDashboard = (res, params = {}) =>
+  redirectToFrontend(res, "/dashboard", params);
 
 if (isGoogleAuthConfigured()) {
   passport.use(
@@ -215,7 +221,7 @@ exports.googleCallback = (req, res, next) => {
     }
 
     const token = createToken(user._id);
-    return redirectToFrontendLogin(res, { token });
+    return redirectToFrontendDashboard(res, { token });
   })(req, res, next);
 };
 
