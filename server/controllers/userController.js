@@ -129,7 +129,7 @@ const updateUserPassword = async (req, res) => {
 // Get current user (for /me endpoint)
 const getCurrentUser = async (req, res) => {
   try {
-    const user = await User.findById(getRequestUserId(req)).select("-password").lean();
+    const user = req.user || await User.findById(getRequestUserId(req)).select("-password").lean();
     
     if (!user) {
       return res.status(404).json({ message: "User not found" });
