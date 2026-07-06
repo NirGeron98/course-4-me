@@ -16,7 +16,8 @@ const protect = async (req, res, next) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Find user by ID from token payload, exclude password.
-    // .lean() — req.user is only read (id, role, _id), no Mongoose methods needed.
+    // .lean() does not include Mongoose's virtual `id`, so normalize it
+    // for controllers that still read req.user.id.
     const user = await User.findById(decoded.id).select("-password").lean();
 
     if (!user) {
@@ -24,7 +25,10 @@ const protect = async (req, res, next) => {
     }
 
     // Attach user to request object
-    req.user = user;
+    req.user = {
+      ...user,
+      id: user._id.toString(),
+    };
 
     next();
   } catch (err) {
